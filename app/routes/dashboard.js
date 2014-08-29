@@ -10,7 +10,7 @@ export default Ember.Route.extend({
 	{
 		return Ember.RSVP.hash({
 			news 	: newsController.model,
-			refsets : refsetController.model.filterBy('published',true)
+			refsets : refsetController.dashboard
 		});
 	}
 });

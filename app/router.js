@@ -14,8 +14,6 @@ Router.map(function() {
 	  this.route("accessibility");
 	  this.route("terms-and-conditions");
 	  this.route("site-map");
-
-	  this.resource("refsets",{path:'/r/'});
 });
 
 export default Router;
