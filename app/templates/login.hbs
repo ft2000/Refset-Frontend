@@ -1,0 +1,15 @@
+<div id="loginForm" class="RefsetPanel">
+	{{input value=username type="text" 		placeholder="Username"}}
+	{{input value=password type="password" 	placeholder="Password"}}
+	
+	{{#if loginInProgress}}
+		<div class="loading">Logging you in, please wait...</div>
+		{{bs-progress progress=100 stripped=true animated=true}}
+	{{/if}}
+	
+	{{#if loginError}}
+		<div class="error">{{loginError}}</div>
+	{{/if}}
+	
+	<p class="forgetPasswordLink"><a href="http://usermanagement.ihtsdotools.org:8080/security-web/requestPwChange.jsp" target="_blank">I've forgotten my password</a></p>
+</div>

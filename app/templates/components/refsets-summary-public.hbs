@@ -1,0 +1,14 @@
+{{#bs-panel heading="Latest Public Refsets" type="info" class="panelNoPadding"}}
+	<ul class="list-group">
+		{{#each refsets}}
+			<li class="list-group-item">
+				{{#if published}}
+				  <span class="badge">{{date-format publishedDate}}</span>
+				{{/if}}
+				<h4>{{description}}</h4>
+				<em>owner:</em> {{createdBy}}
+				<em>created:</em> {{date-format created}}
+			</li>
+		{{/each}}
+	</ul>
+{{/bs-panel}}

@@ -1,0 +1,63 @@
+<div class="wrapper">
+
+	<header>
+		
+		{{#link-to 'dashboard' class='logo'}}IHTSDO logo{{/link-to}}
+		
+		<nav class="loginRegisterButtons">
+			{{#if user}}
+				<a href="#" {{action logout}}>Logout</a>
+			{{else}}
+				<a href="#" {{action showLoginForm}}>Login</a> &bull;
+				<a href="#" {{action showRegistrationFom}}>Register</a>
+			{{/if}}
+		</nav>
+
+        <nav>
+            <ul>
+                <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
+                <li>{{#link-to 'tools'}}Tools{{/link-to}}</li>
+                <li>{{#link-to 'news'}}News {{bs-badge content="5"}}{{/link-to}}</li>
+                <li><span class="clrPrimary">Welcome</span> {{#if user}}{{user.firstName}} {{user.lastName}}{{else}}Guest{{/if}}</li>
+            </ul>
+        </nav>
+
+    </header>
+
+	<section class="content contain pageLayout">
+
+		{{bs-breadcrumbs}}
+		
+		{{outlet}} 
+
+		{{outlet modal}}
+
+	</section>
+
+	<footer class="pageLayout contain">
+		
+		<hr>
+
+		<div class="share">
+			<span><small>Share</small></span>
+			<ul>
+				<li><a href="#" class="linkedin">linkedin</a></li>
+				<li><a href="#" class="twitter">twitter</a></li>
+				<li><a href="#" class="google">googleplus</a></li>
+			</ul>
+		</div>
+
+		<nav>
+            <ul>
+                <li><small>{{#link-to 'privacy-statement'}}Privacy{{/link-to}}</small></li>
+                <li><small>{{#link-to 'cookie-policy'}}Cookie policy{{/link-to}}</small></li>
+                <li><small>{{#link-to 'accessibility'}}Accessibility{{/link-to}}</small></li>
+                <li><small>{{#link-to 'terms-and-conditions'}}Terms and conditions{{/link-to}}</small></li>
+                <li><small>{{#link-to 'site-map'}}Site map{{/link-to}}</small></li>
+                <li><small><a href="http://www.ihtsdo.org/" target="_blank">&copy; Copyright IHTSDO 2014</a></small></li>
+            </ul>
+        </nav>
+
+	</footer>
+
+</div>

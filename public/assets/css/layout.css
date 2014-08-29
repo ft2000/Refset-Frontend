@@ -1,0 +1,38 @@
+nav.loginRegisterButtons {
+  width: 200px;
+  padding-top: 10px;
+  float: left;
+}
+/* Dashboard panels */
+.dashboard .panelNoPadding .panel-body {
+  padding: 0;
+}
+.dashboard .panelNoPadding .panel-body .list-group {
+  margin: 0;
+}
+/* Panels */
+.RefsetPanel .error {
+  color: #ff0000;
+}
+/* Login / Registration Forms */
+.modal-header img {
+  display: inline;
+}
+#loginForm input {
+  width: 49%;
+}
+#loginForm .loading,
+#loginForm .error {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#loginForm .forgetPasswordLink {
+  margin-top: 20px;
+}
+#registrationForm input {
+  width: 100%;
+  margin-bottom: 20px;
+}
+#registrationForm textarea {
+  height: 150px;
+}
