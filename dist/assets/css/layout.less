@@ -1,0 +1,90 @@
+@warningColour : red;
+
+
+nav.loginRegisterButtons
+{
+	width 		: 200px;
+	padding-top	: 10px;
+	float		: left;
+}
+
+
+/* Dashboard panels */
+.dashboard .panelNoPadding .panel-body
+{
+	padding : 0;	
+}
+
+.dashboard .panelNoPadding .panel-body .list-group
+{
+	margin : 0;
+}
+
+/* Panels */
+
+.RefsetPanel
+{
+	.error
+	{
+		color 		: @warningColour;
+	}
+}
+
+/* Login / Registration Forms */
+
+.modal-header
+{
+	img
+	{
+		display 		: inline;
+	}
+}
+
+#loginForm
+{
+	input
+	{
+		width 			: 49%;
+	}
+	
+	.loading,
+	.error
+	{
+		margin-top		: 20px;
+		margin-bottom	: 20px;
+	}
+	
+	.forgetPasswordLink
+	{
+		margin-top		: 20px;
+	}
+}
+
+#registrationForm
+{
+	input
+	{
+		width 			: 100%;
+		margin-bottom	: 20px;
+	}
+	
+	textarea
+	{
+		height			: 150px;
+	}
+}
+
+#toolsMenu
+{
+	ul
+	{
+		display :table;
+		list-style : none;
+			
+		li
+		{
+			display : table-cell;
+			padding-right : 20px;
+		}
+	}
+}

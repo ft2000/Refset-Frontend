@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Refset</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <base href="/">
+
+    <link rel="stylesheet" href="assets/vendor.css">
+    <link rel="stylesheet" href="assets/refset.css">
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <script src="assets/vendor.js"></script>
+    <script src="assets/refset.js"></script>
+    <script>
+      window.RefsetENV = require('refset/config/environment')['default'];
+      window.EmberENV = window.RefsetENV.EmberENV;
+      window.Refset = require('refset/app')['default'].create(RefsetENV.APP);
+    </script>
+  </body>
+</html>
