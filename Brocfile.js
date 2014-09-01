@@ -35,4 +35,7 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
 // JQuery plugins
 app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.js');
 
+// Ember forms
+app.import('vendor/ember-forms/dist/globals/main.js');
+
 module.exports = app.toTree();

@@ -1,17 +1,9 @@
 <div class="dashboard">
 	<div class="colMed inner">
-		{{#if controllers.application.user}}
-			{{refsets-summary-logged-in refsets=refsets}}
-		{{else}}
-			{{refsets-summary-public refsets=refsets}}
-		{{/if}}
+		{{refsets-list refsets=refsets}}
 	</div>
 	
 	<div class="colMed inner">
 		{{latest-news news=news}}
 	</div>
 </div>
-
-{{#if Ember.SHOW_DEV_HINTS}}
-	<i>(templates/bashboard.hbs)</i>
-{{/if}}

@@ -1,4 +1,4 @@
-import RefsetController from '../controllers/refsets';
+import RefsetController from '../controllers/refset-data';
 
 var refsetController 	= RefsetController.create();
 

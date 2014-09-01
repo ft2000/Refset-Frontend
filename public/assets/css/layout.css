@@ -36,3 +36,11 @@ nav.loginRegisterButtons {
 #registrationForm textarea {
   height: 150px;
 }
+#toolsMenu ul {
+  display: table;
+  list-style: none;
+}
+#toolsMenu ul li {
+  display: table-cell;
+  padding-right: 20px;
+}

@@ -5,15 +5,19 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-	  this.route("dashboard",{path:'/'});
-	  this.route("tools");
-	  this.route("news");
+	  this.resource("dashboard",{path:'/'});
+	  this.resource("tools", function(){
+		  this.resource("refsets", function(){
+			  this.route("refset", {path:':refset_id'});
+		  });
+	  });
 
-	  this.route("privacy-statement");
-	  this.route("cookie-policy");
-	  this.route("accessibility");
-	  this.route("terms-and-conditions");
-	  this.route("site-map");
+	  this.resource("news");
+	  this.resource("privacy-statement");
+	  this.resource("cookie-policy");
+	  this.resource("accessibility");
+	  this.resource("terms-and-conditions");
+	  this.resource("site-map");
 });
 
 export default Router;

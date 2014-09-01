@@ -1,29 +1,8 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{#if controllers.application.user}}
-			{{refsets-summary-logged-in refsets=model}}
-		{{else}}
-			{{refsets-summary-public refsets=model}}
-		{{/if}}
-		
-		<ul class="pagination">
-		
-		  <li><a href="#">&laquo;</a></li>
-		  
-		  {{#each p in pages}}
-		  <li><a href="#">{{p}}</a></li>
-		  {{/each}}
-		  
-		  <li><a href="#">&raquo;</a></li>
-		</ul>
-
-	</div>
-	
-	<div class="colMed inner">
-		Refset data goes here...
-	</div>
-</div>
-
-{{#if Ember.SHOW_DEV_HINTS}}
-	<i>(templates/tools.hbs)</i>
-{{/if}}
+ <div id="toolsMenu">
+ 	<ul>
+	 	 <li>{{#link-to 'refsets'}}Browse Refsets{{/link-to}}</li>
+		 <li>{{#link-to 'refsets.refset'}}New Refset{{/link-to}}</li>
+	 </ul>
+ </div>
+ 
+ {{outlet}}

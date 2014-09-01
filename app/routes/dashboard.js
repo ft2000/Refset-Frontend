@@ -1,7 +1,7 @@
-import RefsetController from '../controllers/refsets';
+import RefsetDataController from '../controllers/refset-data';
 import NewsController from '../controllers/news';
 
-var refsetController 	= RefsetController.create();
+var refsetController 	= RefsetDataController.create();
 var newsController 		= NewsController.create();
 
 export default Ember.Route.extend({
