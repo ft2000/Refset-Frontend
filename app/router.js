@@ -6,9 +6,11 @@ var Router = Ember.Router.extend({
 
 Router.map(function() {
 	  this.resource("dashboard",{path:'/'});
+	  
 	  this.resource("tools", function(){
 		  this.resource("refsets", function(){
-			  this.route("refset", {path:':refset_id'});
+			  this.route("refset", {path:':id'});
+			  this.route("new");
 		  });
 	  });
 

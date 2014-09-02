@@ -9,8 +9,10 @@ export default Ember.Route.extend({
 	model: function() 
 	{
 		return Ember.RSVP.hash({
-			news 	: newsController.model,
+			news 	: newsController.getLatestNews(),
 			refsets : refsetController.dashboard
 		});
-	}
+	},
+
+
 });

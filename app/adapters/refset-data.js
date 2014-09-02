@@ -11,11 +11,15 @@ export default Ember.Object.extend({
 				
 				result.content.refsets.map(function(item){
 					
-					if (typeof item.members != "undefined")
+					if (typeof item.members !== "undefined")
+					{
 						item.numMembers = item.members.length;
+					}
 					else
+					{
 						item.numMembers = 0;
-				})
+					}
+				});
 				
 				return result.content.refsets;
 			});

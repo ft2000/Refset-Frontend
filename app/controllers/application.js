@@ -124,7 +124,7 @@ export default Ember.Controller.extend({
 			});
 		},
 
-		showRegistrationFom: function() 
+		showRegistrationForm: function() 
 		{
 			return Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png">  Snomed CT Registration', 'registration', this.registrationButtons, this);
 		},

@@ -1,25 +1,25 @@
 export default Ember.ArrayController.extend({
 	
-	model : [{
-    	"id": "sprint-1",
-    	"title": "Sprint 1 has started!",
-    	"published": "2014-08-21T09:00:00",
-    	"description": "The first sprint has begun, user authentication and listing refsets are the order of the day...",
-	    "read": false
-    },
-	    {
-    	"id": "meeting-2",
-    	"title": "Team meet in Bristol",
-    	"published": "2014-08-20T10:00:00",
-    	"description": "The development team meet to discuss the development plan and in particular, the first sprint...",
-	    "read": false
-    },
-    {
-    	"id": "meeting-1",
-    	"title": "Team meet in Bristol",
-    	"published": "2014-08-13T10:00:00",
-    	"description": "The development team meet to discuss kicking off the development plan...",
-    	"read" : true
-    }],
-
+	model : 
+	[
+		{
+	    	"id": "news",
+	    	"title": "News...",
+	    	"published": "2014-09-02T10:00:00",
+	    	"description": "We will use this news section to post information about updates to the app. There is no back-end for this for now. Possibly in the future. For now, it's coded into the app, which is fine since we'll need to re-deploy when we make changes anyway. This is just to let users know about new features etc. in each release."
+	    },
+		{
+	    	"id": "authentication",
+	    	"title": "User Authentication",
+	    	"published": "2014-09-02T09:00:00",
+	    	"description": "The app now integrated with the user authentication server. You may log in/log out. App checks that you have permission to use it. There is also a form to guide you through registering to use the app."
+	    },
+    ],
+    
+	getLatestNews : function()
+	{
+		var latestNews = Ember.copy(this.model);
+		latestNews = latestNews.splice(0,1);
+		return latestNews;
+	}
 });

@@ -6,10 +6,10 @@
 		
 		<nav class="loginRegisterButtons">
 			{{#if user}}
-				<a href="#" {{action logout}}>Logout</a>
+				<a href="#" {{action 'logout'}}>Logout</a>
 			{{else}}
-				<a href="#" {{action showLoginForm}}>Login</a> &bull;
-				<a href="#" {{action showRegistrationFom}}>Register</a>
+				<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
+				<a href="#" {{action 'showRegistrationForm'}}>Register</a>
 			{{/if}}
 		</nav>
 
@@ -17,7 +17,7 @@
             <ul>
                 <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
                 <li>{{#link-to 'tools'}}Tools{{/link-to}}</li>
-                <li>{{#link-to 'news'}}News {{bs-badge content="5"}}{{/link-to}}</li>
+                <li>{{#link-to 'news'}}News{{/link-to}}</li>
                 <li><span class="clrPrimary">Welcome</span> {{#if user}}{{user.firstName}} {{user.lastName}}{{else}}Guest{{/if}}</li>
             </ul>
         </nav>
