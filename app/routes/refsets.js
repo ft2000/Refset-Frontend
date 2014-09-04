@@ -1,6 +1,6 @@
-import RefsetDataController from '../controllers/refset-data';
+import RefsetsController from '../controllers/refsets';
 
-var controller = RefsetDataController.create();
+var controller = RefsetsController.create();
 
 export default Ember.Route.extend({
            

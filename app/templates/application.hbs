@@ -5,7 +5,7 @@
 		{{#link-to 'dashboard' class='logo'}}IHTSDO logo{{/link-to}}
 		
 		<nav class="loginRegisterButtons">
-			{{#if user}}
+			{{#if globals.user.loggedIn}}
 				<a href="#" {{action 'logout'}}>Logout</a>
 			{{else}}
 				<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
@@ -18,7 +18,7 @@
                 <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
                 <li>{{#link-to 'tools'}}Tools{{/link-to}}</li>
                 <li>{{#link-to 'news'}}News{{/link-to}}</li>
-                <li><span class="clrPrimary">Welcome</span> {{#if user}}{{user.firstName}} {{user.lastName}}{{else}}Guest{{/if}}</li>
+                <li><span class="clrPrimary">Welcome</span> {{#if globals.user.loggedIn}}{{globals.user.firstName}} {{globals.user.lastName}}{{else}}Guest{{/if}}</li>
             </ul>
         </nav>
 

@@ -1,10 +1,11 @@
+import User from './user';
+
 var Login = Ember.Object.extend({
-  username:     null,
-  password:     null,
-  token:		null
+
 });
 
 Login.reopenClass({
+	
 	authenticate: function(username, password) 
 	{ 
 	    Ember.Logger.log('Ajax: authenticate');

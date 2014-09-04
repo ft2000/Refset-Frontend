@@ -1,27 +1,38 @@
-import User from '../models/user';
-import Login from '../models/login';
+import Login 	from '../models/login';
+import User		from '../models/user';
 
-export default Ember.Controller.extend({
-	user : null,
-	loginInProgress : false,
-	loginError: null,
-	username : '',
-	password: '',
- 
-	loginButtons: [
-	    Ember.Object.create({title: 'Cancel', clicked: 'closeLoginModal'}),
-		Ember.Object.create({title: 'Login', clicked:'loginUser'})
-	],
+export default Ember.ObjectController.extend({
 
-	registrationButtons: [
-		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
-		Ember.Object.create({title: 'Register', clicked:'registerUser'})
-	],
+	loginInProgress 	: false,
+	loginError			: null,
+	username 			: 'ianbale',
+	password			: 'Lotusm250',
+	needs 				: ["refsets"],
 
-	actions: 
+	init : function()
+	{
+		var controller = this.get('controllers.refsets');
+		controller.getAllRefsets();
+	},
+	
+	loginButtons: 
+	[
+   	    Ember.Object.create({title: 'Cancel', clicked: 'closeLoginModal'}),
+   		Ember.Object.create({title: 'Login', clicked:'loginUser'})
+   	],
+
+   	registrationButtons: 
+   	[
+   		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
+   		Ember.Object.create({title: 'Register', clicked:'registerUser'})
+   	],
+
+	actions :
 	{
 		showLoginForm: function() 
 		{
+			Ember.Logger.log('showLoginForm');
+			
 			return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this);
 		},
 
@@ -30,36 +41,39 @@ export default Ember.Controller.extend({
 			Ember.Logger.log('Performing Authentication');
 			
 			var _this = this;
+
 			_this.set("loginInProgress",1);
 			_this.set('loginError', null);
 			
-			Login.authenticate(this.get('username'), this.get('password')).then(function(authResult)
+			Login.authenticate(this.username,this.password).then(function(authResult)
 			{
-				Ember.Logger.log("authenticate",authResult.user.givenName);
-
-				var user = User.create({
+				Ember.Logger.log("authResult",authResult);
+				
+				var loggedInUser = User.create({
+					username: authResult.user.name,
 					firstName: authResult.user.givenName,
 					lastName: authResult.user.surname,
-					name: authResult.user.name,
 					token: authResult.user.token,
-					permissionGroups: Ember.A()
+					permissionGroups: Ember.A(),
+					loggedIn : true
 				});
-	
-				Ember.Logger.log("User logged in",JSON.stringify(user));
+
+				Ember.Logger.log("User logged in",JSON.stringify(loggedInUser));
 				
-				Login.isPermittedToUseRefset(user.get('name')).then(function(isAllowedAccessToRefset)
+				Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
 				{
-					Ember.Logger.log("isPermittedToUseRefset : ",isAllowedAccessToRefset);
-					
 					_this.set('loginInProgress', 0);
-					
+
 					switch(isAllowedAccessToRefset)
 					{
 						case 1:
 						{
-							_this.set('user', user);
+							_this.set('globals.user',loggedInUser);
 							_this.send('closeLoginModal');
-							
+
+							var controller = _this.get('controllers.refsets');
+							controller.getAllRefsets(1);
+
 							break;
 						}
 						
@@ -87,7 +101,7 @@ export default Ember.Controller.extend({
 				});
 				
 				/*					
-				var permissionGroups = Login.getPermissionGroups(user.get('name')).then(function(permResult)
+				var permissionGroups = Login.getPermissionGroups(user.get('username')).then(function(permResult)
 				{
 					Ember.Logger.log('success roles:' + permResult);
 	
@@ -155,8 +169,11 @@ export default Ember.Controller.extend({
 		
 		logout : function()
 		{
-			this.set('user', null);
+			this.set('globals.user',User.create());
+			var controller = this.get('controllers.refsets');
+			
+			controller.getAllRefsets(1);
 		}
 	}
-
+	
 });
