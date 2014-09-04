@@ -10,7 +10,7 @@ export default Ember.Object.extend({
 		{
 			'X-REFSET-PRE-AUTH-USERNAME'	: user.username,
 			'X-REFSET-PRE-AUTH-TOKEN'		: user.token
-		}
+		};
 
 		return headers;
 	}, 
@@ -21,7 +21,8 @@ export default Ember.Object.extend({
 
 		if (forceReinit || typeof AllRefsets === "undefined")
 		{
-			var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result){
+			var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
+			{
 				
 				result.content.refsets.map(function(item)
 				{
@@ -37,6 +38,11 @@ export default Ember.Object.extend({
 				});
 				
 				return result.content.refsets;
+			},
+			function (error)
+			{
+				Ember.Logger.log("refsets findAll error",error);
+				return {};	
 			});
 
 			AllRefsets =  result;
@@ -59,6 +65,11 @@ export default Ember.Object.extend({
 			result.content.refset.numMembers = result.content.refset.members.length;
 
 			return refset;	
+		},
+		function (error)
+		{
+			Ember.Logger.log("refsets find error",error);
+			return {authError : true};
 		});	
 		
 		return result;

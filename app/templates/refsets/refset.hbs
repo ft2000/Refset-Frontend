@@ -1,33 +1,37 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{#bs-panel heading="Refset Details" type="info" class=""}}
-			{{#em-form model=model submit_button=false}}
-			    {{em-input property="id" label="ID" placeholder="Refset ID"}}
-			    {{em-input property="moduleId" label="Module ID" placeholder="Module ID"}}
-			    {{em-text property="description" label="Description" placeholder="Description" rows=2}}
-			    {{em-input property="created" label="Created date" placeholder="Created date"}}
-			    {{em-input property="createdBy" label="By" placeholder="Created by"}}
-				{{em-input property="type" label="Refset Type" placeholder="Refset type"}}
-				{{em-input property="numMembers" label="Number of members" placeholder="Number of members"}}
-				{{em-input property="publishedDate" label="Published" placeholder="Published date"}}
-			{{/em-form}}
-		{{/bs-panel}}
-	</div>
-	
-	<div class="colMed inner">
-		{{#bs-panel heading="Members" type="info" class="panelNoPadding"}}
+{{#if authError}}
+	You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
+{{else}}
+	<div class="dashboard">
+		<div class="colMed inner">
+			{{#bs-panel heading="Refset Details" type="info" class=""}}
+				{{#em-form model=model submit_button=false}}
+				    {{em-input property="id" label="ID" placeholder="Refset ID"}}
+				    {{em-input property="moduleId" label="Module ID" placeholder="Module ID"}}
+				    {{em-text property="description" label="Description" placeholder="Description" rows=2}}
+				    {{em-input property="created" label="Created date" placeholder="Created date"}}
+				    {{em-input property="createdBy" label="By" placeholder="Created by"}}
+					{{em-input property="type" label="Refset Type" placeholder="Refset type"}}
+					{{em-input property="numMembers" label="Number of members" placeholder="Number of members"}}
+					{{em-input property="publishedDate" label="Published" placeholder="Published date"}}
+				{{/em-form}}
+			{{/bs-panel}}
+		</div>
 		
-			<ul class="list-group">
-				{{#each members}}
-					<li class="list-group-item">
-						<em>ID:</em> <b>{{id}}</b><br>
-						<em>Module ID:</em> <b>{{moduleId}}</b><br>
-						<em>Reference Component ID:</em> <b>{{referenceComponentId}}</b><br>
-						<em>active:</em> <b>{{active}}</b><br>
-					</li>
-				{{/each}}
-			</ul>
-		
-		{{/bs-panel}}
+		<div class="colMed inner">
+			{{#bs-panel heading="Members" type="info" class="panelNoPadding"}}
+			
+				<ul class="list-group">
+					{{#each members}}
+						<li class="list-group-item">
+							<em>ID:</em> <b>{{id}}</b><br>
+							<em>Module ID:</em> <b>{{moduleId}}</b><br>
+							<em>Reference Component ID:</em> <b>{{referenceComponentId}}</b><br>
+							<em>active:</em> <b>{{active}}</b><br>
+						</li>
+					{{/each}}
+				</ul>
+			
+			{{/bs-panel}}
+		</div>
 	</div>
-</div>
+{{/if}}

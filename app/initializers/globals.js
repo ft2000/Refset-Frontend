@@ -12,6 +12,6 @@ export default
   {
     application.register('global:variables', globals, {singleton: true});
     application.inject('controller', 'globals', 'global:variables');
-    application.inject('adapter', 'globals', 'global:variables');
+    application.inject('route', 'globals', 'global:variables');
   }
 };

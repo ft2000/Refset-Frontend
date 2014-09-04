@@ -3,30 +3,26 @@ var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 
-	model : [],
-	dashboard : [],
-	published : [],
-	unpublished : [],
+	allRefsets 		: [],
+	dashboard 		: [],
+	published 		: [],
+	unpublished 	: [],
 	
 	getAllRefsets : function(reinit)
-	{		
+	{
 		var _this = this;
-
 		var user = this.get('globals.user');
 		
-		Ember.Logger.log("user",user);
-
 		refsetsAdapter.findAll(user,reinit).then(function(result)
 		{			
 			var dashboardArray 		= [];
 			var publishedArray 		= [];
 			var unpublishedArray 	= [];
-			var model				= [];
+			
+			_this.allRefsets.setObjects(result);
 			
 			result.map(function(item)
 			{
-				model.push(item);
-				
 				if (item.published)
 				{
 					dashboardArray.push(item);
@@ -35,8 +31,7 @@ export default Ember.ObjectController.extend({
 				else
 				{
 					unpublishedArray.push(item);					
-				}	
-				
+				}
 			});
 			
 			var sortedDashboardArray = dashboardArray.sort(function(a,b)
@@ -64,18 +59,13 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
-	getRefset : function(id)
+	getRefset : function(user,id)
 	{
-		var user = this.get('globals.user');
-
 		return refsetsAdapter.find(user,id);
 	},
 	
 	actions :
 	{
-		showRefset : function(id)
-		{
-			this.getRefset(id);
-		},
+
 	}
 });
