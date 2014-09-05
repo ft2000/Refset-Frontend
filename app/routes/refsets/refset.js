@@ -13,7 +13,7 @@ export default Ember.Route.extend({
 		
 		var result = refController.getRefset(user, params.id);
 		
-		Em.RSVP.Promise.all([result]).then(function(results)
+		Ember.RSVP.Promise.all([result]).then(function()
 		{
 			Ember.Logger.log("promise done",result,result._result.authError);
 

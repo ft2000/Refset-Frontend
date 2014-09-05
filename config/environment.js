@@ -23,6 +23,7 @@ module.exports = function(environment) {
         authenticationUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/',
         appsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
         permissionsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
+        passwordResetURL: 'https://usermanagement.ihtsdotools.org/security-web/requestPwChange.jsp',
     	
     	// Refsets API
         refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refsets/v1.0/refsets',

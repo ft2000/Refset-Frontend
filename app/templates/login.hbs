@@ -11,5 +11,5 @@
 		<div class="error">{{loginError}}</div>
 	{{/if}}
 	
-	<p class="forgetPasswordLink"><a href="http://usermanagement.ihtsdotools.org:8080/security-web/requestPwChange.jsp" target="_blank">I've forgotten my password</a></p>
+	<p class="forgetPasswordLink"><a {{bind-attr href="RefsetENV.APP.passwordResetURL"}} target="_blank">I've forgotten my password</a></p>
 </div>

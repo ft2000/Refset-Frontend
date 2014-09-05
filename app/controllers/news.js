@@ -21,5 +21,13 @@ export default Ember.ArrayController.extend({
 		var latestNews = Ember.copy(this.model);
 		latestNews = latestNews.splice(0,1);
 		return latestNews;
+	},
+
+	actions :
+	{
+		testMe : function(data)
+		{
+			Ember.Logger.log("testMe",data)
+		}
 	}
 });

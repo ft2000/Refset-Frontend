@@ -11,6 +11,7 @@ Router.map(function() {
 		  this.resource("refsets", function(){
 			  this.route("refset", {path:':id'});
 			  this.route("new");
+			  this.route("upload");
 		  });
 	  });
 

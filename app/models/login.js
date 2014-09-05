@@ -1,5 +1,3 @@
-import User from './user';
-
 var Login = Ember.Object.extend({
 
 });

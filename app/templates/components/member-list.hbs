@@ -1,0 +1,24 @@
+{{#bs-panel heading=title type="info" class="panelNoPadding"}}
+
+	<ul class="list-group">
+		{{#each members}}
+			<li class="list-group-item">
+				<h4>{{description}}</h4>
+				{{id}}
+			</li>
+		{{/each}}
+	</ul>
+
+{{/bs-panel}}
+
+		
+<ul class="pagination">
+
+  <li><a href="#">&laquo;</a></li>
+  
+  {{#each p in pages}}
+  <li><a href="#">{{p}}</a></li>
+  {{/each}}
+  
+  <li><a href="#">&raquo;</a></li>
+</ul>

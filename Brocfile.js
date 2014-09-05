@@ -38,4 +38,7 @@ app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.j
 // Ember forms
 app.import('vendor/ember-forms/dist/globals/main.js');
 
+
+//Ember Upload
+
 module.exports = app.toTree();
