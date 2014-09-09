@@ -6,7 +6,9 @@
     "RefsetENV": true,
     "Ember" : true,
     "Bootstrap" : true,
-    "$" : true
+    "$" : true,
+    "readSingleFile" : true,
+    "handleDragOver" : true
   },
   "browser" : true,
   "boss" : true,
