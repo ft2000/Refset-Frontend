@@ -73,8 +73,6 @@ export default Ember.ObjectController.extend({
 
 							var controller = _this.get('controllers.refsets');
 							controller.getAllRefsets(1);
-							
-							_this.refresh();
 
 							break;
 						}
