@@ -26,7 +26,7 @@ module.exports = function(environment) {
         passwordResetURL: 'https://usermanagement.ihtsdotools.org/security-web/requestPwChange.jsp',
     	
     	// Refsets API
-        refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refsets/v1.0/refsets',
+        refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
         
         numItemsPerPage : 10,
         numItemsPerPageDashboard : 5,
