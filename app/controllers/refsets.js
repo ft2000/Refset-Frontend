@@ -64,6 +64,11 @@ export default Ember.ObjectController.extend({
 		return refsetsAdapter.find(user,id);
 	},
 	
+	create : function (user,refset)
+	{		
+		return refsetsAdapter.create(user,refset);
+	},
+	
 	actions :
 	{
 		refresh : function()

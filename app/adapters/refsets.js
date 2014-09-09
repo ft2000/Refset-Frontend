@@ -42,7 +42,7 @@ export default Ember.Object.extend({
 			function (error)
 			{
 				Ember.Logger.log("refsets findAll error",error);
-				return {};	
+				return [];	
 			});
 
 			AllRefsets =  result;
@@ -69,6 +69,29 @@ export default Ember.Object.extend({
 		function (error)
 		{
 			Ember.Logger.log("refsets find error",error);
+			return {authError : true};
+		});	
+		
+		return result;
+	},
+	
+	create : function (user,refset)
+	{
+		Ember.Logger.log("refset create",user,refset);
+		
+		var jsonFormatRefset = JSON.stringify(refset);
+
+		Ember.Logger.log("refset create jsonFormatRefset ",jsonFormatRefset);
+
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/new', {headers:this.getHeaders(user), type:'post', data: jsonFormatRefset, processData: false, contentType: 'application/json'}).then(function(result)
+		{
+			Ember.Logger.log("Create refset result",result);
+
+			return result;	
+		},
+		function (error)
+		{
+			Ember.Logger.log("create refset error",error);
 			return {authError : true};
 		});	
 		
