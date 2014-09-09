@@ -62,6 +62,8 @@ eval("//# sourceURL=assets/ember-cli/loader.js");
 
 ;eval("define(\"refset/routes/refsets/index\", \n  [\"exports\"],\n  function(__exports__) {\n    \"use strict\";\n    __exports__[\"default\"] = Ember.Route.extend({\n    	controllerName : \'refsets\',\n    });\n  });//# sourceURL=refset/routes/refsets/index.js");
 
+;eval("define(\"refset/routes/refsets/new\", \n  [\"refset/controllers/refsets/new\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var NewRefsetController = __dependency1__[\"default\"];\n    var newRefsetController 	= NewRefsetController.create();\n\n    __exports__[\"default\"] = Ember.Route.extend({\n    	model: function() \n    	{\n    		return Ember.RSVP.hash({\n    			refset 					: newRefsetController.model,\n    			members 				: newRefsetController.members,\n    			doImportPublishedRefset	: newRefsetController.doImportPublishedRefset,\n    			doImportMembers 		: newRefsetController.doImportMembers,			\n    		});\n    	},\n\n    	actions :\n    	{\n    		initRefsetImport : function()\n    		{\n    			var user = this.get(\'globals.user\');\n    			newRefsetController.create(user);\n    		},\n    	},	\n     });\n  });//# sourceURL=refset/routes/refsets/new.js");
+
 ;eval("define(\"refset/routes/site-map\", \n  [\"exports\"],\n  function(__exports__) {\n    \"use strict\";\n    __exports__[\"default\"] = Ember.Route.extend({\n       model: function() {\n         return \'site map goes here...\';\n       }\n     });\n  });//# sourceURL=refset/routes/site-map.js");
 
 ;eval("define(\"refset/routes/terms-and-conditions\", \n  [\"exports\"],\n  function(__exports__) {\n    \"use strict\";\n    __exports__[\"default\"] = Ember.Route.extend({\n       model: function() {\n    	   return $.get(\"assets/static-content/terms-and-conditions.html\");\n       }\n     });\n  });//# sourceURL=refset/routes/terms-and-conditions.js");
@@ -169,6 +171,8 @@ eval("//# sourceURL=assets/ember-cli/loader.js");
 ;eval("define(\"refset/tests/routes/refsets.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes\');\n    test(\'routes/refsets.js should pass jshint\', function() { \n      ok(true, \'routes/refsets.js should pass jshint.\'); \n    });\n  });//# sourceURL=refset/tests/routes/refsets.jshint.js");
 
 ;eval("define(\"refset/tests/routes/refsets/index.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes/refsets\');\n    test(\'routes/refsets/index.js should pass jshint\', function() { \n      ok(true, \'routes/refsets/index.js should pass jshint.\'); \n    });\n  });//# sourceURL=refset/tests/routes/refsets/index.jshint.js");
+
+;eval("define(\"refset/tests/routes/refsets/new.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes/refsets\');\n    test(\'routes/refsets/new.js should pass jshint\', function() { \n      ok(true, \'routes/refsets/new.js should pass jshint.\'); \n    });\n  });//# sourceURL=refset/tests/routes/refsets/new.jshint.js");
 
 ;eval("define(\"refset/tests/routes/site-map.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes\');\n    test(\'routes/site-map.js should pass jshint\', function() { \n      ok(true, \'routes/site-map.js should pass jshint.\'); \n    });\n  });//# sourceURL=refset/tests/routes/site-map.jshint.js");
 
