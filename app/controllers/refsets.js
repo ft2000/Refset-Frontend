@@ -8,15 +8,9 @@ export default Ember.ObjectController.extend({
 	dashboard 		: [],
 	published 		: [],
 	unpublished 	: [],
-	
-	needs			: ["login"],
-	
+
 	getAllRefsets : function(reinit)
 	{
-		var loginController = this.get('controllers.login');
-		
-		Ember.Logger.log("loginController",loginController);
-		
 		var _this = this;
 		var user = this.get('globals.user');
 		
