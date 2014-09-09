@@ -1,0 +1,82 @@
+nav.loginRegisterButtons {
+  width: 200px;
+  padding-top: 10px;
+  float: left;
+}
+/* Dashboard panels */
+.dashboard .panelNoPadding .panel-body {
+  padding: 0;
+}
+.dashboard .panelNoPadding .panel-body .list-group {
+  margin: 0;
+}
+/* Panels */
+.RefsetPanel .error {
+  color: #ff0000;
+}
+/* Login / Registration Forms */
+.modal-header img {
+  display: inline;
+}
+#loginForm input {
+  width: 49%;
+}
+#loginForm .loading,
+#loginForm .error {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#loginForm .forgetPasswordLink {
+  margin-top: 20px;
+}
+#registrationForm input {
+  width: 100%;
+  margin-bottom: 20px;
+}
+#registrationForm textarea {
+  height: 150px;
+}
+#toolsMenu ul {
+  display: table;
+  list-style: none;
+}
+#toolsMenu ul li {
+  display: table-cell;
+  padding-right: 20px;
+}
+/* Upload Refsets */
+.fileUploadDropZone {
+  border: 2px dashed #bbb;
+  border-radius: 5px;
+  color: #bbb;
+  padding: 25px;
+  text-align: center;
+}
+#refsetUploadFileInput {
+  border: none;
+  height: inherit;
+  width: 100%;
+  margin-bottom: 20px;
+}
+/* bootstrap */
+.form-horizontal .control-label {
+  text-align: left;
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+.form-horizontal input {
+  display: inline-block;
+  margin-bottom: 0;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+  width: 100%;
+}
+.form-horizontal input[type="checkbox"] {
+  height: inherit;
+  width: inherit;
+  float: right;
+}
