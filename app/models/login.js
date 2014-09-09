@@ -10,12 +10,12 @@ Login.reopenClass({
 		var data = {};
 		data.username  = username;
 		data.password  = password;
-		data.queryName = RefsetENV.APP.authenticationActionSoapName;
+		data.queryName = SnomedENV.APP.authenticationActionSoapName;
 
 		return Ember.Deferred.promise(function(p) 
 		{
 			return p.resolve($.ajax({
-				url: RefsetENV.APP.authenticationUrl,
+				url: SnomedENV.APP.authenticationUrl,
 				type: "POST",
 				data: data
 			}).then((function(success) 
@@ -34,20 +34,20 @@ Login.reopenClass({
   
 	isPermittedToUseRefset: function(userId)
 	{
-		Ember.Logger.log('Checking if user is permitted to access app: ' + RefsetENV.APP.thisApplicationName);
+		Ember.Logger.log('Checking if user is permitted to access app: ' + SnomedENV.APP.thisApplicationName);
 	    
 		return Ember.Deferred.promise(function(p)
 		{
 			return p.resolve($.ajax({
 
-				url: RefsetENV.APP.appsUrl.replace('__USER_ID__', userId),
+				url: SnomedENV.APP.appsUrl.replace('__USER_ID__', userId),
 				type: "GET"
 			}).then((
 					
 				function(permittedAppsResult) 
 				{
 					Ember.Logger.log('Ajax: success' + JSON.stringify(permittedAppsResult));
-					return $.inArray(RefsetENV.APP.thisApplicationName,permittedAppsResult.apps) === -1 ? 0 : 1;
+					return $.inArray(SnomedENV.APP.thisApplicationName,permittedAppsResult.apps) === -1 ? 0 : 1;
 				}), 
 				
 				function(error)
@@ -63,7 +63,7 @@ Login.reopenClass({
     Ember.Logger.log('Ajax: Get permissionGroups for user ' + userId);
     return Ember.Deferred.promise(function(p) {
       return p.resolve($.ajax({
-        url: RefsetENV.APP.permissionsUrl.replace('__USER_ID__', userId),
+        url: SnomedENV.APP.permissionsUrl.replace('__USER_ID__', userId),
         type: "GET"
       }).then((function(success) {
         Ember.Logger.log('Ajax: success');

@@ -3,10 +3,12 @@
     "document": true,
     "window": true,
     "-Promise": true,
-    "RefsetENV": true,
+    "SnomedENV": true,
     "Ember" : true,
     "Bootstrap" : true,
-    "$" : true
+    "$" : true,
+    "readSingleFile" : true,
+    "handleDragOver" : true
   },
   "browser" : true,
   "boss" : true,

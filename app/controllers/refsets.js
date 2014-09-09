@@ -1,4 +1,5 @@
 import RefsetsAdapter from '../adapters/refsets';
+ 
 var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
@@ -8,13 +9,21 @@ export default Ember.ObjectController.extend({
 	published 		: [],
 	unpublished 	: [],
 	
+	needs			: ["login"],
+	
 	getAllRefsets : function(reinit)
 	{
+		var loginController = this.get('controllers.login');
+		
+		Ember.Logger.log("loginController",loginController);
+		
 		var _this = this;
 		var user = this.get('globals.user');
 		
+		Ember.Logger.log("user",user);
+		
 		refsetsAdapter.findAll(user,reinit).then(function(result)
-		{			
+		{	
 			var dashboardArray 		= [];
 			var publishedArray 		= [];
 			var unpublishedArray 	= [];
@@ -62,6 +71,11 @@ export default Ember.ObjectController.extend({
 	getRefset : function(user,id)
 	{
 		return refsetsAdapter.find(user,id);
+	},
+	
+	create : function (user,refset)
+	{		
+		return refsetsAdapter.create(user,refset);
 	},
 	
 	actions :

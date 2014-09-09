@@ -27,7 +27,7 @@ export default Ember.ArrayController.extend({
 	{
 		testMe : function(data)
 		{
-			Ember.Logger.log("testMe",data)
+			Ember.Logger.log("testMe",data);
 		}
 	}
 });

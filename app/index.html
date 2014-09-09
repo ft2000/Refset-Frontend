@@ -3,22 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Refset</title>
+    <title>Snomed CT Refset Manager</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {{BASE_TAG}}
 
     <link rel="stylesheet" href="assets/vendor.css">
-    <link rel="stylesheet" href="assets/refset.css">
+    <link rel="stylesheet" href="assets/snomed.css">
   </head>
   <body>
     <script src="assets/vendor.js"></script>
-    <script src="assets/refset.js"></script>
+    <script src="assets/snomed.js"></script>
     <script>
-      window.RefsetENV = require('refset/config/environment')['default'];
-      window.EmberENV = window.RefsetENV.EmberENV;
-      window.Refset = require('refset/app')['default'].create(RefsetENV.APP);
+      window.SnomedENV = require('snomed/config/environment')['default'];
+      window.EmberENV = window.SnomedENV.EmberENV;
+      window.Snomed = require('snomed/app')['default'].create(SnomedENV.APP);
     </script>
   </body>
 </html>

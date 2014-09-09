@@ -5,10 +5,10 @@ import loadInitializers from 'ember/load-initializers';
 Ember.MODEL_FACTORY_INJECTIONS = true;
 
 var App = Ember.Application.extend({
-  modulePrefix: 'refset', // TODO: loaded via config
+  modulePrefix: 'snomed', // TODO: loaded via config
   Resolver: Resolver
 });
 
-loadInitializers(App, 'refset');
+loadInitializers(App, 'snomed');
 
 export default App;
