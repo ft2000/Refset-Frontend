@@ -7,12 +7,9 @@ var Router = Ember.Router.extend({
 Router.map(function() {
 	  this.resource("dashboard",{path:'/'});
 	  
-	  this.resource("tools", function(){
-		  this.resource("refsets", function(){
-			  this.route("refset", {path:':id'});
-			  this.route("new");
-			  this.route("upload");
-		  });
+	  this.resource("refsets", function(){
+		  this.route("refset", {path:':id'});
+		  this.route("new");
 	  });
 
 	  this.resource("news");

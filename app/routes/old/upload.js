@@ -1,4 +1,4 @@
-import UploadController from '../../controllers/refsets/upload';
+import UploadController from '../../controllers/refsets';
 
 var uploadController 		= UploadController.create();
 
