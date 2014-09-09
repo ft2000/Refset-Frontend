@@ -1,7 +1,7 @@
 import RefsetModel 			from '../../models/refset';
-import UploadController 	from '../../controllers/refsets';
+import UploadController 	from '../../controllers/refsets/upload';
 import RefsetController 	from '../../controllers/refsets';
-import UtilitiesController	from '../../controllers/refsets';
+import UtilitiesController	from '../../controllers/utilities';
 
 var uploadController 		= UploadController.create();
 var refsetController 		= RefsetController.create();
