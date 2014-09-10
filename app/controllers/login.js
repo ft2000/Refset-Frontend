@@ -6,7 +6,7 @@ export default Ember.ObjectController.extend({
 	loginInProgress 	: false,
 	loginError			: null,
 	username 			: 'ianbale',
-	password			: 'Lotusm250',
+	password			: '',
 	user				: User.create(),
 	needs 				: ["refsets"],
 	
