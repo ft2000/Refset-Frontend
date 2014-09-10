@@ -1,6 +1,8 @@
 export default Ember.ObjectController.extend({
 
 	needs : ["refsets","login"],
+	
+	user : Ember.computed.alias("controllers.login.user"),
 
 	init : function()
 	{

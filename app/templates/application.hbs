@@ -3,16 +3,16 @@
 	<header>
 		
 		{{#link-to 'dashboard' class='logo'}}IHTSDO logo{{/link-to}}
-		
+
 		<nav class="loginRegisterButtons">
-			{{#if globals.user.loggedIn}}
+			{{#if user.token}}
 				<a href="#" {{action 'logout'}}>Logout</a>
 			{{else}}
 				<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
 				<a href="#" {{action 'showRegistrationForm'}}>Register</a>
 			{{/if}}
 		</nav>
-
+		
         <nav>
             <ul>
                 <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>

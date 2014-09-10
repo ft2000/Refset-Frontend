@@ -8,7 +8,8 @@
     "Bootstrap" : true,
     "$" : true,
     "readSingleFile" : true,
-    "handleDragOver" : true
+    "handleDragOver" : true,
+    "sessionStoreManager" : true
   },
   "browser" : true,
   "boss" : true,

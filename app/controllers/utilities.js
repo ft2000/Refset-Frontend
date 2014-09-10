@@ -43,7 +43,7 @@ export default Ember.ObjectController.extend({
 			}
 		}
 		
-		return URLSerialisedData
+		return URLSerialisedData;
 	},
 	
 	storeDataInSessionStore : function(key,data)
@@ -76,7 +76,7 @@ export default Ember.ObjectController.extend({
 		if (typeof storedData !== "undefined")
 		{
 			returnObj.status = 'ok';
-			returnObj.data = this.deserialiseURLString(storedData)	
+			returnObj.data = this.deserialiseURLString(storedData);
 		}
 		else
 		{
