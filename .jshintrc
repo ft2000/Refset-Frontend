@@ -3,7 +3,7 @@
     "document": true,
     "window": true,
     "-Promise": true,
-    "SnomedENV": true,
+    "RefsetENV": true,
     "Ember" : true,
     "Bootstrap" : true,
     "$" : true,

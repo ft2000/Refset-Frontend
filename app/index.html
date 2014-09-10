@@ -10,15 +10,15 @@
     {{BASE_TAG}}
 
     <link rel="stylesheet" href="assets/vendor.css">
-    <link rel="stylesheet" href="assets/snomed.css">
+    <link rel="stylesheet" href="assets/refset.css">
   </head>
   <body>
     <script src="assets/vendor.js"></script>
-    <script src="assets/snomed.js"></script>
+    <script src="assets/refset.js"></script>
     <script>
-      window.SnomedENV = require('snomed/config/environment')['default'];
-      window.EmberENV = window.SnomedENV.EmberENV;
-      window.Snomed = require('snomed/app')['default'].create(SnomedENV.APP);
+      window.RefsetENV = require('refset/config/environment')['default'];
+      window.EmberENV = window.RefsetENV.EmberENV;
+      window.Refset = require('refset/app')['default'].create(RefsetENV.APP);
     </script>
   </body>
 </html>
