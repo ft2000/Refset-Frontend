@@ -41,5 +41,6 @@ app.import('vendor/ember-forms/dist/globals/main.js');
 
 
 //Ember Upload
+app.import('vendor/my_utilities/drag_drop_file_upload.js');
 
 module.exports = app.toTree();
