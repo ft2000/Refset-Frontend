@@ -8,7 +8,7 @@ export default Ember.ObjectController.extend({
 	username 			: 'ianbale',
 	password			: '',
 	user				: User.create(),
-	needs 				: ["refsets"],
+	needs 				: ["refsets","utilities"],
 	
 	loginButtons: 
 	[
@@ -38,6 +38,27 @@ export default Ember.ObjectController.extend({
 		_this.set("loginInProgress",1);
 		_this.set('loginError', null);
 		
+if (1)
+{
+	var loggedInUser = User.create({
+		username: 'ianbale',
+		firstName: 'Ian',
+		lastName: 'Bale',
+		token: 'my token',
+		permissionGroups: Ember.A(),
+		loggedIn : true
+	});
+
+	_this.set('user',loggedInUser);
+	_this.send('closeLoginModal');			
+	
+	var controller = _this.get('controllers.utilities');
+	
+	controller.storeDataInSessionStore('user',loggedInUser);
+}
+		
+else
+
 		Login.authenticate(this.username,this.password).then(function(authResult)
 		{
 			Ember.Logger.log("authResult",authResult);
@@ -163,10 +184,27 @@ export default Ember.ObjectController.extend({
 	
 	logout : function()
 	{
-		this.set('globals.user',User.create());
-		var controller = this.get('controllers.refsets');
+		var guestUser = User.create();
+		this.set('user',guestUser);
+
+		var utilitiesController = this.get('controllers.utilities');
+		utilitiesController.storeDataInSessionStore('user',guestUser);
+
+		var refsetController = this.get('controllers.refsets');		
+		refsetController.getAllRefsets(1);
+	},
+	
+	loginFromLocalStore : function()
+	{
+		var controller 	= this.get('controllers.utilities');
+		var userData 	= controller.getDataFromSessionStore('user');
 		
-		controller.getAllRefsets(1);
-	}
+		Ember.Logger.log("controller.login:loginFromLocalStore (userData)",userData);
+		
+		if (userData.status === 'ok')
+		{
+			this.set('user',userData.data);
+		}
+	},
 	
 });

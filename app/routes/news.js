@@ -1,6 +1,6 @@
 import NewsController from '../controllers/news';
 
-var newsController 		= NewsController.create();
+var newsController = NewsController.create();
 
 export default Ember.Route.extend({
 	   model: function() 

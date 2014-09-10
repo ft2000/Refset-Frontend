@@ -4,8 +4,13 @@ export default Ember.ObjectController.extend({
 
 	init : function()
 	{
-		var controller = this.get('controllers.refsets');
-		controller.getAllRefsets();
+		// Check if user is still logged in...
+		var loginController = this.get('controllers.login');
+		loginController.loginFromLocalStore();
+
+		// Get a list of Refsets
+		var refsetController = this.get('controllers.refsets');
+		refsetController.getAllRefsets();
 	},	
 
 	actions :

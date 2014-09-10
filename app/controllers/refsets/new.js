@@ -1,31 +1,28 @@
-import RefsetModel 			from '../../models/refset';
-import UploadController 	from '../../controllers/refsets/upload';
-import RefsetController 	from '../../controllers/refsets';
-import UtilitiesController	from '../../controllers/utilities';
-
-var uploadController 		= UploadController.create();
-var refsetController 		= RefsetController.create();
-var utilities 				= UtilitiesController.create();
+import RefsetModel from '../../models/refset';
 
 export default Ember.ObjectController.extend({
 		
 	model 	: RefsetModel.create(),
-	members : uploadController.model,
 	
 	doImportPublishedRefset : false,
 	doImportMembers : false,
+	
+	needs : ["utilities","refsets","refsets/upload"],
 	
 	create : function(user)
 	{
 		// Need to serialise the form into the model
 
 		var URLSerialisedData = $('#newRefsetForm').serialize();
-		var refsetData = utilities.deserialiseURLString(URLSerialisedData);
+
+		var utilitiesController = this.get('controllers.utilities');		
+		var refsetData = utilitiesController.deserialiseURLString(URLSerialisedData);
 		
 		refsetData.active = (typeof refsetData.active !== "undefined" && refsetData.active === "1") ? true : false;
 		
 		this.set("model",refsetData);		
 		
+		var refsetController = this.get('controllers.refsets');
 		refsetController.create(user,this.model);
 	},
 		
@@ -53,6 +50,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
+				var uploadController = this.get('controllers.refsetsUpload');
 				uploadController.clearMemberList();
 			}
 		},

@@ -21,6 +21,8 @@ export default Ember.ArrayController.extend({
 				return {referenceComponentId:refCompId,description: "member " + counter++};
 			});
 			
+			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);
+			
 			this.model.setObjects(membersData);
 		},
     }
