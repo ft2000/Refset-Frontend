@@ -1,29 +1,23 @@
 import Ember from 'ember';
 
 var Router = Ember.Router.extend({
-	location: SnomedENV.locationType
+  location: RefsetENV.locationType
 });
 
-Router.map(function()
-{
-	this.resource("dashboard",{path:'/'});
-  
-	this.resource("tools", function()
-	{
-		this.resource("refsets", function()
-		{
-			this.route("refset", {path:':id'});
-			this.route("new");
-			this.route("upload");
-		});
-	});
+Router.map(function() {
+	  this.resource("dashboard",{path:'/'});
+	  
+	  this.resource("refsets", function(){
+		  this.route("refset", {path:':id'});
+		  this.route("new");
+	  });
 
-	this.resource("news");
-	this.resource("privacy-statement");
-	this.resource("cookie-policy");
-	this.resource("accessibility");
-	this.resource("terms-and-conditions");
-	this.resource("site-map");
+	  this.resource("news");
+	  this.resource("privacy-statement");
+	  this.resource("cookie-policy");
+	  this.resource("accessibility");
+	  this.resource("terms-and-conditions");
+	  this.resource("site-map");
 });
 
 export default Router;

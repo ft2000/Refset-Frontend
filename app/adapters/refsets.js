@@ -21,7 +21,7 @@ export default Ember.Object.extend({
 
 		if (forceReinit || typeof AllRefsets === "undefined")
 		{
-			var result = ajax(SnomedENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
+			var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
 			{
 				
 				result.content.refsets.map(function(item)
@@ -53,7 +53,7 @@ export default Ember.Object.extend({
 	
 	find : function (user,id)
 	{
-		var result = ajax(SnomedENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(result){
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(result){
 			
 			var refset = result.content.refset;
 
@@ -83,7 +83,7 @@ export default Ember.Object.extend({
 
 		Ember.Logger.log("refset create jsonFormatRefset ",jsonFormatRefset);
 
-		var result = ajax(SnomedENV.APP.refsetApiBaseUrl + '/new', {headers:this.getHeaders(user), type:'post', data: jsonFormatRefset, processData: false, contentType: 'application/json'}).then(function(result)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/new', {headers:this.getHeaders(user), type:'post', data: jsonFormatRefset, processData: false, contentType: 'application/json'}).then(function(result)
 		{
 			Ember.Logger.log("Create refset result",result);
 

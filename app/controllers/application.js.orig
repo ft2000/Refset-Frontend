@@ -1,0 +1,50 @@
+export default Ember.ObjectController.extend({
+
+<<<<<<< HEAD
+	needs 				: ["refsets","login"],
+=======
+	needs : ["refsets","login"],
+>>>>>>> file-upload-working
+
+	init : function()
+	{
+		var controller = this.get('controllers.refsets');
+		controller.getAllRefsets();
+<<<<<<< HEAD
+	},
+	
+=======
+	},	
+
+>>>>>>> file-upload-working
+	actions :
+	{
+		showLoginForm: function() 
+		{
+			var controller = this.get('controllers.login');
+			controller.showLoginForm();
+<<<<<<< HEAD
+		},
+
+=======
+			
+		},
+>>>>>>> file-upload-working
+		showRegistrationForm: function() 
+		{
+			var controller = this.get('controllers.login');
+			controller.showRegistrationForm();
+		},
+<<<<<<< HEAD
+		
+=======
+
+>>>>>>> file-upload-working
+		logout : function()
+		{
+			var controller = this.get('controllers.login');
+			controller.logout();
+		}
+	},
+	
+});

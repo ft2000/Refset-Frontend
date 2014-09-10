@@ -1,0 +1,246 @@
+<<<<<<< HEAD
+import Login from '../models/login';
+import User	from '../models/user';
+=======
+import Login 	from '../models/login';
+import User		from '../models/user';
+>>>>>>> file-upload-working
+
+export default Ember.ObjectController.extend({
+
+	loginInProgress 	: false,
+	loginError			: null,
+	username 			: 'ianbale',
+	password			: 'Lotusm250',
+<<<<<<< HEAD
+	user 				: User.create(),
+	
+	needs 				: ["refsets"],
+	
+	loginButtons:
+=======
+	user				: User.create(),
+	needs 				: ["refsets"],
+	
+	loginButtons: 
+>>>>>>> file-upload-working
+	[
+   	    Ember.Object.create({title: 'Cancel', clicked: 'closeLoginModal'}),
+   		Ember.Object.create({title: 'Login', clicked:'loginUser'})
+   	],
+
+   	registrationButtons: 
+   	[
+   		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
+   		Ember.Object.create({title: 'Register', clicked:'registerUser'})
+   	],
+
+	showLoginForm: function() 
+	{
+<<<<<<< HEAD
+		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this);
+	},
+	
+	loginUser: function()
+	{
+=======
+		Ember.Logger.log('showLoginForm');
+		
+		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this);
+	},
+
+	loginUser: function()
+	{
+		Ember.Logger.log('Performing Authentication');
+		
+>>>>>>> file-upload-working
+		var _this = this;
+
+		_this.set("loginInProgress",1);
+		_this.set('loginError', null);
+		
+		Login.authenticate(this.username,this.password).then(function(authResult)
+		{
+<<<<<<< HEAD
+=======
+			Ember.Logger.log("authResult",authResult);
+			
+>>>>>>> file-upload-working
+			var loggedInUser = User.create({
+				username: authResult.user.name,
+				firstName: authResult.user.givenName,
+				lastName: authResult.user.surname,
+				token: authResult.user.token,
+				permissionGroups: Ember.A(),
+				loggedIn : true
+			});
+
+<<<<<<< HEAD
+=======
+			Ember.Logger.log("User logged in",JSON.stringify(loggedInUser));
+			
+>>>>>>> file-upload-working
+			Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
+			{
+				_this.set('loginInProgress', 0);
+
+				switch(isAllowedAccessToRefset)
+				{
+					case 1:
+					{
+						_this.set('globals.user',loggedInUser);
+<<<<<<< HEAD
+						_this.send('closeLoginModal');
+						
+						_this.set("user",loggedInUser);
+=======
+						_this.set('user',loggedInUser);
+						_this.send('closeLoginModal');
+>>>>>>> file-upload-working
+
+						var controller = _this.get('controllers.refsets');
+						controller.getAllRefsets(1);
+
+						break;
+					}
+					
+					case 0:
+					{
+						_this.set('loginError', "You do not have access to this application");
+						break;
+					}
+					
+					default:
+					{
+						_this.set('loginError', "Unable to check application access: " + isAllowedAccessToRefset);
+						break;
+					}
+				}
+					
+			},
+
+			function(error)
+			{
+<<<<<<< HEAD
+=======
+				Ember.Logger.log('isPermittedToUseRefset error:' + error);
+				
+>>>>>>> file-upload-working
+				_this.set('loginInProgress', 0);
+				_this.set('loginError', "Unable to check application access: " + error.errorMessage);
+			});
+			
+			/*					
+<<<<<<< HEAD
+			var permissionGroups = Login.getPermissionGroups(user.get('username')).then(function(permResult)
+			{
+				Ember.Logger.log('success roles:' + permResult);
+
+			for (var i = 0; i < success.perms.length; i++)
+				{
+					User.get('permissionGroups').pushObject(
+						PermissionGroup.create({
+							app:     success.perms[i].app,
+							role:    success.perms[i].role,
+							country: success.perms[i].member
+						})
+					);
+				}
+			},
+
+
+			
+			function(error)
+			{
+				Ember.Logger.log('permissionGroups error:' + error);
+				
+				_this.set('loginInProgress', 0);
+				_this.set('loginError', "Unable to load permissions: " + error.errorMessage);
+			});
+=======
+				var permissionGroups = Login.getPermissionGroups(user.get('username')).then(function(permResult)
+				{
+					Ember.Logger.log('success roles:' + permResult);
+	
+				for (var i = 0; i < success.perms.length; i++)
+					{
+						User.get('permissionGroups').pushObject(
+							PermissionGroup.create({
+								app:     success.perms[i].app,
+								role:    success.perms[i].role,
+								country: success.perms[i].member
+							})
+						);
+					}
+				},
+
+
+				
+				function(error)
+				{
+					Ember.Logger.log('permissionGroups error:' + error);
+					
+					_this.set('loginInProgress', 0);
+					_this.set('loginError', "Unable to load permissions: " + error.errorMessage);
+				});
+>>>>>>> file-upload-working
+*/			
+		},
+		
+		function(error)
+		{
+			Ember.Logger.log('error',error);
+			
+			_this.set('loginInProgress', 0);
+			_this.set('loginError', "Username and password not recognised");
+		});
+	},
+
+	showRegistrationForm: function() 
+	{
+		return Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png">  Snomed CT Registration', 'registration', this.registrationButtons, this);
+	},
+
+	registerUser: function()
+	{
+<<<<<<< HEAD
+=======
+		Ember.Logger.log('try to register user...');
+		
+>>>>>>> file-upload-working
+		var regBody = "Name : " + this.regname + "%0A%0A";
+		regBody += "Phone : " + this.regphone + "%0A%0A";
+		regBody += "IHTSDO Login : " + this.reguser + "%0A%0A";
+		regBody += "Nationality : " + this.regnationality + "%0A%0A";
+		regBody += this.regnotes;
+		
+<<<<<<< HEAD
+		window.location.href = 'mailto:' + SnomedENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
+=======
+		window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
+>>>>>>> file-upload-working
+		this.send('closeRegistrationModal');
+	},
+	
+	closeLoginModal: function()
+	{
+		return Bootstrap.ModalManager.close('loginModal');
+	},
+
+	closeRegistrationModal: function()
+	{
+		return Bootstrap.ModalManager.close('registrationModal');
+	},
+	
+	logout : function()
+	{
+		this.set('globals.user',User.create());
+		var controller = this.get('controllers.refsets');
+		
+		controller.getAllRefsets(1);
+	}
+<<<<<<< HEAD
+=======
+	
+>>>>>>> file-upload-working
+});

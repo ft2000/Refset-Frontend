@@ -1,5 +1,5 @@
-import Login from '../models/login';
-import User	from '../models/user';
+import Login 	from '../models/login';
+import User		from '../models/user';
 
 export default Ember.ObjectController.extend({
 
@@ -7,11 +7,10 @@ export default Ember.ObjectController.extend({
 	loginError			: null,
 	username 			: 'ianbale',
 	password			: 'Lotusm250',
-	user 				: User.create(),
-	
+	user				: User.create(),
 	needs 				: ["refsets"],
 	
-	loginButtons:
+	loginButtons: 
 	[
    	    Ember.Object.create({title: 'Cancel', clicked: 'closeLoginModal'}),
    		Ember.Object.create({title: 'Login', clicked:'loginUser'})
@@ -25,11 +24,15 @@ export default Ember.ObjectController.extend({
 
 	showLoginForm: function() 
 	{
+		Ember.Logger.log('showLoginForm');
+		
 		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this);
 	},
-	
+
 	loginUser: function()
 	{
+		Ember.Logger.log('Performing Authentication');
+		
 		var _this = this;
 
 		_this.set("loginInProgress",1);
@@ -37,6 +40,8 @@ export default Ember.ObjectController.extend({
 		
 		Login.authenticate(this.username,this.password).then(function(authResult)
 		{
+			Ember.Logger.log("authResult",authResult);
+			
 			var loggedInUser = User.create({
 				username: authResult.user.name,
 				firstName: authResult.user.givenName,
@@ -46,6 +51,8 @@ export default Ember.ObjectController.extend({
 				loggedIn : true
 			});
 
+			Ember.Logger.log("User logged in",JSON.stringify(loggedInUser));
+			
 			Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
 			{
 				_this.set('loginInProgress', 0);
@@ -55,9 +62,8 @@ export default Ember.ObjectController.extend({
 					case 1:
 					{
 						_this.set('globals.user',loggedInUser);
+						_this.set('user',loggedInUser);
 						_this.send('closeLoginModal');
-						
-						_this.set("user",loggedInUser);
 
 						var controller = _this.get('controllers.refsets');
 						controller.getAllRefsets(1);
@@ -82,36 +88,38 @@ export default Ember.ObjectController.extend({
 
 			function(error)
 			{
+				Ember.Logger.log('isPermittedToUseRefset error:' + error);
+				
 				_this.set('loginInProgress', 0);
 				_this.set('loginError', "Unable to check application access: " + error.errorMessage);
 			});
 			
 			/*					
-			var permissionGroups = Login.getPermissionGroups(user.get('username')).then(function(permResult)
-			{
-				Ember.Logger.log('success roles:' + permResult);
-
-			for (var i = 0; i < success.perms.length; i++)
+				var permissionGroups = Login.getPermissionGroups(user.get('username')).then(function(permResult)
 				{
-					User.get('permissionGroups').pushObject(
-						PermissionGroup.create({
-							app:     success.perms[i].app,
-							role:    success.perms[i].role,
-							country: success.perms[i].member
-						})
-					);
-				}
-			},
+					Ember.Logger.log('success roles:' + permResult);
+	
+				for (var i = 0; i < success.perms.length; i++)
+					{
+						User.get('permissionGroups').pushObject(
+							PermissionGroup.create({
+								app:     success.perms[i].app,
+								role:    success.perms[i].role,
+								country: success.perms[i].member
+							})
+						);
+					}
+				},
 
 
-			
-			function(error)
-			{
-				Ember.Logger.log('permissionGroups error:' + error);
 				
-				_this.set('loginInProgress', 0);
-				_this.set('loginError', "Unable to load permissions: " + error.errorMessage);
-			});
+				function(error)
+				{
+					Ember.Logger.log('permissionGroups error:' + error);
+					
+					_this.set('loginInProgress', 0);
+					_this.set('loginError', "Unable to load permissions: " + error.errorMessage);
+				});
 */			
 		},
 		
@@ -131,13 +139,15 @@ export default Ember.ObjectController.extend({
 
 	registerUser: function()
 	{
+		Ember.Logger.log('try to register user...');
+		
 		var regBody = "Name : " + this.regname + "%0A%0A";
 		regBody += "Phone : " + this.regphone + "%0A%0A";
 		regBody += "IHTSDO Login : " + this.reguser + "%0A%0A";
 		regBody += "Nationality : " + this.regnationality + "%0A%0A";
 		regBody += this.regnotes;
 		
-		window.location.href = 'mailto:' + SnomedENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
+		window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
 		this.send('closeRegistrationModal');
 	},
 	
@@ -158,4 +168,5 @@ export default Ember.ObjectController.extend({
 		
 		controller.getAllRefsets(1);
 	}
+	
 });

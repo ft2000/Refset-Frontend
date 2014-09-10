@@ -1,13 +1,13 @@
 export default Ember.ObjectController.extend({
 
-	needs 				: ["refsets","login"],
+	needs : ["refsets","login"],
 
 	init : function()
 	{
 		var controller = this.get('controllers.refsets');
 		controller.getAllRefsets();
-	},
-	
+	},	
+
 	actions :
 	{
 		showLoginForm: function() 
@@ -21,7 +21,7 @@ export default Ember.ObjectController.extend({
 			var controller = this.get('controllers.login');
 			controller.showRegistrationForm();
 		},
-		
+
 		logout : function()
 		{
 			var controller = this.get('controllers.login');

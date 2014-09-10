@@ -74,6 +74,10 @@ export default Ember.ObjectController.extend({
 	
 	actions :
 	{
-
+		refresh : function()
+		{
+			Ember.Logger.log("controllers.refsets:actions:refresh");
+			this.getAllRefsets(1);
+		}
 	}
 });
