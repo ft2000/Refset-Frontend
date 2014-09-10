@@ -40,7 +40,11 @@ app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.j
 app.import('vendor/ember-forms/dist/globals/main.js');
 
 
-//Ember Upload
+// File Upload
 app.import('vendor/my_utilities/drag_drop_file_upload.js');
+
+// Session Store
+app.import('vendor/my_utilities/sessvars-1.0.0-min.js');
+app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
 
 module.exports = app.toTree();
