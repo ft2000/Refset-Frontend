@@ -17,6 +17,8 @@ export default Ember.Object.extend({
 	
 	findAll : function (user,reinit)
 	{
+		Ember.Logger.log("adapters.refsets:findAll (user,reinit)",user,reinit);
+		
 		var forceReinit = typeof reinit === "undefined" ? 0 : reinit;
 
 		if (forceReinit || typeof AllRefsets === "undefined")

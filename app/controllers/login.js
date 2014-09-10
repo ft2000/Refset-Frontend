@@ -38,27 +38,6 @@ export default Ember.ObjectController.extend({
 		_this.set("loginInProgress",1);
 		_this.set('loginError', null);
 		
-if (1)
-{
-	var loggedInUser = User.create({
-		username: 'ianbale',
-		firstName: 'Ian',
-		lastName: 'Bale',
-		token: 'my token',
-		permissionGroups: Ember.A(),
-		loggedIn : true
-	});
-
-	_this.set('user',loggedInUser);
-	_this.send('closeLoginModal');			
-	
-	var controller = _this.get('controllers.utilities');
-	
-	controller.storeDataInSessionStore('user',loggedInUser);
-}
-		
-else
-
 		Login.authenticate(this.username,this.password).then(function(authResult)
 		{
 			Ember.Logger.log("authResult",authResult);
@@ -82,12 +61,14 @@ else
 				{
 					case 1:
 					{
-						_this.set('globals.user',loggedInUser);
 						_this.set('user',loggedInUser);
 						_this.send('closeLoginModal');
 
-						var controller = _this.get('controllers.refsets');
-						controller.getAllRefsets(1);
+						var UtilitiesController = _this.get('controllers.utilities');						
+						UtilitiesController.storeDataInSessionStore('user',loggedInUser);
+						
+						var refsetsController = _this.get('controllers.refsets');
+						refsetsController.getAllRefsets(1);
 
 						break;
 					}

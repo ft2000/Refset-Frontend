@@ -16,10 +16,9 @@ export default Ember.ObjectController.extend({
 		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
-		Ember.Logger.log("controllers.refsets.index:getAllRefSets (user)",loginController.user);
-	
-		var user = {};
 		
+		Ember.Logger.log("controllers.refsets:getAllRefSets (user)",user);
+	
 		refsetsAdapter.findAll(user,reinit).then(function(result)
 		{	
 			Ember.Logger.log("controllers.refsets.index:getAllRefSets (result)",result);
