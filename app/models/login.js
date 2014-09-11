@@ -1,6 +1,6 @@
-var Login = Ember.Object.extend({
+import ajax from 'ic-ajax';
 
-});
+var Login = Ember.Object.extend({});
 
 Login.reopenClass({
 	
@@ -12,70 +12,39 @@ Login.reopenClass({
 		data.password  = password;
 		data.queryName = RefsetENV.APP.authenticationActionSoapName;
 
-		return Ember.Deferred.promise(function(p) 
+		var result = ajax(RefsetENV.APP.authenticationUrl, {type:'post', data: data}).then(function(success)
 		{
-			return p.resolve($.ajax({
-				url: RefsetENV.APP.authenticationUrl,
-				type: "POST",
-				data: data
-			}).then((function(success) 
-				{
-					Ember.Logger.log('Ajax: success');
-					return (success);
-				}), 
-				
-				function(error) 
-				{
-					Ember.Logger.log('Ajax: error');
-					return error; 
-				}));
-		});
+			Ember.Logger.log('Ajax: success');
+			return (success);
+		},
+		function (error)
+		{
+			Ember.Logger.log('Ajax: error');
+			return error; 
+		});	
+		
+		return result;
 	},
   
 	isPermittedToUseRefset: function(userId)
 	{
 		Ember.Logger.log('Checking if user is permitted to access app: ' + RefsetENV.APP.thisApplicationName);
 	    
-		return Ember.Deferred.promise(function(p)
+		var result = ajax(RefsetENV.APP.appsUrl.replace('__USER_ID__', userId), {type:'get'}).then(function(permittedAppsResult)
 		{
-			return p.resolve($.ajax({
+			Ember.Logger.log('Ajax: success' + JSON.stringify(permittedAppsResult));
+			return $.inArray(RefsetENV.APP.thisApplicationName,permittedAppsResult.apps) === -1 ? 0 : 1;
 
-				url: RefsetENV.APP.appsUrl.replace('__USER_ID__', userId),
-				type: "GET"
-			}).then((
-					
-				function(permittedAppsResult) 
-				{
-					Ember.Logger.log('Ajax: success' + JSON.stringify(permittedAppsResult));
-					return $.inArray(RefsetENV.APP.thisApplicationName,permittedAppsResult.apps) === -1 ? 0 : 1;
-				}), 
-				
-				function(error)
-				{
-					Ember.Logger.log('Ajax: error' + JSON.stringify(error));
-					return error.errorMessage;
-				}
-			));
-		});
+		},
+		function (error)
+		{
+			Ember.Logger.log('Ajax: error' + JSON.stringify(error));
+			return error.errorMessage;
+		});	
+		
+		return result;
 	},
-	  
-  getPermissionGroups: function(userId){
-    Ember.Logger.log('Ajax: Get permissionGroups for user ' + userId);
-    return Ember.Deferred.promise(function(p) {
-      return p.resolve($.ajax({
-        url: RefsetENV.APP.permissionsUrl.replace('__USER_ID__', userId),
-        type: "GET"
-      }).then((function(success) {
-        Ember.Logger.log('Ajax: success');
-        return success;
-      }), function(error) {
-        Ember.Logger.log('Ajax: error');
-        Ember.Logger.log('fail: ' + JSON.stringify(error));
-        return error;
-      }));
-    });
-  },
-
+	
 });
 
 export default Login;

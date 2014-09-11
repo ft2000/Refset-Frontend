@@ -30,6 +30,8 @@ module.exports = function(environment) {
         
         numItemsPerPage : 10,
         numItemsPerPageDashboard : 5,
+        
+        loginExpiry : 0.5, // minutes before you are logged out
         }
   };
 

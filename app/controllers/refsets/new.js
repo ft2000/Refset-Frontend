@@ -9,21 +9,24 @@ export default Ember.ObjectController.extend({
 	
 	needs : ["utilities","refsets","refsets/upload"],
 	
-	create : function(user)
+	create : function()
 	{
 		// Need to serialise the form into the model
 
 		var URLSerialisedData = $('#newRefsetForm').serialize();
-
+		
 		var utilitiesController = this.get('controllers.utilities');		
 		var refsetData = utilitiesController.deserialiseURLString(URLSerialisedData);
 		
 		refsetData.active = (typeof refsetData.active !== "undefined" && refsetData.active === "1") ? true : false;
+
+		delete refsetData["import"];
+		delete refsetData["import-members"];
 		
-		this.set("model",refsetData);		
+		this.set("model",refsetData);	
 		
 		var refsetController = this.get('controllers.refsets');
-		refsetController.create(user,this.model);
+		refsetController.create(this.model);
 	},
 		
     actions :
@@ -43,6 +46,8 @@ export default Ember.ObjectController.extend({
 			{
 				Ember.run.next(this,function()
 				{
+					Ember.Logger.log("controllers.refsets.new:actions:toggleMembersImportForm (Setting event listeners)");
+					
 					document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
 					document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
 					document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
@@ -50,7 +55,9 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				var uploadController = this.get('controllers.refsetsUpload');
+				Ember.Logger.log("controllers.refsets.new:actions:toggleMembersImportForm (Clearing members)");
+
+				var uploadController = this.get('controllers.refsets/upload');
 				uploadController.clearMemberList();
 			}
 		},

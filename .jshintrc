@@ -4,6 +4,7 @@
     "window": true,
     "-Promise": true,
     "RefsetENV": true,
+    "Refset" : true,
     "Ember" : true,
     "Bootstrap" : true,
     "$" : true,

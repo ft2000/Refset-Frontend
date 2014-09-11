@@ -1,12 +1,12 @@
 export default Ember.Route.extend({
 	model: function() 
 	{
-		var newRefsetController = this.controllerFor('refsets.new');
-		var uploadRefsetController = this.controllerFor('refsets.upload');
+		var newRefsetController 	= this.controllerFor('refsets.new');
+		var uploadRefsetController 	= this.controllerFor('refsets.upload');
 
 		return Ember.RSVP.hash({
 			refset 					: newRefsetController.model,
-			members 				: uploadRefsetController.members,
+			members 				: uploadRefsetController.model,
 			doImportPublishedRefset	: newRefsetController.doImportPublishedRefset,
 			doImportMembers 		: newRefsetController.doImportMembers,			
 		});
@@ -17,10 +17,7 @@ export default Ember.Route.extend({
 		initRefsetImport : function()
 		{
 			var newRefsetController = this.controllerFor('refsets.new');
-			var loginController 	= this.controllerFor('login');
-			
-			var user = loginController.user;
-			newRefsetController.create(user);
+			newRefsetController.create(this.refset);
 		},
 	},	
  });

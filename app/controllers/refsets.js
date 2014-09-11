@@ -17,12 +17,10 @@ export default Ember.ObjectController.extend({
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
-		Ember.Logger.log("controllers.refsets:getAllRefSets (user)",user);
+		Ember.Logger.log("controllers.refsets:getAllRefSets");
 	
 		refsetsAdapter.findAll(user,reinit).then(function(result)
 		{	
-			Ember.Logger.log("controllers.refsets.index:getAllRefSets (result)",result);
-			
 			var dashboardArray 		= [];
 			var publishedArray 		= [];
 			var unpublishedArray 	= [];
@@ -31,8 +29,6 @@ export default Ember.ObjectController.extend({
 			
 			result.map(function(item)
 			{
-				Ember.Logger.log("controllers.refsets.index:getAllRefSets (item)",item);
-				
 				if (item.published)
 				{
 					dashboardArray.push(item);
@@ -43,8 +39,6 @@ export default Ember.ObjectController.extend({
 					unpublishedArray.push(item);					
 				}
 			});
-			
-			Ember.Logger.log("controllers.refsets.index:getAllRefSetss (done map)");			
 			
 			var sortedDashboardArray = dashboardArray.sort(function(a,b)
 			{
@@ -76,8 +70,11 @@ export default Ember.ObjectController.extend({
 		return refsetsAdapter.find(user,id);
 	},
 	
-	create : function (user,refset)
+	create : function (refset)
 	{		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
 		return refsetsAdapter.create(user,refset);
 	},
 	

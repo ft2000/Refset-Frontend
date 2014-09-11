@@ -4,7 +4,7 @@ var User = Ember.Object.extend({
 	  lastName:         null,
 	  token:			null,
 	  permissionGroups: null,
-	  loggedIn:	 		false
+	  logoutTimer:		0
 });
 
 export default User;

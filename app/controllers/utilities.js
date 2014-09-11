@@ -13,7 +13,7 @@ export default Ember.ObjectController.extend({
 				if (!seg[i]) { continue; }
 				var s = seg[i].split('=');
 				var v = this.urldecode(s[1]);
-				ret[s[0]] = /^\[^0]d+$/.test(v) ? Math.ceil(v) : v; // If our value is an integer value then force it to be numeric rather than a string
+				ret[s[0]] = /^\[^0]d+$/.test(v) ? Math.ceil(v) : v == "null" ? null : v; // If our value is an integer value then force it to be numeric rather than a string
 			}
 		}
 		return ret;
@@ -26,8 +26,6 @@ export default Ember.ObjectController.extend({
 	
 	serialiseObject : function(object)
 	{
-		Ember.Logger.log("controllers.utilities:serialiseObject (object)",object);
-		
 		var URLSerialisedData = "";
 		
 		for (var key in object)
@@ -48,31 +46,17 @@ export default Ember.ObjectController.extend({
 	
 	storeDataInSessionStore : function(key,data)
 	{
-		Ember.Logger.log("controllers.utilities:storeDataInSessionStore (key,data)",key,data);
-		
 		var URLSerialisedData = this.serialiseObject(data);
-
-		Ember.Logger.log("controllers.utilities:storeDataInSessionStore (URLSerialisedData)",URLSerialisedData);
-		
 		sessionStoreManager.setSessionVar(key,URLSerialisedData);
-
-	
 		var storedData = sessionStoreManager.getSessionVar(key);
-		
-		Ember.Logger.log("controllers.utilities:storeDataInSessionStore (storedData)",storedData);
 	},
 	
 	getDataFromSessionStore : function(key)
 	{
-		Ember.Logger.log("controllers.utilities:getDataFromSessionStore (key)",key);
-
 		var returnObj = {};
 		
 		var storedData = sessionStoreManager.getSessionVar(key);
-		
-		Ember.Logger.log("controllers.utilities:getDataFromSessionStore (storedData)",storedData);
-		
-		
+
 		if (typeof storedData !== "undefined")
 		{
 			returnObj.status = 'ok';
