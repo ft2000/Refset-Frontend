@@ -180,7 +180,7 @@ export default Ember.ObjectController.extend({
 		
 		logout : function()
 		{
-			this.logout()
+			this.logout();
 		},
 	}
 	

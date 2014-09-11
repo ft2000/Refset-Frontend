@@ -47,8 +47,7 @@ export default Ember.ObjectController.extend({
 	storeDataInSessionStore : function(key,data)
 	{
 		var URLSerialisedData = this.serialiseObject(data);
-		sessionStoreManager.setSessionVar(key,URLSerialisedData);
-		var storedData = sessionStoreManager.getSessionVar(key);
+		sessionStoreManager.setSessionVar(key,URLSerialisedData);		
 	},
 	
 	getDataFromSessionStore : function(key)
