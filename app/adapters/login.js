@@ -1,8 +1,6 @@
 import ajax from 'ic-ajax';
 
-var Login = Ember.Object.extend({});
-
-Login.reopenClass({
+export default Ember.Object.extend({
 	
 	authenticate: function(username, password) 
 	{ 
@@ -46,5 +44,3 @@ Login.reopenClass({
 	},
 	
 });
-
-export default Login;

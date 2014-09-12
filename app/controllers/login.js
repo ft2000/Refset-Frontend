@@ -1,5 +1,7 @@
-import Login 	from '../models/login';
-import User		from '../models/user';
+import LoginAdapter	from '../adapters/login';
+import User			from '../models/user';
+
+var Login = LoginAdapter.create();
 
 export default Ember.ObjectController.extend({
 
