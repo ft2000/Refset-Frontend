@@ -10,6 +10,7 @@ export default Ember.ObjectController.extend({
 	loginInProgress 	: false,
 	loginError			: null,
 	password			: '',
+	username			: null,
 	user				: User.create(),
 
 	loginExpiryLength 	: RefsetENV.APP.loginExpiry * 60 * 1000, // Setting is in MINUTES, we need milliseconds here
@@ -54,8 +55,15 @@ export default Ember.ObjectController.extend({
 			if (this.user.token === null && userData.data.token !== null)
 			{
 				this.initUserInteractionEvents();
+				this.send('closeLoginModal');
 			}
+			
 			this.set("user",userData.data);
+
+			if (this.username === null)
+			{
+				this.set("username",userData.data.username);				
+			}
 		}
 
 		var timeLeftToAutoLogout = this.getSecondsLeftToAutoLogout();
@@ -157,7 +165,7 @@ export default Ember.ObjectController.extend({
 			_this.set("loginInProgress",1);
 			_this.set('loginError', null);
 			
-			Login.authenticate(this.user.username,this.password).then(function(authResult)
+			Login.authenticate(this.username,this.password).then(function(authResult)
 			{
 				Ember.Logger.log("authResult",authResult);
 				
@@ -183,6 +191,7 @@ export default Ember.ObjectController.extend({
 							case 1:
 							{
 								_this.send('closeLoginModal');
+								_this.set("username",loggedInUser.username);
 								_this.saveUserToLocalStore(loggedInUser);
 								
 								var refsetsController = _this.get('controllers.refsets');
