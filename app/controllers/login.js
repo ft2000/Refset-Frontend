@@ -5,42 +5,107 @@ var Login = LoginAdapter.create();
 
 export default Ember.ObjectController.extend({
 
+	needs 				: ["refsets","utilities"],
+
 	loginInProgress 	: false,
 	loginError			: null,
 	password			: '',
 	user				: User.create(),
-	needs 				: ["refsets","utilities"],
+
+	loginExpiryLength 	: RefsetENV.APP.loginExpiry * 60 * 1000, // Setting is in MINUTES, we need milliseconds here
+	
+	showLogoutTimer		: Ember.computed.lte("logoutTimerDisplay",100),
+	
+	logoutTimerDisplay : function()
+	{
+		return this.getSecondsLeftToAutoLogout();
+	}.property("user"),
 	
 	loginButtons: 
 	[
-   	    Ember.Object.create({title: 'Cancel', clicked: 'closeLoginModal'}),
-   		Ember.Object.create({title: 'Login', clicked:'loginUser'})
+		Ember.Object.create({title: 'Register', clicked:'showRegistrationForm'}),
+   	    Ember.Object.create({title: 'Continue as a Guest', clicked: 'continueAsGuest'}),
+   		Ember.Object.create({title: 'Login', clicked:'loginUser', type:"primary"})
    	],
 
    	registrationButtons: 
    	[
    		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
-   		Ember.Object.create({title: 'Register', clicked:'registerUser'})
+   		Ember.Object.create({title: 'Register', clicked:'registerUser', type:"primary"})
    	],
-
-	showLoginForm: function() 
-	{
-		Ember.Logger.log('showLoginForm');
-		
-		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this);
-	},
 	
 	init : function()
 	{	
+		this.monitorLoginViaLocalStore();
+		
+		if(this.user.token === null && !this.user.loginDeclined)
+		{
+			this.showLoginForm();
+		}
+	},
+	
+	monitorLoginViaLocalStore : function()
+	{		
 		var controller 	= this.get('controllers.utilities');
 		var userData 	= controller.getDataFromSessionStore('user');
-		
-		Ember.Logger.log("controller.login:init (userData)",userData);
-		
+
 		if (userData.status === 'ok')
 		{
-			this.set('user',userData.data);
+			if (this.user.token === null && userData.data.token !== null)
+			{
+				this.initUserInteractionEvents();
+			}
+			this.set("user",userData.data);
 		}
+
+		var timeLeftToAutoLogout = this.getSecondsLeftToAutoLogout();
+		
+		if (this.user.token !== null && timeLeftToAutoLogout <= 0)
+		{
+			this.logout();
+		}
+
+		var _this = this;
+
+		Ember.run.later(function()
+		{
+			_this.monitorLoginViaLocalStore();
+		},1000);
+	},
+	
+	getSecondsLeftToAutoLogout : function()
+	{
+		var autoLogoutTime 		= new Date(this.user.autoLogoutTime);
+		var timeLeftToLogout 	= parseInt((autoLogoutTime.getTime() - new Date().getTime()) /1000); // seconds
+		
+		return timeLeftToLogout;
+	},
+	
+	initUserInteractionEvents : function()
+	{
+		// Events handlers to detect ANY user interaction. Used to reset the logout timer.
+	    $(document).mousemove(function () {
+			var controller = Refset.__container__.lookup("controller:login");
+			controller.send('resetAutoLogoutTimer');
+	    });
+	    
+	    $(document).keypress(function () {
+			var controller = Refset.__container__.lookup("controller:login");
+			controller.send('resetAutoLogoutTimer');
+	    });
+	},
+
+	stopUserInteractionEvents : function()
+	{
+		// Stop bothering to monitor user events
+	    $(document).unbind('mousemove');
+	    $(document).unbind('keypress');
+	},
+	
+
+	showLoginForm: function()
+	{
+		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
 	},
 	
 	logout : function()
@@ -52,7 +117,6 @@ export default Ember.ObjectController.extend({
 		if (userData.status === 'ok')
 		{
 			user = userData.data;
-			user.logoutTimer = 0;
 			user.token = null;
 		}
 		else
@@ -60,13 +124,12 @@ export default Ember.ObjectController.extend({
 			user = User.create();
 		}
 
-		this.set('user',user);
-
-		var utilitiesController = this.get('controllers.utilities');
-		utilitiesController.storeDataInSessionStore('user',user);
+		this.saveUserToLocalStore(user);
 
 		var refsetController = this.get('controllers.refsets');		
 		refsetController.getAllRefsets(1);
+		
+		this.stopUserInteractionEvents();
 	},
 	
 
@@ -75,6 +138,14 @@ export default Ember.ObjectController.extend({
 		return Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png">  Snomed CT Registration', 'registration', this.registrationButtons, this);
 	},
 	
+	saveUserToLocalStore : function(user)
+	{
+		var UtilitiesController = this.get('controllers.utilities');						
+		UtilitiesController.storeDataInSessionStore('user',user);
+		
+		this.set('user',user);
+	},
+		
 	actions : 
 	{
 		loginUser: function()
@@ -90,69 +161,57 @@ export default Ember.ObjectController.extend({
 			{
 				Ember.Logger.log("authResult",authResult);
 				
-				var loggedInUser = User.create({
-					username: authResult.user.name,
-					firstName: authResult.user.givenName,
-					lastName: authResult.user.surname,
-					token: authResult.user.token,
-					logoutTimer : RefsetENV.APP.loginExpiry * 60
-				});
-
-				Ember.Logger.log("User logged in",JSON.stringify(loggedInUser));
-				
-				_this.set('password', '');			
-				
-				Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
+				if (authResult.authenticated)
 				{
-					_this.set('loginInProgress', 0);
+					var loggedInUser = User.create({
+						username		: authResult.user.name,
+						firstName		: authResult.user.givenName,
+						lastName		: authResult.user.surname,
+						token			: authResult.user.token,
+						autoLogoutTime 	: new Date(new Date().getTime() + _this.loginExpiryLength),
+						loginDeclined	: false
+					});
 
-					switch(isAllowedAccessToRefset)
-					{
-						case 1:
-						{
-							_this.set('user',loggedInUser);
-							_this.send('closeLoginModal');
-
-							var UtilitiesController = _this.get('controllers.utilities');						
-							UtilitiesController.storeDataInSessionStore('user',loggedInUser);
-							
-							var refsetsController = _this.get('controllers.refsets');
-							refsetsController.getAllRefsets(1);
-
-							break;
-						}
-						
-						case 0:
-						{
-							_this.set('loginError', "You do not have access to this application");
-							break;
-						}
-						
-						default:
-						{
-							_this.set('loginError', "Unable to check application access: " + isAllowedAccessToRefset);
-							break;
-						}
-					}
-						
-				},
-
-				function(error)
-				{
-					Ember.Logger.log('isPermittedToUseRefset error:' + error);
+					_this.set('password', '');			
 					
+					Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
+					{
+						_this.set('loginInProgress', 0);
+
+						switch(isAllowedAccessToRefset)
+						{
+							case 1:
+							{
+								_this.send('closeLoginModal');
+								_this.saveUserToLocalStore(loggedInUser);
+								
+								var refsetsController = _this.get('controllers.refsets');
+								refsetsController.getAllRefsets(1);
+								
+								_this.initUserInteractionEvents();
+
+								break;
+							}
+							
+							case 0:
+							{
+								_this.set('loginError', "You do not have access to this application");
+								break;
+							}
+							
+							case -1:
+							{
+								_this.set('loginError', "Unable to check application access: " + isAllowedAccessToRefset);
+								break;
+							}
+						}		
+					});
+				}
+				else
+				{
 					_this.set('loginInProgress', 0);
-					_this.set('loginError', "Unable to check application access: " + error.errorMessage);
-				});
-	
-			},
-			
-			function(error)
-			{
-				Ember.Logger.log('error',error);
-				
-				_this.set('loginInProgress', 0);
-				_this.set('loginError', "Username and password not recognised");
+					_this.set('loginError', "Username and password not recognised");
+				}
 			});
 		},
 
@@ -184,6 +243,33 @@ export default Ember.ObjectController.extend({
 		{
 			this.logout();
 		},
+		
+		continueAsGuest : function()
+		{
+			var user = this.user;
+			user.loginDeclined = true;
+
+			this.saveUserToLocalStore(user);
+			
+			Bootstrap.ModalManager.close('loginModal');
+		},
+		
+		resetAutoLogoutTimer : function()
+		{
+			Ember.Logger.log("controllers.login:resetAutoLogoutTimer");
+			
+			var user = this.user;
+			
+			user.autoLogoutTime	= new Date(new Date().getTime() + this.loginExpiryLength);
+			
+			this.saveUserToLocalStore(user);
+		},
+		
+		showRegistrationForm : function()
+		{
+			Bootstrap.ModalManager.close('loginModal');
+			this.showRegistrationForm();
+		}
 	}
 	
 });

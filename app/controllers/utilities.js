@@ -46,7 +46,7 @@ export default Ember.ObjectController.extend({
 	
 	storeDataInSessionStore : function(key,data)
 	{
-		var URLSerialisedData = this.serialiseObject(data);
+		var URLSerialisedData = JSON.stringify(data);
 		sessionStoreManager.setSessionVar(key,URLSerialisedData);		
 	},
 	
@@ -58,8 +58,15 @@ export default Ember.ObjectController.extend({
 
 		if (typeof storedData !== "undefined")
 		{
-			returnObj.status = 'ok';
-			returnObj.data = this.deserialiseURLString(storedData);
+			try
+			{
+				returnObj.data 		= JSON.parse(storedData);
+				returnObj.status 	= 'ok';
+			}
+			catch(e)
+			{
+				returnObj.status 	= 'error';				
+			}
 		}
 		else
 		{

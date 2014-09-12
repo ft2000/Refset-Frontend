@@ -1,4 +1,10 @@
-<div id="loginForm" class="RefsetPanel">
+<form id="loginForm" class="RefsetPanel" action="javascript:Refset.__container__.lookup('controller:login').send('loginUser')">
+	
+	<p>
+		For access to the full range to tools you will need to login.
+		You may continue as a guest to view only public refsets.
+	</p>
+	
 	{{input value=user.username type="text" placeholder="Username"}}
 	{{input value=password type="password" 	placeholder="Password"}}
 	
@@ -11,5 +17,7 @@
 		<div class="error">{{loginError}}</div>
 	{{/if}}
 	
+	<button type="submit" style="display:none">Submit</button>
+	
 	<p class="forgetPasswordLink"><a {{bind-attr href="RefsetENV.APP.passwordResetURL"}} target="_blank">I've forgotten my password</a></p>
-</div>
+</form>

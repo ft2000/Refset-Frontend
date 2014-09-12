@@ -7,7 +7,7 @@
 		<nav class="loginRegisterButtons">
 			{{#if user.token}}
 				<a href="#" {{action 'logout'}}>Logout</a>
-				{{bs-progress progressBinding="logoutTimerDisplay" type="info" striped="true"}}
+				{{#if showLogoutTimer}}{{bs-progress progressBinding="logoutTimerDisplay" type="danger" stripped="true"}} Logging you out in {{logoutTimerDisplay}} seconds{{/if}}
 			{{else}}
 				<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
 				<a href="#" {{action 'showRegistrationForm'}}>Register</a>

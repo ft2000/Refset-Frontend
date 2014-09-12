@@ -10,6 +10,11 @@ export default Ember.ObjectController.extend({
 	
 	needs 			: ["login"],
 
+	init : function()
+	{
+		this.getAllRefsets(1);
+	},
+	
 	getAllRefsets : function(reinit)
 	{
 		var _this = this;

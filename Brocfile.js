@@ -4,6 +4,9 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 var app = new EmberApp();
 
+var mergeTrees = require('broccoli-merge-trees');
+var pickFiles = require('broccoli-static-compiler');
+
 // Use `app.import` to add additional libraries to the generated
 // output files.
 //
@@ -33,6 +36,11 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-nav.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-notifications.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
 
+//Bootstrap Modal
+app.import('vendor/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js');
+app.import('vendor/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css');
+
+
 // JQuery plugins
 app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.js');
 
@@ -47,4 +55,12 @@ app.import('vendor/my_utilities/drag_drop_file_upload.js');
 app.import('vendor/my_utilities/sessvars-1.0.0-min.js');
 app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
 
-module.exports = app.toTree();
+// Bootstrap fonts
+var fontOpenSans = pickFiles('vendor/bootstrap/dist', {
+	   srcDir: '/',
+	   files: ['**/*.woff', '**/*.eot', '**/*.svg', '**/*.ttf'],
+	   destDir: '/assets'
+	});
+
+//module.exports = app.toTree();
+module.exports = mergeTrees([app.toTree(), fontOpenSans]);

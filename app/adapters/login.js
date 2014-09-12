@@ -4,7 +4,7 @@ export default Ember.Object.extend({
 	
 	authenticate: function(username, password) 
 	{ 
-	    Ember.Logger.log('Ajax: authenticate');
+	    Ember.Logger.log('adapters.login:authenticate');
 		var data = {};
 		data.username  = username;
 		data.password  = password;
@@ -12,13 +12,18 @@ export default Ember.Object.extend({
 
 		var result = ajax(RefsetENV.APP.authenticationUrl, {type:'post', data: data}).then(function(success)
 		{
-			Ember.Logger.log('Ajax: success');
-			return (success);
+			success.authenticated = true;
+			
+			return success;
 		},
 		function (error)
 		{
-			Ember.Logger.log('Ajax: error');
-			return error; 
+			var result = {};
+			
+			result.authenticated = false;
+			result.error = error;
+			
+			return result; 
 		});	
 		
 		return result;
@@ -26,18 +31,16 @@ export default Ember.Object.extend({
   
 	isPermittedToUseRefset: function(userId)
 	{
-		Ember.Logger.log('Checking if user is permitted to access app: ' + RefsetENV.APP.thisApplicationName);
-	    
+		Ember.Logger.log('adapters.login:isPermittedToUseRefset');
+
 		var result = ajax(RefsetENV.APP.appsUrl.replace('__USER_ID__', userId), {type:'get'}).then(function(permittedAppsResult)
 		{
-			Ember.Logger.log('Ajax: success' + JSON.stringify(permittedAppsResult));
 			return $.inArray(RefsetENV.APP.thisApplicationName,permittedAppsResult.apps) === -1 ? 0 : 1;
-
 		},
 		function (error)
 		{
-			Ember.Logger.log('Ajax: error' + JSON.stringify(error));
-			return error.errorMessage;
+			Ember.Logger.log("adapters.login:isPermittedToUseRefset (error)",error);
+			return -1;
 		});	
 		
 		return result;
