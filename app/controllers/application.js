@@ -4,8 +4,9 @@ export default Ember.ObjectController.extend({
 	
 	user : Ember.computed.alias("controllers.login.user"),
 	
-	logoutTimerDisplay : Ember.computed.alias("controllers.login.logoutTimerDisplay"),
-	showLogoutTimer : Ember.computed.alias("controllers.login.showLogoutTimer"),
+	logoutTimerDisplay 	: Ember.computed.alias("controllers.login.logoutTimerDisplay"),
+	showLogoutTimer 	: Ember.computed.alias("controllers.login.showLogoutTimer"),
+	autoLoggedOut		: Ember.computed.alias("controllers.login.autoLoggedOut"),
 	
 	actions :
 	{

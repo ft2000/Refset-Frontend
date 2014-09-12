@@ -5,7 +5,8 @@ export default Ember.Object.extend({
 	authenticate: function(username, password) 
 	{ 
 	    Ember.Logger.log('adapters.login:authenticate');
-		var data = {};
+
+	    var data = {};
 		data.username  = username;
 		data.password  = password;
 		data.queryName = RefsetENV.APP.authenticationActionSoapName;
@@ -21,7 +22,7 @@ export default Ember.Object.extend({
 			var result = {};
 			
 			result.authenticated = false;
-			result.error = error;
+			result.error = (error.errorThrown === "Unauthorized") ? 'Username and/or password not recognised' : 'Error accessing the authentication server';
 			
 			return result; 
 		});	

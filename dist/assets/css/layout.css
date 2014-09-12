@@ -18,7 +18,7 @@ nav.loginRegisterButtons .warningText {
 }
 /* Panels */
 .RefsetPanel .error {
-  color: #ff0000;
+  color: #c9302c;
 }
 /* Login / Registration Forms */
 .modal-header img {
@@ -34,6 +34,9 @@ nav.loginRegisterButtons .warningText {
 }
 #loginForm .forgetPasswordLink {
   margin-top: 20px;
+}
+#loginForm .autoLogoutInfo {
+  color: #ec971f;
 }
 #registrationForm input {
   width: 100%;
