@@ -7,6 +7,7 @@ export default Ember.ObjectController.extend({
 
 	needs 				: ["refsets","utilities"],
 
+	loginDialogOpen		: false,
 	loginInProgress 	: false,
 	loginError			: null,
 	password			: '',
@@ -113,6 +114,7 @@ export default Ember.ObjectController.extend({
 
 	showLoginForm: function()
 	{
+		this.set("loginDialogOpen",true);
 		return Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
 	},
 	
@@ -240,7 +242,10 @@ export default Ember.ObjectController.extend({
 		
 		closeLoginModal: function()
 		{
-			return Bootstrap.ModalManager.close('loginModal');
+			if (this.loginDialogOpen)
+			{
+				Bootstrap.ModalManager.close('loginModal');
+			}
 		},
 
 		closeRegistrationModal: function()
