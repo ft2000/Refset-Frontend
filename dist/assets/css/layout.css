@@ -68,14 +68,26 @@ nav.loginRegisterButtons .warningText {
   margin-bottom: 20px;
 }
 /* bootstrap */
-.form-horizontal .control-label {
+.myCheckboxes {
+  height: inherit;
+  width: inherit;
+  float: right;
+}
+.mylabels {
   text-align: left;
   padding-top: 5px;
   font-size: 14px;
   font-weight: normal;
   line-height: 20px;
 }
-.form-horizontal input {
+.myForm .control-label {
+  text-align: left;
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+.myForm input {
   display: inline-block;
   margin-bottom: 0;
   vertical-align: middle;
@@ -84,8 +96,32 @@ nav.loginRegisterButtons .warningText {
   line-height: 20px;
   width: 100%;
 }
-.form-horizontal input[type="checkbox"] {
+.myForm input[type="checkbox"] {
   height: inherit;
   width: inherit;
   float: right;
+}
+.checkboxList .control-label {
+  text-align: left;
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+.checkboxList input[type="checkbox"] {
+  height: inherit;
+  width: inherit;
+  float: right;
+  float: left;
+  margin-right: 10px;
+}
+#logoutWarningModel .heading {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+#logoutWarningModel .timer {
+  color: #c9302c;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
 }

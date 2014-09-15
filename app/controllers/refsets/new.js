@@ -1,19 +1,29 @@
-import RefsetModel from '../../models/refset';
+import RefsetModel 		from '../../models/refset';
+import RefsetsAdapter 	from '../../adapters/refsets';
+
+var refsetsAdapter 		= RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
+	needs : ["login","utilities","refsets","refsets/upload"],
+
 	model 	: RefsetModel.create(),
 	
 	doImportPublishedRefset : false,
 	doImportMembers : false,
-	
-	needs : ["utilities","refsets","refsets/upload"],
+	getConceptDataInProgress : Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	
 	create : function()
 	{
 		// Need to serialise the form into the model
 
-		var URLSerialisedData = $('#newRefsetForm').serialize();
+		var URLSerialisedData 	= $('#newRefsetForm').serialize();
+
+		var MemberData = []
+		$("#importedMemberForm input[type=checkbox]:checked").each(function ()
+		{
+			MemberData.push(parseInt($(this).val()));
+		});
 		
 		var utilitiesController = this.get('controllers.utilities');		
 		var refsetData = utilitiesController.deserialiseURLString(URLSerialisedData);
@@ -25,10 +35,30 @@ export default Ember.ObjectController.extend({
 		
 		this.set("model",refsetData);	
 		
-		var refsetController = this.get('controllers.refsets');
-		refsetController.create(this.model);
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		refsetsAdapter.create(user,this.model).then(function(refset)
+		{
+			if (refset.meta.status === "CREATED")
+			{
+				Ember.Logger.log("Refset created:",refset.content.id);
+				
+				var refsetId = refset.content.id;
+				
+				MemberData.map(function(member)
+				{
+					Ember.Logger.log("Adding member",member);
+					refsetsAdapter.addMember(user,refsetId,member);
+				});
+			}
+			else
+			{
+				Ember.Logger.log("Refset create failed:",refset.meta.message);				
+			}	
+		});
 	},
-		
+
     actions :
     {
     	togglePublishedRefsetImportForm : function()

@@ -124,15 +124,27 @@ nav.loginRegisterButtons
 
 /* bootstrap */
 
-.form-horizontal
+.myCheckboxes
+{
+	height : inherit;
+	width	: inherit;
+	float : right;
+}
+
+.mylabels
+{
+	text-align: left;
+	padding-top: 5px;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 20px;
+}
+
+.myForm
 {
 	.control-label
 	{
-		text-align: left;
-		padding-top: 5px;
-		font-size: 14px;
-		font-weight: normal;
-		line-height: 20px;
+		.mylabels;
     }
     
     input
@@ -148,8 +160,39 @@ nav.loginRegisterButtons
     
     input[type="checkbox"]
     {
-    	height : inherit;
-    	width	: inherit;
-    	float : right;
+		.myCheckboxes;
     }
+}
+
+.checkboxList
+{
+	.control-label
+	{
+		.mylabels;
+    }
+    
+    input[type="checkbox"]
+    {
+		.myCheckboxes;
+		
+		float : left;
+		margin-right : 10px;
+    }
+}
+
+#logoutWarningModel
+{
+	.heading
+	{
+		font-size 		: 18px;	
+		margin-bottom	: 20px;	
+	}
+	
+	.timer
+	{
+		color 		: @warningColour;
+		font-size 	: 24px;
+		font-weight	: bold;
+		text-align 	: center;
+	}
 }

@@ -21,8 +21,10 @@ var pickFiles = require('broccoli-static-compiler');
 // along with the exports of each module as its value.
 
 //Bootstrap Stuff
+app.import('vendor/bootstrap/dist/js/bootstrap.min.js');
 app.import('vendor/bootstrap/dist/css/bootstrap.min.css');
 app.import('vendor/bootstrap/dist/css/bootstrap-theme.min.css');
+
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-core.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-basic.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-alert.min.js');

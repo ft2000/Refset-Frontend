@@ -14,14 +14,22 @@ export default Ember.ObjectController.extend({
 	username			: null,				// Bound to the login form input field
 	password			: '',				// Holds the user's password between form entry and the authentication call
 	user				: User.create(),	// A dummy user record. Overwritten upon login
+	logoutDialogOpen	: false,			// Are we showing an auto-logout alert?
 
 	loginExpiryLength 	: RefsetENV.APP.loginExpiry * 60 * 1000, // Setting is in MINUTES, we need milliseconds here. This is the inactivity period before auto logout
 	
-	showLogoutTimer		: Ember.computed.lte("logoutTimerDisplay",100),	// Only show the logout progress bar if there are 100 seconds or less left until logout.
+	showLogoutTimer		: Ember.computed.lte("logoutTimerDisplay",200),	// Only show the logout progress bar if there are 100 seconds or less left until logout.
 	
 	logoutTimerDisplay 	: function() 		// A auto calculated property which returns how many seconds are left until user is automatically logged out
 	{
 		return this.getSecondsLeftToAutoLogout();
+	}.property("user"),
+	
+	logoutProgressDisplay : function() 		// A auto calculated property which returns a range of 1-100 for the progress bar showing how long until user is automatically logged out
+	{
+		var secondsLeft = this.getSecondsLeftToAutoLogout();
+		
+		return (secondsLeft / 2);
 	}.property("user"),
 	
 	// Define the buttons used on the login and register modal dialogs
@@ -38,7 +46,11 @@ export default Ember.ObjectController.extend({
    		Ember.Object.create({title: 'Register', clicked:'registerUser', type:"primary"})
    	],
 	
-
+   	logoutButtons: 
+   	[
+   		Ember.Object.create({title: 'Ok'}),
+   	],
+   	   
    	init : function()
 	{	
    	   	// When we start up we want to check the Local Store to see if the user may already be logged in
@@ -50,16 +62,22 @@ export default Ember.ObjectController.extend({
 			this.showLoginForm();
 		}
 	},
-	
+
 	// Calculates the number of seconds of inactivity remaining before the user will be auto logged out
 	getSecondsLeftToAutoLogout : function()
 	{
 		var autoLogoutTime 		= new Date(this.user.autoLogoutTime);
 		var timeLeftToLogout 	= parseInt((autoLogoutTime.getTime() - new Date().getTime()) /1000); // seconds
-		
+
+		if (this.user.token !== null && !this.logoutDialogOpen && timeLeftToLogout < 195)
+		{
+			this.set("logoutDialogOpen",true);
+			Bootstrap.ModalManager.open('logoutModal', '<img src="assets/img/login.png"> Snomed CT', 'logout-alert', this.logoutButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
+		}
+
 		return timeLeftToLogout;
 	},
-	
+
 	// Check the Local Store every second to see if out user record has been overwritten by another window
 	monitorLoginViaLocalStore : function()
 	{
@@ -95,7 +113,7 @@ export default Ember.ObjectController.extend({
 			this.set("autoLoggedOut",true);
 			this.logout();
 		}
-
+		
 		var _this = this;
 
 		// Run this function again in 1000 milliseconds time
@@ -130,6 +148,7 @@ export default Ember.ObjectController.extend({
 	// Show the login modal dialog
 	showLoginForm: function()
 	{
+		this.send("closeLogoutAlertModal");
 		this.set("loginDialogOpen",true);
 		Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
 	},
@@ -182,8 +201,10 @@ export default Ember.ObjectController.extend({
 			_this.set("loginInProgress",1);
 			_this.set('loginError', null);
 			
+			var password = $('#loginPassword').val();
+			
 			// Start by authenticating the user
-			Login.authenticate(this.username,this.password).then(function(authResult)
+			Login.authenticate(this.username,password).then(function(authResult)
 			{
 				// If we authenticated then we proceed
 				if (authResult.authenticated)
@@ -283,9 +304,19 @@ export default Ember.ObjectController.extend({
 
 		closeRegistrationModal: function()
 		{
-			return Bootstrap.ModalManager.close('registrationModal');
+			Bootstrap.ModalManager.close('registrationModal');
 		},
 
+		closeLogoutAlertModal: function()
+		{
+			if (this.logoutDialogOpen)
+			{
+				Bootstrap.ModalManager.close('logoutModal');
+			}
+			
+			this.set("logoutDialogOpen",false);
+		},
+		
 		// If user elects to use the app as a guest then we need to record that fact in order so we can choose not to show the login form if they open another window.
 		continueAsGuest : function()
 		{
@@ -301,12 +332,12 @@ export default Ember.ObjectController.extend({
 		// We reset the time the user will be auto logged out because of inactivity.
 		resetAutoLogoutTimer : function()
 		{
-			Ember.Logger.log("controllers.login:resetAutoLogoutTimer");
-			
+			this.send("closeLogoutAlertModal");
+
 			var user = this.user;
 			
 			user.autoLogoutTime	= new Date(new Date().getTime() + this.loginExpiryLength);
-			
+						
 			this.saveUserToLocalStore(user);
 		},
 

@@ -2,7 +2,7 @@
 	<div class="colMed inner">
 		{{#bs-panel heading="Create New Refset" type="info"}}
 			{{#with refset}}
-			<form class="form-horizontal" id="newRefsetForm" name="newRefsetForm">
+			<form class="myForm" id="newRefsetForm" name="newRefsetForm">
 
 				<label class="control-label" for="description">Refset Description</label>
 				<textarea id="description" name="description">{{unbound description}}</textarea>
@@ -59,8 +59,8 @@
 
 			{{#if doImportMembers}}
 
-				<b>Import Members</b>
-				<p>To import members from a flat-file export, either use the browse button to locate your file, or drag a file below.</p>
+				<b>Import Members (flat file)</b>
+				<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
 
 				<input type="file" id="refsetUploadFileInput" />
 
@@ -75,9 +75,19 @@
 		<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 	</div>
 
-	{{#if members}}
+	
+	{{#if doImportMembers}}
 	<div class="colMed inner">
-		{{member-list members=members title='Members to be imported'}}
+		{{#if getConceptDataInProgress}}
+			{{#bs-panel heading="Importing member concepts" type="info"}}
+				<img src="assets/img/googleballs-animated.gif">
+				<p><b>Please wait...</b></p>
+			{{/bs-panel}}
+		{{else}}
+			{{#bs-panel heading="Member concepts to be imported" type="info" class="panelNoPadding"}}
+				{{member-list members=members}}
+			{{/bs-panel}}
+		{{/if}}
 	</div>
 	{{/if}}
 </div>

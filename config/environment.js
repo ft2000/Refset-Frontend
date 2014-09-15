@@ -27,11 +27,12 @@ module.exports = function(environment) {
     	
     	// Refsets API
         refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
+        conceptsApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
         
         numItemsPerPage : 10,
         numItemsPerPageDashboard : 5,
         
-        loginExpiry : 0.5, // minutes before you are logged out
+        loginExpiry : 20, // minutes before you are logged out
         }
   };
 

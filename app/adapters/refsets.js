@@ -99,5 +99,26 @@ export default Ember.Object.extend({
 		
 		return result;
 	},
+	
+
+	addMember : function (user,refsetId,referenceComponentId)
+	{
+		var member = {referenceComponentId : referenceComponentId};
+			
+		var jsonFormatMemberData = JSON.stringify(member);
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/member', {headers:this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(result)
+		{			
+			Ember.Logger.log("add member result",result);
+			return result;
+		},
+		function (error)
+		{
+			Ember.Logger.log("adapters.simple-members:findList error",error);
+			return [];
+		});
+
+		return result;	
+	},
 });
 

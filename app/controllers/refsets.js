@@ -75,14 +75,6 @@ export default Ember.ObjectController.extend({
 		return refsetsAdapter.find(user,id);
 	},
 	
-	create : function (refset)
-	{		
-		var loginController = this.get('controllers.login');
-		var user = loginController.user;
-
-		return refsetsAdapter.create(user,refset);
-	},
-	
 	actions :
 	{
 		refresh : function()
