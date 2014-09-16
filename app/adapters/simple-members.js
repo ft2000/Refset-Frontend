@@ -20,8 +20,16 @@ export default Ember.Object.extend({
 		var jsonFormatIdArray = JSON.stringify(idArray);
 	
 		var result = ajax(RefsetENV.APP.conceptsApiBaseUrl, {headers:this.getHeaders(user), method:"post", data: jsonFormatIdArray, processData: false, contentType: 'application/json'}).then(function(result)
-		{				
-			return result.content.concepts;
+		{	
+			if (typeof result.content !== "undefined")
+			{
+				return result.content.concepts;
+			}
+			else
+			{
+				Ember.Logger.log("adapters.simple-members:findList error",result.meta.message);
+				return [];		
+			}
 		},
 		function (error)
 		{

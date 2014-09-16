@@ -19,7 +19,7 @@ export default Ember.ObjectController.extend({
 
 		var URLSerialisedData 	= $('#newRefsetForm').serialize();
 
-		var MemberData = []
+		var MemberData = [];
 		$("#importedMemberForm input[type=checkbox]:checked").each(function ()
 		{
 			MemberData.push(parseInt($(this).val()));

@@ -84,7 +84,7 @@ export default Ember.ObjectController.extend({
 		var controller 	= this.get('controllers.utilities');
 		var userData 	= controller.getDataFromSessionStore('user');
 
-		if (userData.status === 'ok')
+		if (userData.status === 'ok' && userData.data !== null)
 		{
 			// If user not logged in here, but has logged in on another window then we need to act as if the user has logged in here
 			if (this.user.token === null && userData.data.token !== null)

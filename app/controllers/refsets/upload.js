@@ -40,7 +40,14 @@ export default Ember.ArrayController.extend({
 			{
 				var membersData = membersArray.map(function(refCompId)
 				{
-					return {referenceComponentId:refCompId,description: conceptData[refCompId].label};
+					if (typeof conceptData[refCompId] !== "undefined")
+					{
+						return {referenceComponentId:refCompId,description: conceptData[refCompId].label, checked:true};
+					}
+					else
+					{
+						return {referenceComponentId:refCompId,description: 'concept ' + refCompId + ' not found', checked:false};
+					}
 				});	
 				
 				_this.model.setObjects(membersData);
@@ -49,8 +56,7 @@ export default Ember.ArrayController.extend({
 				return membersData;
 			});
 			
-			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);
-			
+			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);			
 		},
     }
 });
