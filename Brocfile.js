@@ -49,6 +49,8 @@ app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.j
 // Ember forms
 app.import('vendor/ember-forms/dist/globals/main.js');
 
+// File saver
+app.import('vendor/fileSaver/FileSaver.min.js');
 
 // File Upload
 app.import('vendor/my_utilities/drag_drop_file_upload.js');

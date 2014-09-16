@@ -6,9 +6,9 @@ export default Ember.ArrayController.extend({
 	
 	needs : ["login"],
 	
-	model : 
-	[
-    ],
+	model : [],
+    
+    importError : null,
 
 	clearMemberList : function()
 	{
@@ -36,24 +36,37 @@ export default Ember.ArrayController.extend({
 
 			this.set("getConceptDataInProgress",true);
 			
-			var membersData = membersAdapter.findList(user,idArray).then(function(conceptData)
+			var membersData = membersAdapter.findList(user,idArray).then(function(result)
 			{
-				var membersData = membersArray.map(function(refCompId)
-				{
-					if (typeof conceptData[refCompId] !== "undefined")
-					{
-						return {referenceComponentId:refCompId,description: conceptData[refCompId].label, checked:true};
-					}
-					else
-					{
-						return {referenceComponentId:refCompId,description: 'concept ' + refCompId + ' not found', checked:false};
-					}
-				});	
+				var membersData2;
 				
-				_this.model.setObjects(membersData);
+				if (result.status)
+				{
+					var conceptData = result.data;
+					
+					membersData2 = membersArray.map(function(refCompId)
+					{
+						if (conceptData[refCompId] !== null)
+						{
+							return {referenceComponentId:refCompId,description: conceptData[refCompId].label, active:conceptData[refCompId].active, found:true, disabled:!conceptData[refCompId].active};
+						}
+						else
+						{
+							return {referenceComponentId:refCompId,description: 'concept not found', active:false, found:false, disabled:true};
+						}
+					});	
+
+					_this.set("importError",null);
+					_this.model.setObjects(membersData2);
+				}
+				else
+				{
+					Ember.Logger.log(result.error);
+					_this.set("importError",result.error);
+				}
 
 				_this.set("getConceptDataInProgress",false);
-				return membersData;
+				return membersData2;
 			});
 			
 			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);			

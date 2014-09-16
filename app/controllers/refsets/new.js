@@ -1,7 +1,7 @@
 import RefsetModel 		from '../../models/refset';
 import RefsetsAdapter 	from '../../adapters/refsets';
 
-var refsetsAdapter 		= RefsetsAdapter.create();
+var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
@@ -12,6 +12,7 @@ export default Ember.ObjectController.extend({
 	doImportPublishedRefset : false,
 	doImportMembers : false,
 	getConceptDataInProgress : Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
+	importError : Ember.computed.alias("controllers.refsets/upload.importError"),
 	
 	create : function()
 	{

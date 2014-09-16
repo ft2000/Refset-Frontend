@@ -21,20 +21,32 @@ export default Ember.Object.extend({
 	
 		var result = ajax(RefsetENV.APP.conceptsApiBaseUrl, {headers:this.getHeaders(user), method:"post", data: jsonFormatIdArray, processData: false, contentType: 'application/json'}).then(function(result)
 		{	
-			if (typeof result.content !== "undefined")
+			var response = {};
+
+			if (result.meta.message === "Success")
 			{
-				return result.content.concepts;
+				response.data 	= result.content.concepts;
+				response.status = true;
 			}
 			else
 			{
 				Ember.Logger.log("adapters.simple-members:findList error",result.meta.message);
-				return [];		
+
+				response.error 	= result.meta.message;
+				response.status = false;
 			}
+			
+			return response;
 		},
 		function (error)
 		{
 			Ember.Logger.log("adapters.simple-members:findList error",error);
-			return [];
+
+			var response 	= {};
+			response.status	= false;
+			response.error	= error;
+
+			return response;
 		});
 
 		return result;

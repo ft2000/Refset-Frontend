@@ -103,7 +103,7 @@ export default Ember.Object.extend({
 
 	addMember : function (user,refsetId,referenceComponentId)
 	{
-		var member = {referenceComponentId : referenceComponentId};
+		var member = {referenceComponentId : referenceComponentId, active:true};
 			
 		var jsonFormatMemberData = JSON.stringify(member);
 		
