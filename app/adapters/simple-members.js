@@ -15,7 +15,7 @@ export default Ember.Object.extend({
 	
 	findList : function (user,idArray)
 	{
-		Ember.Logger.log("adapters.simple-members:findList (user,idArray)",user,idArray);
+		Ember.Logger.log("adapters.simple-members:findList");
 		
 		var jsonFormatIdArray = JSON.stringify(idArray);
 	

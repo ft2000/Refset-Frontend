@@ -70,7 +70,7 @@ nav.loginRegisterButtons .warningText {
 /* bootstrap */
 .myCheckboxes {
   height: inherit;
-  width: inherit;
+  width: 30px;
   float: right;
 }
 .mylabels {
@@ -79,6 +79,7 @@ nav.loginRegisterButtons .warningText {
   font-size: 14px;
   font-weight: normal;
   line-height: 20px;
+  width: 100%;
 }
 .myForm .control-label {
   text-align: left;
@@ -86,6 +87,7 @@ nav.loginRegisterButtons .warningText {
   font-size: 14px;
   font-weight: normal;
   line-height: 20px;
+  width: 100%;
 }
 .myForm input {
   display: inline-block;
@@ -98,7 +100,7 @@ nav.loginRegisterButtons .warningText {
 }
 .myForm input[type="checkbox"] {
   height: inherit;
-  width: inherit;
+  width: 30px;
   float: right;
 }
 .checkboxList .control-label {
@@ -107,10 +109,11 @@ nav.loginRegisterButtons .warningText {
   font-size: 14px;
   font-weight: normal;
   line-height: 20px;
+  width: 100%;
 }
 .checkboxList input[type="checkbox"] {
   height: inherit;
-  width: inherit;
+  width: 30px;
   float: right;
   float: left;
   margin-right: 10px;

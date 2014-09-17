@@ -1,7 +1,9 @@
 export default Ember.Route.extend({
-           
+        		
 	model: function(params) 
 	{
+		Ember.Logger.log("params",params);
+		
 		var _this = this;
 		
 		var loginController = this.controllerFor('login');
@@ -23,9 +25,9 @@ export default Ember.Route.extend({
 			}
 		});
 		
+		Ember.Logger.log("result",result);
 		
 		return result;
-
 	},
 	
 	actions : 

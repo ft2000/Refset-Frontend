@@ -9,10 +9,10 @@ export default Ember.ObjectController.extend({
 
 	model 	: RefsetModel.create(),
 	
-	doImportPublishedRefset : false,
-	doImportMembers : false,
-	getConceptDataInProgress : Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
-	importError : Ember.computed.alias("controllers.refsets/upload.importError"),
+	doImportPublishedRefset 	: false,
+	doImportMembers 			: false,
+	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
+	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	
 	create : function()
 	{
@@ -25,7 +25,7 @@ export default Ember.ObjectController.extend({
 		{
 			MemberData.push(parseInt($(this).val()));
 		});
-		
+
 		var utilitiesController = this.get('controllers.utilities');		
 		var refsetData = utilitiesController.deserialiseURLString(URLSerialisedData);
 		
@@ -38,6 +38,8 @@ export default Ember.ObjectController.extend({
 		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
+		
+		var _this = this;
 
 		refsetsAdapter.create(user,this.model).then(function(refset)
 		{
@@ -52,6 +54,12 @@ export default Ember.ObjectController.extend({
 					Ember.Logger.log("Adding member",member);
 					refsetsAdapter.addMember(user,refsetId,member);
 				});
+				
+				_this.set("model",RefsetModel.create());
+				var uploadAdapter = _this.get('controllers.refsets/upload');		
+				uploadAdapter.clearMembers();
+				
+				_this.transitionToRoute('refsets.refset',refsetId);
 			}
 			else
 			{

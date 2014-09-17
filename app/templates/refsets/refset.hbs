@@ -20,13 +20,15 @@
 		<div class="colMed inner">
 			{{#bs-panel heading="Members" type="info" class="panelNoPadding"}}
 			
-				<ul class="list-group">
+				<ul class="list-group checkboxList">
 					{{#each members}}
 						<li class="list-group-item">
-							<em>ID:</em> <b>{{id}}</b><br>
-							<em>Module ID:</em> <b>{{moduleId}}</b><br>
-							<em>Reference Component ID:</em> <b>{{referenceComponentId}}</b><br>
-							<em>active:</em> <b>{{active}}</b><br>
+							<label {{bind-attr class=':control-label found::disabled'}}>
+								<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}} {{bind-attr disabled='disabled'}}> 
+								{{description}}
+								{{#if found}}{{#unless conceptactive}}<br><span class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</span>{{/unless}}{{/if}}
+								<span class="referenceComponentId">{{referenceComponentId}}</span>
+							</label>
 						</li>
 					{{/each}}
 				</ul>

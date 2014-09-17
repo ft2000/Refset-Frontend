@@ -16,6 +16,12 @@ export default Ember.ArrayController.extend({
 	},
 	
 	getConceptDataInProgress : false,
+
+	
+	clearMembers : function()
+	{
+		this.model.setObjects([]);
+	},
 	
     actions :
     {
@@ -71,5 +77,6 @@ export default Ember.ArrayController.extend({
 			
 			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);			
 		},
+
     }
 });
