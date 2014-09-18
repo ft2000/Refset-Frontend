@@ -79,30 +79,50 @@ export default Ember.Object.extend({
 	
 	create : function (user,refset)
 	{
-		Ember.Logger.log("refset create",user,refset);
+		Ember.Logger.log("adapters.refsets:create",user,refset);
 		
 		var jsonFormatRefset = JSON.stringify(refset);
 
-		Ember.Logger.log("refset create jsonFormatRefset ",jsonFormatRefset);
-
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/new', {headers:this.getHeaders(user), type:'post', data: jsonFormatRefset, processData: false, contentType: 'application/json'}).then(function(result)
 		{
-			Ember.Logger.log("Create refset result",result);
-
 			return result;	
 		},
 		function (error)
 		{
 			Ember.Logger.log("create refset error",error);
 			return {authError : true};
+
+			// Needs more work here.  A failure might not just be an authenticate error...
 		});	
 		
 		return result;
 	},
 	
+	update : function (user,refset)
+	{
+		Ember.Logger.log("adapters.refsets:update",user,refset);
+		
+		var jsonFormatRefset = JSON.stringify(refset);
 
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/update', {headers:this.getHeaders(user), type:'post', data: jsonFormatRefset, processData: false, contentType: 'application/json'}).then(function(result)
+		{
+			return result;	
+		},
+		function (error)
+		{
+			Ember.Logger.log("update refset error",error);
+			return {authError : true};
+			
+			// Needs more work here.  A failure might not just be an authenticate error...
+		});	
+		
+		return result;
+	},
+	
 	addMember : function (user,refsetId,referenceComponentId)
 	{
+		Ember.Logger.log("adapters.refsets:addMember (user,refsetId,referenceComponentId)",user,refsetId,referenceComponentId);
+
 		var member = {referenceComponentId : referenceComponentId, active:true};
 			
 		var jsonFormatMemberData = JSON.stringify(member);
@@ -114,7 +134,7 @@ export default Ember.Object.extend({
 		},
 		function (error)
 		{
-			Ember.Logger.log("adapters.simple-members:findList error",error);
+			Ember.Logger.log("adapters.refsets:addMember error",error);
 			return [];
 		});
 

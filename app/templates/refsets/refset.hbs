@@ -4,14 +4,21 @@
 	<div class="dashboard">
 		<div class="colMed inner">
 			{{#bs-panel heading="Refset Details" type="info" class=""}}
-				{{#em-form model=model submit_button=false}}
-				    {{em-text property="description" label="Description" placeholder="Description" rows=2}}
-				    {{em-input property="id" label="ID" placeholder="Refset ID" disabled="true"}}
-				    {{em-input property="moduleId" label="Module ID" placeholder="Module ID" disabled="true"}}
+				{{#em-form model=model submit_button=false id="refsetEditForm"}}
+					<label id="ember877" class="ember-view control-label">Description</label>
+					<textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea>
+
+				    {{em-input property="id" label="ID" placeholder="Refset ID" disabled="true" cid="id"}}
+				    {{em-input property="moduleId" label="Module ID" placeholder="Module ID" disabled="true" cid="moduleId"}}
 				    {{em-input property="formattedCreatedDate" label="Created date" placeholder="Created date" disabled="true"}}
-				    {{em-input property="createdBy" label="By" placeholder="Created by" disabled="true"}}
+				    {{em-input property="createdBy" label="Created By" placeholder="Created by" disabled="true"}}
 					{{em-input property="type" label="Refset Type" placeholder="Refset type" disabled="true"}}
-					{{em-input property="formattedPublishedDate" label="Published" placeholder="Published date" disabled="true"}}
+					{{#if published}}
+						{{em-input property="formattedPublishedDate" label="Published" placeholder="Published date" disabled="true"}}
+					{{else}}
+						<label id="ember877" class="ember-view control-label">Published</label>
+						Not yet published
+					{{/if}}
 				{{/em-form}}
 			{{/bs-panel}}
 			
