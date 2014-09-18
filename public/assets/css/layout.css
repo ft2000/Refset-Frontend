@@ -139,3 +139,6 @@ nav.loginRegisterButtons .warningText {
   font-weight: bold;
   text-align: center;
 }
+.right {
+  float: right;
+}

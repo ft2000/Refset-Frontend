@@ -10,7 +10,6 @@ export default Ember.ObjectController.extend({
 	dashboard 		: [],
 	published 		: [],
 	unpublished 	: [],
-	model			: {},
 	
 	needs 			: ["login"],
 
@@ -85,6 +84,10 @@ export default Ember.ObjectController.extend({
 				return member.referenceComponentId;
 			});
 			
+			// Need these dates formatted for easy display
+			refsetData.formattedCreatedDate 	= _this.dateFormat(refsetData.created);
+			refsetData.formattedPublishedDate 	= _this.dateFormat(refsetData.publishedDate);
+			
 			membersAdapter.findList(user,idArray).then(function(result)
 			{
 				var membersData = result;
@@ -118,16 +121,17 @@ export default Ember.ObjectController.extend({
 				}
 
 				refsetData.members.setObjects(membersData);
-				
-				Ember.Logger.log("membersData",membersData);
-				
 			});
 						
-			_this.set("model",refsetData);
 			return refsetData;
 		});
 		
 		return refset;
+	},
+	
+	dateFormat : function(date)
+	{
+		return $.formatDateTime('MM dd, yy', new Date(date));
 	},
 	
 	actions :
@@ -136,6 +140,6 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("controllers.refsets:actions:refresh");
 			this.getAllRefsets(1);
-		}
+		},
 	}
 });
