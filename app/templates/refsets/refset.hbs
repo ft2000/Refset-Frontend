@@ -24,20 +24,28 @@
 			
 			<button {{action 'exportRefset'}} class="btn">Export</button>
 			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
+			<button {{action 'deleteAllUnpublishedConcepts'}} class="btn">Delete All Unpublished Concepts</button>
 		</div>
 		
 		<div class="colMed inner">
-			{{#bs-panel heading="Members" type="info" class="panelNoPadding"}}
+			{{#bs-panel heading="Members (ticks indicate ACTIVE concepts)" type="info" class="panelNoPadding"}}
 			
 				<ul class="list-group checkboxList">
 					{{#each members}}
-						<li class="list-group-item">
+						<li {{bind-attr class=':list-group-item published::unpublishedMember'}}>
 							<label {{bind-attr class=':control-label found::disabled'}}>
 								<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}} {{bind-attr disabled='disabled'}}> 
 								{{description}}
 								{{#if found}}{{#unless conceptactive}}<br><span class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</span>{{/unless}}{{/if}}
 								<span class="referenceComponentId">{{referenceComponentId}}</span>
 							</label>
+							{{#if published}}
+								<span class="publishDate"><em>Effective date:</em> <b>{{date-format effectiveTime}}</b></span>
+							{{else}}
+								<label class="control-label">
+									<input type="checkbox" name="deleteConcept" {{bind-attr value='referenceComponentId'}}> Delete this concept from the Refset
+								</label>
+							{{/if}}
 						</li>
 					{{/each}}
 				</ul>

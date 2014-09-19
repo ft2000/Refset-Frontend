@@ -101,14 +101,16 @@ export default Ember.ObjectController.extend({
 						
 						if (conceptData[member.referenceComponentId] !== null)
 						{
-							member.description = conceptData[member.referenceComponentId].label;
-							member.found = true;
-							member.conceptactive = conceptData[member.referenceComponentId].active;
+							member.description 		= conceptData[member.referenceComponentId].label;
+							member.conceptactive 	= conceptData[member.referenceComponentId].active;
+							member.found 			= true;
+							member.published 		= (typeof member.effectiveTime !== "undefined");
 						}
 						else
 						{
-							member.description = 'concept not found';
-							member.found = false;
+							member.description 		= 'concept not found';
+							member.found 			= false;
+							member.published 		= false;
 						}
 						
 						return member;

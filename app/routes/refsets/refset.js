@@ -40,6 +40,11 @@ export default Ember.Route.extend({
 			Ember.Logger.log('routes.resfets.refset:actions:showLoginForm');
 			this.controllerFor('application').send('showLoginForm');
 		},
+		
+		deleteAllUnpublishedConcepts : function()
+		{
+			$(".checkboxList input[name=deleteConcept]").prop('checked', true);
+		},
 
 		updateRefset : function()
 		{
@@ -51,11 +56,39 @@ export default Ember.Route.extend({
 			delete Refset["formattedPublishedDate"];
 			delete Refset["numMembers"];
 			
+			var MembersToDelete = [];
+			$(".checkboxList input[name=deleteConcept]:checked").each(function ()
+			{
+				MembersToDelete.push(parseInt($(this).val()));
+			});			
+			Ember.Logger.log("MembersToDelete",MembersToDelete);
+			
+			for (var m=Refset.members.length-1;m>=0;m--)
+			{
+				if (MembersToDelete.indexOf(Refset.members[m].referenceComponentId) !== -1)
+				{
+					Ember.Logger.log("deleting",m);
+					Refset.members = Refset.members.splice(m,1);
+				}
+			}
+			Ember.Logger.log("finished checking");
+			
+			var ActiveMembers = [];
+			$(".checkboxList input[name=conceptId]:checked").each(function ()
+			{
+				ActiveMembers.push(parseInt($(this).val()));
+			});			
+			Ember.Logger.log("ActiveMembers",ActiveMembers);
+
 			for (var m=0;m<Refset.members.length;m++)
 			{
 				delete Refset.members[m]["conceptactive"];
 				delete Refset.members[m]["found"];
 				delete Refset.members[m]["description"];
+// Need to remove this once API is updated
+delete Refset.members[m]["published"];
+
+				Refset.members[m].active = (ActiveMembers.indexOf(Refset.members[m].referenceComponentId) !== -1)
 			}
 			
 			var URLSerialisedData 	= $('#refsetEditForm').serialize();
@@ -73,6 +106,8 @@ export default Ember.Route.extend({
 			
 			var loginController = this.controllerFor('login');
 			var user = loginController.get("user");
+			
+			return;
 			
 			refsetsAdapter.update(user,Refset).then(function(refset)
 			{

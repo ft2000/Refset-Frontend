@@ -41,17 +41,14 @@
 						<label class="control-label" for="moduleId">Module ID</label>
 						<input id="moduleId" name="moduleId" placeholder="Module ID" type="text" {{bind-attr value="moduleId"}}>
 
-						<label class="control-label" for="created">Create Date</label>
-						<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}}>
+						<label class="control-label" for="created">Creation Date</label>
+						<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}} data-provide="datepicker" data-date-format="MM d, yyyy">
 
 						<label class="control-label" for="createdBy">Created By</label>
 						<input id="createdBy" name="createdBy" placeholder="refset created by" type="text"  {{bind-attr value="createdBy"}}>
 
 						<label class="control-label" for="publishedDate">Date Published</label>
-						<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}}>
-
-						<label class="control-label" for="effectiveTime">Effective Time</label>
-						<input id="effectiveTime" name="effectiveTime" placeholder="Effective Time" required="" type="text" {{bind-attr value="effectiveTime"}}>
+						<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}} data-provide="datepicker">
 					{{/with}}
 				{{/if}}
 

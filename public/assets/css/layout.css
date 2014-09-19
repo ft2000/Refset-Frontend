@@ -121,10 +121,17 @@ nav.loginRegisterButtons .warningText {
 .checkboxList .disabled {
   color: #c9302c;
 }
+.checkboxList .unpublishedMember {
+  background-color: #eefbee;
+}
 .checkboxList .referenceComponentId {
   font-size: 10px;
   font-style: italic;
   float: right;
+}
+.checkboxList .publishDate {
+  font-size: 10px;
+  font-style: italic;
 }
 .checkboxList .warning {
   color: #c9302c;
