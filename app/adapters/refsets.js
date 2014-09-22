@@ -140,5 +140,21 @@ export default Ember.Object.extend({
 
 		return result;	
 	},
+	
+	getRefsetExport : function(user,id)
+	{
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(result){
+			return result;	
+		},
+		function (error)
+		{
+			Ember.Logger.log("refsets getRefsetExport error",error);
+			return {authError : true};
+		});	
+		
+		return result;
+
+	},
+	
 });
 

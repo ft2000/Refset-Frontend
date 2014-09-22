@@ -13,6 +13,7 @@
 				    {{em-input property="formattedCreatedDate" label="Created date" placeholder="Created date" disabled="true"}}
 				    {{em-input property="createdBy" label="Created By" placeholder="Created by" disabled="true"}}
 					{{em-input property="type" label="Refset Type" placeholder="Refset type" disabled="true"}}
+
 					{{#if published}}
 						{{em-input property="formattedPublishedDate" label="Published" placeholder="Published date" disabled="true"}}
 					{{else}}
@@ -22,7 +23,7 @@
 				{{/em-form}}
 			{{/bs-panel}}
 			
-			<button {{action 'exportRefset'}} class="btn">Export</button>
+			<button {{action 'exportRefset' id}} class="btn">Export</button>
 			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
 			<button {{action 'deleteAllUnpublishedConcepts'}} class="btn">Delete All Unpublished Concepts</button>
 		</div>

@@ -7,25 +7,12 @@
 				  <span class="badge">{{date-format publishedDate}}</span>
 				{{/if}}
 				<h4>{{description}}</h4>
-				<em>owner:</em> {{createdBy}}
-				<em>created:</em> {{date-format created}}
-				<em>members:</em> {{numMembers}}
+				<em>created:</em> {{date-format created}}<br>
+				<em>by:</em> {{createdBy}}<br>
 				
-				{{#link-to "refsets.refset" id}}view{{/link-to}}
+				{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
 			</li>
 		{{/each}}
 	</ul>
 
 {{/bs-panel}}
-
-		
-<ul class="pagination">
-
-  <li><a href="#">&laquo;</a></li>
-  
-  {{#each p in pages}}
-  <li><a href="#">{{p}}</a></li>
-  {{/each}}
-  
-  <li><a href="#">&raquo;</a></li>
-</ul>

@@ -16,6 +16,9 @@ nav.loginRegisterButtons .warningText {
 .dashboard .panelNoPadding .panel-body .list-group {
   margin: 0;
 }
+.list-group-item {
+  overflow: auto;
+}
 /* Panels */
 .RefsetPanel .error {
   color: #c9302c;
@@ -148,4 +151,14 @@ nav.loginRegisterButtons .warningText {
 }
 .right {
   float: right;
+}
+.clearAfter:after {
+  content: ".";
+  display: block;
+  height: 0px;
+  clear: both;
+  visibility: hidden;
+}
+.clearAfter:after {
+  display: inline-block;
 }

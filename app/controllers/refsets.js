@@ -124,7 +124,7 @@ export default Ember.ObjectController.extend({
 
 				refsetData.members.setObjects(membersData);
 			});
-						
+			
 			return refsetData;
 		});
 		

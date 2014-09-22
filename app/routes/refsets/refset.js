@@ -8,8 +8,6 @@ export default Ember.Route.extend({
 	
 	model: function(params) 
 	{
-		Ember.Logger.log("params",params);
-		
 		var _this = this;
 		
 		var loginController = this.controllerFor('login');
@@ -61,17 +59,15 @@ export default Ember.Route.extend({
 			{
 				MembersToDelete.push(parseInt($(this).val()));
 			});			
-			Ember.Logger.log("MembersToDelete",MembersToDelete);
 			
 			for (var m=Refset.members.length-1;m>=0;m--)
 			{
-				if (MembersToDelete.indexOf(Refset.members[m].referenceComponentId) !== -1)
+				if ($.inArray(Refset.members[m].referenceComponentId,MembersToDelete))
 				{
-					Ember.Logger.log("deleting",m);
-					Refset.members = Refset.members.splice(m,1);
+					Refset.members.splice(m,1);
 				}
 			}
-			Ember.Logger.log("finished checking");
+			Ember.Logger.log("finished checking",Refset.members.length);
 			
 			var ActiveMembers = [];
 			$(".checkboxList input[name=conceptId]:checked").each(function ()
@@ -102,12 +98,8 @@ delete Refset.members[m]["published"];
 				Refset[key] = updatedData[key];
 			}
 						
-			Ember.Logger.log("Refset",Refset);
-			
 			var loginController = this.controllerFor('login');
 			var user = loginController.get("user");
-			
-			return;
 			
 			refsetsAdapter.update(user,Refset).then(function(refset)
 			{
@@ -122,9 +114,19 @@ delete Refset.members[m]["published"];
 			});
 		},	
 
-		exportRefset : function()
+		exportRefset : function(id)
 		{
-			Ember.Logger.log("routes.refsets.refset:actions:exportRefset");
+			Ember.Logger.log("routes.refsets.refset:actions:exportRefset (id)",id);
+			
+			var loginController = this.controllerFor('login');
+			var user = loginController.user;
+			
+			refsetsAdapter.getRefsetExport(user, id).then(function(exportFile)
+			{
+				var blob = new Blob([exportFile], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, id + ".rf2");
+			});
+			
 		},	
 	}
 });
