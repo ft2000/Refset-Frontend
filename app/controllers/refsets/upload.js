@@ -38,7 +38,7 @@ export default Ember.ArrayController.extend({
 				}
 			});
 			
-			idArray = $.grep(idArray,function(n){ return(n) });
+			idArray = $.grep(idArray,function(n){ return(n); });
 
 			var loginController = this.get('controllers.login');
 			var user = loginController.user;

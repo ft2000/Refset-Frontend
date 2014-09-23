@@ -85,6 +85,11 @@ nav.loginRegisterButtons .warningText {
   line-height: 20px;
   width: 100%;
 }
+.mylabels span {
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 30px;
+}
 .myForm .control-label {
   text-align: left;
   padding-top: 5px;
@@ -92,6 +97,11 @@ nav.loginRegisterButtons .warningText {
   font-weight: normal;
   line-height: 20px;
   width: 100%;
+}
+.myForm .control-label span {
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 30px;
 }
 .myForm input {
   display: inline-block;
@@ -102,10 +112,21 @@ nav.loginRegisterButtons .warningText {
   line-height: 20px;
   width: 100%;
 }
+.myForm select {
+  width: 100%;
+  height: inherit;
+}
 .myForm input[type="checkbox"] {
   height: inherit;
   width: 30px;
   float: right;
+}
+.myForm .label {
+  font-style: italic;
+  color: #ec971f;
+}
+.myForm .content {
+  font-weight: normal;
 }
 .checkboxList .control-label {
   text-align: left;
@@ -114,6 +135,11 @@ nav.loginRegisterButtons .warningText {
   font-weight: normal;
   line-height: 20px;
   width: 100%;
+}
+.checkboxList .control-label span {
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 30px;
 }
 .checkboxList input[type="checkbox"] {
   height: inherit;

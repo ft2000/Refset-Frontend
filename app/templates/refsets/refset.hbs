@@ -2,34 +2,48 @@
 	You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
 {{else}}
 	<div class="dashboard">
-		<div class="colMed inner">
-			{{#bs-panel heading="Refset Details" type="info" class=""}}
-				{{#em-form model=model submit_button=false id="refsetEditForm"}}
-					<label id="ember877" class="ember-view control-label">Description</label>
-					<textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea>
-
-				    {{em-input property="id" label="ID" placeholder="Refset ID" disabled="true" cid="id"}}
-				    {{em-input property="moduleId" label="Module ID" placeholder="Module ID" disabled="true" cid="moduleId"}}
-				    {{em-input property="formattedCreatedDate" label="Created date" placeholder="Created date" disabled="true"}}
-				    {{em-input property="createdBy" label="Created By" placeholder="Created by" disabled="true"}}
-					{{em-input property="type" label="Refset Type" placeholder="Refset type" disabled="true"}}
-
-					{{#if published}}
-						{{em-input property="formattedPublishedDate" label="Published" placeholder="Published date" disabled="true"}}
-					{{else}}
-						<label id="ember877" class="ember-view control-label">Published</label>
-						Not yet published
-					{{/if}}
-				{{/em-form}}
+			{{#bs-panel heading="Refset Header" type="info" collapsible="true"}}
+				<form id="refsetEditForm" class="myForm">
+					
+					<table>
+						
+						<tr>
+							{{#if published}}
+								<td class="label">Published on</td><td class="content">{{date-format publishedDate}}</td>
+							{{else}}
+								<td class="label">Not yet published</td>
+							{{/if}}
+						</tr>
+	
+						<tr>
+							<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea></td>
+						</tr>
+	
+						<tr>
+							<td class="label">Language</td><td class="content">{{languageCode}}</td>
+							<td class="label">Active</td><td class="content">{{active}}</td>
+						</tr>
+	
+						<tr>
+							<td class="label">Refset Type</td><td class="content">{{type}}</td>
+							<td class="label">Refset Members Type</td><td class="content">Not yet in the data....</td>
+						</tr>
+	
+						<tr>
+							<td class="label">Created on</td><td class="content">{{date-format created}}</td>
+							<td class="label">by</td><td class="content">{{#if createdBy}}{{createdBy}}{{else}}unknown{{/if}}</td>
+						</tr>
+	
+						<tr>
+							<td class="label">ID</td><td class="content">{{id}}</td>
+							<td class="label">Module ID</td><td class="content">{{moduleId}}</td>
+						</tr>
+					
+					</table>
+				</form>
 			{{/bs-panel}}
 			
-			<button {{action 'exportRefset' id}} class="btn">Export</button>
-			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
-			<button {{action 'deleteAllUnpublishedConcepts'}} class="btn">Delete All Unpublished Concepts</button>
-		</div>
-		
-		<div class="colMed inner">
-			{{#bs-panel heading="Members (ticks indicate ACTIVE concepts)" type="info" class="panelNoPadding"}}
+			{{#bs-panel heading="Members (ticks indicate ACTIVE concepts)" type="info" class="panelNoPadding" collapsible=true open=false}}
 			
 				<ul class="list-group checkboxList">
 					{{#each members}}
@@ -52,6 +66,12 @@
 				</ul>
 			
 			{{/bs-panel}}
-		</div>
+
+			{{#unless published}}
+			<button {{action 'deleteRefset' id}} class="btn">Delete</button>
+			{{/unless}}
+			<button {{action 'exportRefset' id}} class="btn">Export</button>
+			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
+		
 	</div>
 {{/if}}

@@ -14,7 +14,17 @@
 
 				<label class="control-label" for="type">Refset Type</label>
 				<select id="type" name="type" class="input-xlarge">
-					<option value="simple">Simple</option>
+					<option value="simple">Simple (Manually add members)</option>
+				</select>
+
+				<label class="control-label" for="member-type">Refset Members Type</label>
+				<select id="type" name="members-type" class="input-xlarge">
+					<option value="900000000000461009">Concept type components</option>
+<!---
+					<option value="900000000000462002">Description type components</option>
+					<option value="900000000000464001">Reference set member type component</option>
+					<option value="900000000000463007">Relationship type component</option>
+--->
 				</select>
 
 			    <label class="control-label" for="active">
@@ -67,7 +77,7 @@
 
 			{{/if}}
 
-			<button {{action "initRefsetImport"}}>Create Refset</button>
+			<button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>
 
 		{{/bs-panel}}
 

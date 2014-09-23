@@ -148,6 +148,13 @@ nav.loginRegisterButtons
 	font-weight: normal;
 	line-height: 20px;
 	width : 100%;
+	
+	span
+	{
+		font-weight: bold;
+		margin-left : 10px;
+		margin-right : 30px;
+	}
 }
 
 .myForm
@@ -156,7 +163,7 @@ nav.loginRegisterButtons
 	{
 		.mylabels;
     }
-    
+
     input
     {
 		display: inline-block;
@@ -168,9 +175,26 @@ nav.loginRegisterButtons
 		width : 100%;
     }
     
+    select
+    {
+    	width : 100%;
+		height: inherit;
+    }
+    
     input[type="checkbox"]
     {
 		.myCheckboxes;
+    }
+    
+    .label
+    {
+		font-style : italic;
+		color : @infoColour;
+    }
+    
+    .content
+    {
+    	font-weight : normal;
     }
 }
 

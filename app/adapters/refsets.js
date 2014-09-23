@@ -154,6 +154,21 @@ export default Ember.Object.extend({
 		});	
 		
 		return result;
+	},
+	
+	deleteRefset : function(user,id)
+	{
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/delete/' + id , {headers:this.getHeaders(user), method:"delete", processData: false, contentType: 'application/json'}).then(function(result){
+			Ember.Logger.log("refsets deleteRefset result",result);
+			return true;	
+		},
+		function (error)
+		{
+			Ember.Logger.log("refsets deleteRefset error",error);
+			return {authError : true};
+		});	
+		
+		return result;
 
 	},
 	

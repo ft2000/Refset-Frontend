@@ -78,8 +78,6 @@ export default Ember.ObjectController.extend({
 	
 	getRefset : function(user,id)
 	{
-		var _this = this;
-		
 		var refset = refsetsAdapter.find(user,id).then(function(refsetData)
 		{
 			if (!refsetData.authError)
@@ -88,47 +86,37 @@ export default Ember.ObjectController.extend({
 				{
 					return member.referenceComponentId;
 				});
-				
-				// Need these dates formatted for easy display
-				refsetData.formattedCreatedDate 	= _this.dateFormat(refsetData.created);
-				refsetData.formattedPublishedDate 	= _this.dateFormat(refsetData.publishedDate);
-				
+									
 				membersAdapter.findList(user,idArray).then(function(result)
 				{
-					var membersData = result;
-					
-					if (result.noOfRecords > 0)
+					if (result.status)
 					{
 						var conceptData = result.data;
 																
-						membersData = refsetData.members.map(function(member)
+						var tempMemberData = refsetData.members.map(function(member)
 						{
-							
 							if (conceptData[member.referenceComponentId] !== null)
 							{
 								member.description 		= conceptData[member.referenceComponentId].label;
 								member.conceptactive 	= conceptData[member.referenceComponentId].active;
 								member.found 			= true;
-								member.published 		= (typeof member.effectiveTime !== "undefined");
 							}
 							else
 							{
 								member.description 		= 'concept not found';
 								member.found 			= false;
-								member.published 		= false;
 							}
 							
 							return member;
-							
 						});	
+
+						refsetData.members.setObjects(tempMemberData);
 					}
 					else
 					{
-						Ember.Logger.log(result.error);
+						Ember.Logger.log("result.error",result.error);
 					}
-
-					refsetData.members.setObjects(membersData);
-			});
+				});
 			}
 			else
 			{

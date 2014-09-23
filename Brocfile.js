@@ -28,6 +28,7 @@ app.import('vendor/bootstrap/dist/css/bootstrap-theme.min.css');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-core.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-basic.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-alert.min.js');
+app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-modal.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-button.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-breadcrumbs.min.js');

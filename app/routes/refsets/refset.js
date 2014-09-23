@@ -38,11 +38,6 @@ export default Ember.Route.extend({
 			Ember.Logger.log('routes.resfets.refset:actions:showLoginForm');
 			this.controllerFor('application').send('showLoginForm');
 		},
-		
-		deleteAllUnpublishedConcepts : function()
-		{
-			$(".checkboxList input[name=deleteConcept]").prop('checked', true);
-		},
 
 		updateRefset : function()
 		{
@@ -76,15 +71,13 @@ export default Ember.Route.extend({
 			});			
 			Ember.Logger.log("ActiveMembers",ActiveMembers);
 
-			for (var m=0;m<Refset.members.length;m++)
+			for (m=0;m<Refset.members.length;m++)
 			{
 				delete Refset.members[m]["conceptactive"];
 				delete Refset.members[m]["found"];
 				delete Refset.members[m]["description"];
-// Need to remove this once API is updated
-delete Refset.members[m]["published"];
 
-				Refset.members[m].active = (ActiveMembers.indexOf(Refset.members[m].referenceComponentId) !== -1)
+				Refset.members[m].active = (ActiveMembers.indexOf(Refset.members[m].referenceComponentId) !== -1);
 			}
 			
 			var URLSerialisedData 	= $('#refsetEditForm').serialize();
@@ -125,6 +118,25 @@ delete Refset.members[m]["published"];
 			{
 				var blob = new Blob([exportFile], {type: "text/plain;charset=utf-8"});
 				saveAs(blob, id + ".rf2");
+			});
+			
+		},	
+		
+		deleteRefset : function(id)
+		{
+			Ember.Logger.log("routes.refsets.refset:actions:deleteRefset (id)",id);
+			
+			var loginController = this.controllerFor('login');
+			var user = loginController.user;
+			
+			var _this = this;
+			
+			refsetsAdapter.deleteRefset(user, id).then(function()
+			{
+				var refsetController = _this.controllerFor('refsets');
+				refsetController.getAllRefsets(1);
+				
+				_this.transitionTo('refsets');
 			});
 			
 		},	

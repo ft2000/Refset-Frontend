@@ -10,7 +10,8 @@
     "$" : true,
     "readSingleFile" : true,
     "handleDragOver" : true,
-    "sessionStoreManager" : true
+    "sessionStoreManager" : true,
+    "saveAs" : true
   },
   "browser" : true,
   "boss" : true,
