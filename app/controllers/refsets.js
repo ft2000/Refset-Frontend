@@ -29,47 +29,50 @@ export default Ember.ObjectController.extend({
 	
 		refsetsAdapter.findAll(user,reinit).then(function(result)
 		{	
-			var dashboardArray 		= [];
-			var publishedArray 		= [];
-			var unpublishedArray 	= [];
-			
-			_this.allRefsets.setObjects(result);
-			
-			result.map(function(item)
+			if (!result.dataError)
 			{
-				if (item.published)
+				var dashboardArray 		= [];
+				var publishedArray 		= [];
+				var unpublishedArray 	= [];
+				
+				_this.allRefsets.setObjects(result);
+				
+				result.map(function(item)
 				{
-					dashboardArray.push(item);
-					publishedArray.push(item);
-				}
-				else
+					if (item.published)
+					{
+						dashboardArray.push(item);
+						publishedArray.push(item);
+					}
+					else
+					{
+						unpublishedArray.push(item);					
+					}
+				});
+				
+				var sortedDashboardArray = dashboardArray.sort(function(a,b)
 				{
-					unpublishedArray.push(item);					
-				}
-			});
-			
-			var sortedDashboardArray = dashboardArray.sort(function(a,b)
-			{
-			    return new Date(b.publishedDate) - new Date (a.publishedDate);
-			});
+				    return new Date(b.publishedDate) - new Date (a.publishedDate);
+				});
 
-			sortedDashboardArray = sortedDashboardArray.splice(0,5);
-			
-			_this.dashboard.setObjects(sortedDashboardArray);
-			
-			var sortedPublishedArray = publishedArray.sort(function(a,b)
-			{
-			    return new Date(b.publishedDate) - new Date (a.publishedDate);
-			});			
+				sortedDashboardArray = sortedDashboardArray.splice(0,5);
+				
+				_this.dashboard.setObjects(sortedDashboardArray);
+				
+				var sortedPublishedArray = publishedArray.sort(function(a,b)
+				{
+				    return new Date(b.publishedDate) - new Date (a.publishedDate);
+				});			
 
-			_this.published.setObjects(sortedPublishedArray);
-		
-			var sortedUnpublishedArray = unpublishedArray.sort(function(a,b)
-			{
-			    return new Date(b.publishedDate) - new Date (a.publishedDate);
-			});			
+				_this.published.setObjects(sortedPublishedArray);
+			
+				var sortedUnpublishedArray = unpublishedArray.sort(function(a,b)
+				{
+				    return new Date(b.publishedDate) - new Date (a.publishedDate);
+				});			
 
-			_this.unpublished.setObjects(sortedUnpublishedArray);
+				_this.unpublished.setObjects(sortedUnpublishedArray);			}
+
 		});
 	},
 	
@@ -79,52 +82,59 @@ export default Ember.ObjectController.extend({
 		
 		var refset = refsetsAdapter.find(user,id).then(function(refsetData)
 		{
-			var idArray = refsetData.members.map(function(member)
+			if (!refsetData.authError)
 			{
-				return member.referenceComponentId;
-			});
-			
-			// Need these dates formatted for easy display
-			refsetData.formattedCreatedDate 	= _this.dateFormat(refsetData.created);
-			refsetData.formattedPublishedDate 	= _this.dateFormat(refsetData.publishedDate);
-			
-			membersAdapter.findList(user,idArray).then(function(result)
-			{
-				var membersData = result;
+				var idArray = refsetData.members.map(function(member)
+				{
+					return member.referenceComponentId;
+				});
 				
-				if (result.status)
+				// Need these dates formatted for easy display
+				refsetData.formattedCreatedDate 	= _this.dateFormat(refsetData.created);
+				refsetData.formattedPublishedDate 	= _this.dateFormat(refsetData.publishedDate);
+				
+				membersAdapter.findList(user,idArray).then(function(result)
 				{
-					var conceptData = result.data;
-															
-					membersData = refsetData.members.map(function(member)
+					var membersData = result;
+					
+					if (result.noOfRecords > 0)
 					{
-						
-						if (conceptData[member.referenceComponentId] !== null)
+						var conceptData = result.data;
+																
+						membersData = refsetData.members.map(function(member)
 						{
-							member.description 		= conceptData[member.referenceComponentId].label;
-							member.conceptactive 	= conceptData[member.referenceComponentId].active;
-							member.found 			= true;
-							member.published 		= (typeof member.effectiveTime !== "undefined");
-						}
-						else
-						{
-							member.description 		= 'concept not found';
-							member.found 			= false;
-							member.published 		= false;
-						}
-						
-						return member;
-						
-					});	
-				}
-				else
-				{
-					Ember.Logger.log(result.error);
-				}
+							
+							if (conceptData[member.referenceComponentId] !== null)
+							{
+								member.description 		= conceptData[member.referenceComponentId].label;
+								member.conceptactive 	= conceptData[member.referenceComponentId].active;
+								member.found 			= true;
+								member.published 		= (typeof member.effectiveTime !== "undefined");
+							}
+							else
+							{
+								member.description 		= 'concept not found';
+								member.found 			= false;
+								member.published 		= false;
+							}
+							
+							return member;
+							
+						});	
+					}
+					else
+					{
+						Ember.Logger.log(result.error);
+					}
 
-				refsetData.members.setObjects(membersData);
+					refsetData.members.setObjects(membersData);
 			});
-			
+			}
+			else
+			{
+				Ember.Logger.log("get refset failed...",refsetData);
+			}
+
 			return refsetData;
 		});
 		

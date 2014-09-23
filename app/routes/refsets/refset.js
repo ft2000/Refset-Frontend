@@ -16,7 +16,7 @@ export default Ember.Route.extend({
 		var refsetController = this.controllerFor('refsets');
 		var result = refsetController.getRefset(user, params.id);
 
-		// We need to pause here foe the above promise to be fulfilled so we can check the Auth Status
+		// We need to pause here for the above promise to be fulfilled so we can check the Auth Status
 		Ember.RSVP.Promise.all([result]).then(function()
 		{
 			if (result._result.authError)

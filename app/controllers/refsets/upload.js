@@ -32,14 +32,17 @@ export default Ember.ArrayController.extend({
 			
 			var idArray = membersArray.map(function(refCompId)
 			{
-				return refCompId;
+				if (refCompId !== "")
+				{
+					return refCompId;
+				}
 			});
+			
+			idArray = $.grep(idArray,function(n){ return(n) });
 
 			var loginController = this.get('controllers.login');
 			var user = loginController.user;
 			
-			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (idArray)",idArray);
-
 			this.set("getConceptDataInProgress",true);
 			
 			var membersData = membersAdapter.findList(user,idArray).then(function(result)
@@ -50,8 +53,10 @@ export default Ember.ArrayController.extend({
 				{
 					var conceptData = result.data;
 					
-					membersData2 = membersArray.map(function(refCompId)
+					membersData2 = idArray.map(function(refCompId)
 					{
+						Ember.Logger.log("refCompId",refCompId,conceptData);
+						
 						if (conceptData[refCompId] !== null)
 						{
 							return {referenceComponentId:refCompId,description: conceptData[refCompId].label, active:conceptData[refCompId].active, found:true, disabled:!conceptData[refCompId].active};

@@ -73,13 +73,13 @@ export default Ember.ObjectController.extend({
     	togglePublishedRefsetImportForm : function()
     	{
     		Ember.Logger.log("togglePublishedRefsetImportForm",this.doImportPublishedRefset);
-    		this.set("doImportPublishedRefset",!this.doImportPublishedRefset);
+    		this.set("doImportPublishedRefset",$('#import').is(':checked'));
     	},
 
 		toggleMembersImportForm : function()
 		{
 			Ember.Logger.log("togglePublishedRefsetImportForm",this.doImportPublishedRefset);
-			this.set("doImportMembers",!this.doImportMembers);
+			this.set("doImportMembers",$('#import-members').is(':checked'));
 			
 			if (this.doImportMembers)
 			{

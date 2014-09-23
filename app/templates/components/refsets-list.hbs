@@ -3,14 +3,13 @@
 	<ul class="list-group">
 		{{#each refsets}}
 			<li class="list-group-item">
-				{{#if published}}
-				  <span class="badge">{{date-format publishedDate}}</span>
-				{{/if}}
-				<h4>{{description}}</h4>
-				<em>created:</em> {{date-format created}}<br>
-				<em>by:</em> {{createdBy}}<br>
-				
 				{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
+				<h4>{{description}}</h4>
+				<em>created on:</em> {{date-format created}}<br>
+				<em>by:</em> {{createdBy}}<br>
+				{{#if published}}
+					<em>published on:</em> {{date-format publishedDate}}<br>
+				{{/if}}
 			</li>
 		{{/each}}
 	</ul>

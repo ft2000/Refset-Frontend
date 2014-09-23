@@ -25,21 +25,16 @@ export default Ember.Object.extend({
 		{
 			var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
 			{
-				
-				result.content.refsets.map(function(item)
+				if (result.meta.noOfRecords !== 0)
+				{					
+					return result.content.refsets;
+				}
+				else
 				{
-					
-					if (typeof item.members !== "undefined")
-					{
-						item.numMembers = item.members.length;
-					}
-					else
-					{
-						item.numMembers = 0;
-					}
-				});
+					Ember.Logger.log("Didn't get any data from server...",result.meta.message);
+					return {dataError : true};
+				}
 				
-				return result.content.refsets;
 			},
 			function (error)
 			{
@@ -57,16 +52,22 @@ export default Ember.Object.extend({
 	{
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(result){
 			
-			var refset = result.content.refset;
-
-			if (typeof refset.members === "undefined")
+			if (result.meta.message === "Success")
 			{
-				refset.members = [];	
+				var refset = result.content.refset;
+	
+				if (typeof refset.members === "undefined")
+				{
+					refset.members = [];	
+				}
+	
+				return refset;
 			}
-
-			result.content.refset.numMembers = result.content.refset.members.length;
-
-			return refset;	
+			else
+			{
+				Ember.Logger.log("Didn't get any data from server...",result.meta.message);
+				return {authError : true};
+			}
 		},
 		function (error)
 		{
