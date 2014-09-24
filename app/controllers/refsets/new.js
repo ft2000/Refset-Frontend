@@ -33,7 +33,7 @@ export default Ember.ObjectController.extend({
 
 		delete refsetData["import"];
 		delete refsetData["import-members"];
-		delete refsetData["members-type"];
+		delete refsetData["membersTypeId"];
 		
 		this.set("model",refsetData);	
 		
