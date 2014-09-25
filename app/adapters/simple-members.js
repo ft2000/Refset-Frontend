@@ -52,5 +52,43 @@ export default Ember.Object.extend({
 		return result;
 
 	},
+	
+	find : function (user,id)
+	{
+		Ember.Logger.log("adapters.simple-members:find",user,id);
+		
+		var result = ajax(RefsetENV.APP.conceptsApiBaseUrl + '/' + id, {headers:this.getHeaders(user), method:"get"}).then(function(result)
+		{	
+			var response = {};
+
+			if (result.meta.message === "Success")
+			{
+				response.data 	={label: 'concept label goes here'}; //result.content.concept;
+				response.status = true;
+			}
+			else
+			{
+				Ember.Logger.log("adapters.simple-members:find error",result.meta.message);
+
+				response.error 	= result.meta.message;
+				response.status = false;
+			}
+			
+			return response;
+		},
+		function (error)
+		{
+			Ember.Logger.log("adapters.simple-members:find error",error);
+
+			var response 	= {};
+			response.status	= false;
+			response.error	= error;
+
+			return response;
+		});
+
+		return result;
+
+	},
 
 });

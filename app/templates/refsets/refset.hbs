@@ -14,19 +14,19 @@
 								<td class="label">Not yet published</td>
 							{{/if}}
 						</tr>
-	
+
 						<tr>
 							<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea></td>
 						</tr>
 	
 						<tr>
 							<td class="label">Language</td><td class="content">{{languageCode}}</td>
-							<td class="label">Active</td><td class="content">{{active}}</td>
+							<td class="label">Active</td><td class="content">{{yes-no-format active}}</td>
 						</tr>
 	
 						<tr>
-							<td class="label">Refset Type</td><td class="content">{{type}}</td>
-							<td class="label">Refset Members Type</td><td class="content">Not yet in the data....</td>
+							<td class="label">Refset Type</td><td class="content">{{id-to-name typeId}}</td>
+							<td class="label">Refset Members Type</td><td class="content">{{id-to-name componentTypeId}}</td>
 						</tr>
 	
 						<tr>
