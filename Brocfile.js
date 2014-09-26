@@ -29,6 +29,7 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-core.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-basic.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-alert.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.min.js');
+app.import('vendor/ember-addons.bs_for_ember/dist/css/bs-growl-notifications.min.css');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-modal.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-button.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-breadcrumbs.min.js');
@@ -70,7 +71,7 @@ app.import('vendor/bootstrap-datepicker-release/css/datepicker3.css');
 var fontOpenSans = pickFiles('vendor/bootstrap/dist', {
 	   srcDir: '/',
 	   files: ['**/*.woff', '**/*.eot', '**/*.svg', '**/*.ttf'],
-	   destDir: '/assets'
+	   destDir: '/'
 	});
 
 //module.exports = app.toTree();

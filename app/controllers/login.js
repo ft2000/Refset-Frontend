@@ -56,11 +56,11 @@ export default Ember.ObjectController.extend({
    	   	// When we start up we want to check the Local Store to see if the user may already be logged in
 		this.monitorLoginViaLocalStore();
 		
-		// Show the login form if needed
-		if(this.user.token === null && !this.user.loginDeclined)
-		{
-			this.showLoginForm();
-		}
+//		// Show the login form if needed
+//		if(this.user.token === null && !this.user.loginDeclined)
+//		{
+//			this.showLoginForm();
+//		}
 	},
 
 	// Calculates the number of seconds of inactivity remaining before the user will be auto logged out
