@@ -9,6 +9,20 @@ export default Ember.ObjectController.extend({
 	autoLoggedOut			: Ember.computed.alias("controllers.login.autoLoggedOut"),
 	logoutProgressDisplay	: Ember.computed.alias("controllers.login.logoutProgressDisplay"),
 	
+	init : function()
+	{
+		window.addEventListener("dragover",function(e)
+		{
+			e = e || event;
+			e.preventDefault();
+		},false);
+		window.addEventListener("drop",function(e)
+		{
+			e = e || event;
+			e.preventDefault();
+		},false);	
+	},
+	
 	actions :
 	{
 		showLoginForm: function() 

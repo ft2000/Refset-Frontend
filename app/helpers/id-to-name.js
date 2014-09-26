@@ -11,6 +11,8 @@ var concepts = {
 
 export default Ember.Handlebars.makeBoundHelper(function(id)
 {
+	return 'unknown';
+	
 	if (typeof concepts[id] === "undefined")
 	{
 		var loginController = this.get('controllers.login');

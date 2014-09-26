@@ -1,5 +1,5 @@
 var User = Ember.Object.extend({
-	  username:         null,
+	  name:    		     null,
 	  firstName:        'Guest',
 	  lastName:         null,
 	  token:			null,

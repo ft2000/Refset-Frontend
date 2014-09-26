@@ -1,20 +1,20 @@
 import LoginAdapter	from '../adapters/login';
 import User			from '../models/user';
 
-var Login = LoginAdapter.create();
+var loginAdapter = LoginAdapter.create();
 
 export default Ember.ObjectController.extend({
 
-	needs 				: ["refsets","utilities"],
+	needs 				: ["refsets","utilities","data"],
 
 	loginDialogOpen		: false,			// Indicates that we have an open login dialog window
-	loginInProgress 	: false,			// Indicates that an API call to the authentication server is currently in progress
 	autoLoggedOut		: false,			// Indicates that the user was logged out automatically through inactivity
 	loginError			: null,				// Contains any relevant login error message
 	username			: null,				// Bound to the login form input field
 	password			: '',				// Holds the user's password between form entry and the authentication call
 	user				: User.create(),	// A dummy user record. Overwritten upon login
 	logoutDialogOpen	: false,			// Are we showing an auto-logout alert?
+	loginDialogRef		: null,
 
 	loginExpiryLength 	: RefsetENV.APP.loginExpiry * 60 * 1000, // Setting is in MINUTES, we need milliseconds here. This is the inactivity period before auto logout
 	
@@ -32,35 +32,163 @@ export default Ember.ObjectController.extend({
 		return (secondsLeft / 2);
 	}.property("user"),
 	
-	// Define the buttons used on the login and register modal dialogs
-	loginButtons: 
-	[
-		Ember.Object.create({title: 'Register', clicked:'showRegistrationForm'}),
-   	    Ember.Object.create({title: 'Continue as a Guest', clicked: 'continueAsGuest'}),
-   		Ember.Object.create({title: 'Login', clicked:'loginUser', type:"primary"})
-   	],
+	showLoginForm : function()
+	{
+		var _this = this;
+		
+		if (!this.loginDialogOpen)
+		{
+			this.set("loginDialogOpen",true);
+			
+			var loginFormSource   = $("#login-form").html();
+			var loginFormTemplate = Handlebars.compile(loginFormSource.replace(/(\r\n|\n|\r)/gm, ''));
+			var context = {autoLoggedOut: this.autoLoggedOut, username: this.user.name, forgotPasswordLink:RefsetENV.APP.passwordResetURL,timeout:RefsetENV.APP.loginExpiry};
+			var loginFormHTML = loginFormTemplate(context);
+			
+			var loginDialog = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Authentication Required',
+	            closable: false,
+	            message: loginFormHTML,
+	            buttons: 
+	            [
+	             	{
+	             		label		: 'Register',
+	             		cssClass	: 'btn-default left',
+	             		action		: function(dialog)
+	             		{
+	             			_this.set("loginDialogOpen",false);
+	             			dialog.close();
+	             			_this.showRegistrationForm();
+	             		}
+	             	},
+	             	{
+	             		label	: 'Continue as a guest',
+	             		action	: function(dialog)
+	             		{
+	             			_this.set("loginDialogOpen",false);
+	             			dialog.close();
+	             		}
+	             	},
+	             	{
+	             		label		: 'Login',
+	             		cssClass	: 'btn-primary',
+	             		icon		: 'glyphicon glyphicon-user',
+	             		id 			: 'submit-btn',
+	             		hotkey		: 13, // Enter key
+	             		action 		: function(dialog)
+	             		{
+	             			var btn = this;
+	             			btn.spin();
 
-   	registrationButtons: 
-   	[
-   		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
-   		Ember.Object.create({title: 'Register', clicked:'registerUser', type:"primary"})
-   	],
+	             			_this.login($('#loginFormUsername').val(),$('#loginFormPassword').val()).then(function(loginResult)
+	             			{
+		             			if (loginResult)
+		             			{
+		             				_this.set("loginDialogOpen",false);
+		             				dialog.close();
+		             			}
+		             			else
+		             			{
+			             			btn.stopSpin();		             									             				
+		             			}
+	             			});
+	             		}
+	             	}
+	             ]
+	        });	
+			
+			this.set("loginDialogRef",loginDialog);
+		}
+			
+	},
 	
-   	logoutButtons: 
-   	[
-   		Ember.Object.create({title: 'Ok'}),
-   	],
+	login : function(username,password)
+	{
+		var _this = this;
+		
+		return loginAdapter.authenticate(username,password).then(function(authResult)
+		{
+			var user = authResult.user;
+			
+			if (authResult.authenticated)
+			{
+				return loginAdapter.isPermittedToUseRefset(user.name).then(function(permissionResult)
+				{
+					if (permissionResult)
+					{
+						user.autoLogoutTime = new Date(new Date().getTime() + _this.loginExpiryLength),
+						user.loginDeclined	= false
+
+						_this.saveUserToLocalStore(user);
+         				_this.initUserInteractionEvents();
+						
+						var dataController = _this.get('controllers.data');
+						dataController.authenticationStatusChanged();
+
+						Bootstrap.GNM.push('Authenticated','You have sucessfully logged in', 'info');
+					}
+					else
+					{
+						Bootstrap.GNM.push('Unauthorised','You do not have permission to acccess this application', 'warning');
+					}
+					return permissionResult;
+				});			
+			}
+			else
+			{
+				Bootstrap.GNM.push('Unauthorised','Your username and/or password were not accepted', 'warning');
+				return false;
+			}
+			
+		});
+	},
+	
+	// Log the user out of the app
+	logout : function()
+	{
+		var user = this.user;
+		
+		// This has the effect of logging the user out
+		user.token = null;
+
+		// Store our modified user record in the Local Store
+		this.saveUserToLocalStore(user);
+
+		// Since we changed authentication state, we need to refresh our list of refsets.
+		// This will be moved to a common data refresh handler at a later date
+		var dataController = this.get('controllers.data');
+		dataController.authenticationStatusChanged();
+		
+		// No need to monitor user activity once they have been logged out
+		this.stopUserInteractionEvents();
+		
+		// Show the login form
+		this.showLoginForm();
+	},
+	
+	registerButtons : 
+	[
+		Ember.Object.create({title: 'Cancel', clicked: 'closeRegistrationModal'}),
+   		Ember.Object.create({title: 'Register', clicked:'registerUser', type:"primary"})
+	],
+	
+	// Show the registration modal dialog
+	showRegistrationForm: function() 
+	{
+		Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png"> Snomed CT', 'registration', this.registerButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
+	},
+	
    	   
    	init : function()
 	{	
    	   	// When we start up we want to check the Local Store to see if the user may already be logged in
 		this.monitorLoginViaLocalStore();
 		
-//		// Show the login form if needed
-//		if(this.user.token === null && !this.user.loginDeclined)
-//		{
-//			this.showLoginForm();
-//		}
+		// Show the login form if needed
+		if(this.user.token === null && !this.user.loginDeclined)
+		{
+			this.showLoginForm();
+		}
 	},
 
 	// Calculates the number of seconds of inactivity remaining before the user will be auto logged out
@@ -97,9 +225,9 @@ export default Ember.ObjectController.extend({
 			this.set("user",userData.data);
 
 			// If we do not already have a username, then use the one from the Store. We only do this once, otherwise it will prevent you entering a username in the login form since it is bound to this value.
-			if (this.username === null)
+			if (this.name === null)
 			{
-				this.set("username",userData.data.username);				
+				this.set("name",userData.data.name);				
 			}
 		}
 
@@ -110,6 +238,8 @@ export default Ember.ObjectController.extend({
 		if (this.user.token !== null && timeLeftToAutoLogout <= 0)
 		{
 			// Enable the "you've been auto logged out" message in the login dialog
+			Bootstrap.GNM.push('Session Timeout','You have been logged out after ' + RefsetENV.APP.loginExpiry + ' minutes of inactivity', 'warning');
+
 			this.set("autoLoggedOut",true);
 			this.logout();
 		}
@@ -145,43 +275,6 @@ export default Ember.ObjectController.extend({
 	    $(document).unbind('keypress');
 	},
 	
-	// Show the login modal dialog
-	showLoginForm: function()
-	{
-		this.send("closeLogoutAlertModal");
-		this.set("loginDialogOpen",true);
-		Bootstrap.ModalManager.open('loginModal', '<img src="assets/img/login.png"> Snomed CT Login', 'login', this.loginButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
-	},
-
-	// Show the registration modal dialog
-	showRegistrationForm: function() 
-	{
-		return Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png">  Snomed CT Registration', 'registration', this.registrationButtons, this);
-	},
-	
-	// Log the user out of the app
-	logout : function()
-	{
-		var user = this.user;
-		
-		// This has the effect of logging the user out
-		user.token = null;
-
-		// Store our modified user record in the Local Store
-		this.saveUserToLocalStore(user);
-
-		// Since we changed authentication state, we need to refresh our list of refsets.
-		// This will be moved to a common data refresh handler at a later date
-		var refsetController = this.get('controllers.refsets');		
-		refsetController.getAllRefsets(1);
-		
-		// No need to monitor user activity once they have been logged out
-		this.stopUserInteractionEvents();
-		
-		// Show the login form
-		this.showLoginForm();
-	},
-	
 	// Save the supplied user record both into this controller and into the Local Store
 	saveUserToLocalStore : function(user)
 	{
@@ -193,118 +286,19 @@ export default Ember.ObjectController.extend({
 
 	actions : 
 	{
-		// Perform the user authentication
-		loginUser: function()
-		{
-			var _this = this;
-
-			_this.set("loginInProgress",1);
-			_this.set('loginError', null);
-			
-			var password = $('#loginPassword').val();
-			
-			// Start by authenticating the user
-			Login.authenticate(this.username,password).then(function(authResult)
-			{
-				// If we authenticated then we proceed
-				if (authResult.authenticated)
-				{
-					var loggedInUser = User.create({
-						username		: authResult.user.name,
-						firstName		: authResult.user.givenName,
-						lastName		: authResult.user.surname,
-						token			: authResult.user.token,
-						autoLogoutTime 	: new Date(new Date().getTime() + _this.loginExpiryLength),
-						loginDeclined	: false
-					});
-
-					// Reset the password field now that we have finished with it.
-					_this.set('password', '');			
-					
-					// Check if the user is permitted to access this refset application
-					Login.isPermittedToUseRefset(loggedInUser.username).then(function(isAllowedAccessToRefset)
-					{
-						_this.set('loginInProgress', 0);
-
-						switch(isAllowedAccessToRefset)
-						{
-							case 1: // Yes, user is permitted
-							{
-								_this.send('closeLoginModal');
-
-								// Save the username so it gets used next time the user logs in
-								_this.set("username",loggedInUser.username);
-								
-								_this.saveUserToLocalStore(loggedInUser);
-								
-								// Refresh the refset list so that we get the private ones as well as public ones.
-								// This will be moved to a central data refresh handler at a later date
-								var refsetsController = _this.get('controllers.refsets');
-								refsetsController.getAllRefsets(1);
-								
-								// Start monitoring user interactions for the auto-logout handler
-								_this.initUserInteractionEvents();
-
-								break;
-							}
-							
-							case 0: // No, user is not permitted
-							{
-								_this.set('loginError', "You do not have access to this application");
-								break;
-							}
-							
-							case -1: // Error communicating with the authentication server
-							{
-								_this.set('loginError', authResult.error);
-								break;
-							}
-						}		
-					});
-				}
-				else // Failed to authenticate the user
-				{
-					_this.set('loginInProgress', 0);
-					_this.set('loginError', "Username and password not recognised");
-				}
-			});
-		},
-		
 		logout : function()
 		{
 			this.logout();
 		},
 		
-		// For now registration consists only of opening the users mail client with some pre-filled in information.
-		registerUser: function()
+		closeLoginModal : function()
 		{
-			Ember.Logger.log('try to register user...');
-			
-			var regBody = "Name : " + this.regname + "%0A%0A";
-			regBody += "Phone : " + this.regphone + "%0A%0A";
-			regBody += "IHTSDO Login : " + this.reguser + "%0A%0A";
-			regBody += "Nationality : " + this.regnationality + "%0A%0A";
-			regBody += this.regnotes;
-			
-			window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
-			this.send('closeRegistrationModal');
-		},
-		
-		// Close the login modal window
-		closeLoginModal: function()
-		{
-			// Since we can try to do this at app startup, we need to check if the modal is open since it causes an error if it is not.
 			if (this.loginDialogOpen)
 			{
-				Bootstrap.ModalManager.close('loginModal');
+				this.loginDialogRef.close();
 			}
-
-			this.set("autoLoggedOut",false);		
-		},
-
-		closeRegistrationModal: function()
-		{
-			Bootstrap.ModalManager.close('registrationModal');
+			
+			this.set("loginDialogOpen",false);
 		},
 
 		closeLogoutAlertModal: function()
@@ -316,6 +310,27 @@ export default Ember.ObjectController.extend({
 			
 			this.set("logoutDialogOpen",false);
 		},
+
+		closeRegistrationModal: function()
+		{
+			Bootstrap.ModalManager.close('registrationModal');
+			
+			this.set("loginDialogOpen",false);
+ 		},
+
+		
+		// For now registration consists only of opening the users mail client with some pre-filled in information.
+		registerUser: function()
+		{
+			var regBody = "Name : " + this.regname + "%0A%0A";
+			regBody += "Phone : " + this.regphone + "%0A%0A";
+			regBody += "IHTSDO Login : " + this.reguser + "%0A%0A";
+			regBody += "Nationality : " + this.regnationality + "%0A%0A";
+			regBody += this.regnotes;
+			
+			window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
+			this.send('closeRegistrationModal');
+		},	
 		
 		// If user elects to use the app as a guest then we need to record that fact in order so we can choose not to show the login form if they open another window.
 		continueAsGuest : function()
@@ -341,12 +356,6 @@ export default Ember.ObjectController.extend({
 			this.saveUserToLocalStore(user);
 		},
 
-		// Used by the login form to open the register window instead
-		showRegistrationForm : function()
-		{
-			Bootstrap.ModalManager.close('loginModal');
-			this.showRegistrationForm();
-		}
 	}
 	
 });

@@ -29,7 +29,7 @@ export default Ember.Object.extend({
 		
 		return result;
 	},
-  
+ 
 	isPermittedToUseRefset: function(userId)
 	{
 		Ember.Logger.log('adapters.login:isPermittedToUseRefset');

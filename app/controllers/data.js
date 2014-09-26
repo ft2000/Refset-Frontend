@@ -13,25 +13,22 @@ var autoServerRetryMultiplier 	= 1.5; // Amount to increase wait period before r
 
 export default Ember.ObjectController.extend({
 	
-	needs 				: ["login","refsets","news"],
+	needs 				: ["login","refsets"],
 	
 	refsets 			: [],
 	unpublishedRefsets	: [],
 	publishedRefsets	: [],
 	refset 				: {},
+	currentRefsetId		: null,
 	concepts 			: {},
-	latestNews 			: Ember.computed.alias("controllers.news.latestNews"),
-	allNews 			: Ember.computed.alias("controllers.news.model"),
-	
-	user				: Ember.computed.alias("controllers.login.user"),
 	
 	init : function()
 	{
 		Ember.Logger.log("controllers.data:init");
-		this.getAllRefsets(1);
+		this.getAllRefsets();
 	},
 	
-	getAllRefsets : function(reinit)
+	getAllRefsets : function()
 	{
 		var _this = this;
 		
@@ -40,7 +37,7 @@ export default Ember.ObjectController.extend({
 		
 		Ember.Logger.log("controllers.refsets:getAllRefSets");
 	
-		refsetsAdapter.findAll(user,reinit).then(function(result)
+		refsetsAdapter.findAll(user).then(function(result)
 		{	
 			if (!result.dataError)
 			{
@@ -95,6 +92,10 @@ export default Ember.ObjectController.extend({
 	
 	getRefset : function(id,retry)
 	{
+		Ember.Logger.log("controllers.data:getRefset");
+
+		this.set("currentRefsetId",id);
+		
 		var _this = this;
 		var retrying = (typeof retry === "undefined" ? 0 : retry);
 
@@ -111,158 +112,10 @@ export default Ember.ObjectController.extend({
 				Ember.Logger.log("Successful response for our request",response);
 				
 				_this.set("refset",response.content.refset);
-			}
-			else
-			{
-				// Failed response... check errorInfo.code / message
-				Ember.Logger.log("Failed response for our request (code,message)",response.meta.errorInfo.code,response.meta.errorInfo.message);
 				
-				switch(response.meta.errorInfo.code)
-				{
-					case 401:
-					{
-						if (user.token === null)
-						{
-							// User is not logged in, so prompt to login
-							Bootstrap.GNM.push('Authentication Required','The resource you have requested requires you to login.', 'warning');
-					
-					        BootstrapDialog.show({
-					            title: '<img src="assets/img/login.white.png"> Authentication Required',
-					            closable: false,
-					            message: 'The resource you have requested requires you to login.',
-					            buttons: 
-					            [
-					             	{
-					             		label		: 'Register',
-					             		cssClass	: 'btn-default left',
-					             		action		: function(dialog)
-					             		{
-					             			history.go(-1);
-					             			dialog.close();
-					             		}
-					             	},
-					             	{
-					             		label	: 'Continue as a guest',
-					             		action	: function(dialog)
-					             		{
-					             			history.go(-1);
-					             			dialog.close();
-					             		}
-					             	},
-					             	{
-					             		label		: 'Login',
-					             		cssClass	: 'btn-primary',
-					             		icon		: 'glyphicon glyphicon-user',
-					             		id 			: 'submit-btn',
-					             		hotkey		: 13, // Enter key
-					             		action 		: function(dialog)
-					             		{
-					             			var btn = this;
-					             			btn.spin();
-
-					             			_this.login('ianbale','Lotusm250').then(function(loginResult)
-					             			{
-						             			if (loginResult)
-						             			{
-						             				Ember.run.next(function(){_this.getRefset(id);});
-						             				dialog.close();
-						             			}
-						             			else
-						             			{
-							             			btn.stopSpin();		             									             				
-						             			}
-					             			});
-					             		}
-					             	}
-					             ]
-					        });						
-						}
-						else
-						{
-							// User is logged in, but it not permitted to access the requested resource
-							Bootstrap.GNM.push('Not Authorised','You do not have permission to access the resource you have requested.', 'warning');
-							
-					        BootstrapDialog.show({
-					            title: 'Not Authorised',
-					            closable: false,
-					            message: 'You do not have permission to access the resource you have requested.',
-					            buttons: [{
-					                label: 'OK',
-					                action: function(dialog) {
-					                	history.go(-1);
-					                    dialog.close();
-					                }
-					            }]
-					        });
-						}
-						
-						break;
-					}
-
-					case 404:
-					{
-						// Not found
-						Bootstrap.GNM.push('Not found','We cannot locate the resource you have requested.', 'warning');
-
-						break;
-					}
-					
-					default :
-					{
-						// Other error, worth retrying...
-					
-						if (retrying < numAutoServerRetries)
-						{
-							var waitPeriod = _this.getRetryWaitPeriod(retrying);
-							
-							Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retrying) + ' times. Will retry in ' + waitPeriod + ' seconds.', 'warning');
-							
-							var retry = Ember.run.later(function()
-							{
-								return _this.getRefset(id,retrying);
-							},waitPeriod * 1000);
-							
-							return retry;
-						}
-						else
-						{
-							// Too many errors. Time to prompt the user
-							Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + numAutoServerRetries + ' sucessive attempts have failed.', 'danger');
-							
-					        BootstrapDialog.show({
-					            title: 'Communication Failure',
-					            closable: false,
-					            message: '<p>There has been a problem communicating with the server.</p><p>We have tried several times already.</p><p>Would you like to keep trying or give up?</p>',
-					            buttons: 
-					            [
-					             	{
-					             		label: 'Give up',
-					             		action: function(dialog)
-					             		{
-					             			dialog.close();
-					             		}
-					             	},
-					             	{
-					             		label: 'Continue Trying',
-					             		cssClass: 'btn-primary',
-					             		action: function(dialog)
-					             		{
-					             			_this.getRefset(id);
-					             			dialog.close();
-					             		}
-					             	}
-					             ]
-					        });
-						}
-						
-						break;
-					}
-				}
-			}
-/*			
-			if (!refsetData.authError)
-			{
-				var idArray = refsetData.members.map(function(member)
+				// Now get member data...
+				
+				var idArray = _this.refset.members.map(function(member)
 				{
 					return member.referenceComponentId;
 				});
@@ -273,7 +126,7 @@ export default Ember.ObjectController.extend({
 					{
 						var conceptData = result.data;
 																
-						var tempMemberData = refsetData.members.map(function(member)
+						var tempMemberData = _this.refset.members.map(function(member)
 						{
 							if (conceptData[member.referenceComponentId] !== null)
 							{
@@ -290,59 +143,141 @@ export default Ember.ObjectController.extend({
 							return member;
 						});	
 
-						refsetData.members.setObjects(tempMemberData);
+						_this.refset.members.setObjects(tempMemberData);
 					}
 					else
 					{
 						Ember.Logger.log("result.error",result.error);
 					}
-				});
+				});	
 			}
 			else
 			{
-				Ember.Logger.log("get refset failed...",refsetData);
+				_this.handleRequestFailure(response,'Refset','getRefset',retrying,id);
 			}
-*/
+
 			return response;
 		});
 		
 		this.set("refset",refset);
 	},
-
-	login : function(username,password)
+	
+	authenticationStatusChanged : function()
 	{
-		var _this = this;
+		this.getAllRefsets();
 		
-		return loginAdapter.authenticate(username,password).then(function(authResult)
+		// If we are holding a refset then refresh it
+		if (this.currentRefsetId !== null)
 		{
-			Ember.Logger.log("login",authResult);
-			
-			var user = authResult.user;
-			
-			if (authResult.authenticated)
-			{
-				return loginAdapter.isPermittedToUseRefset(user.name).then(function(permissionResult)
-				{
-					if (permissionResult)
-					{
-						var loginController = _this.get('controllers.login');
-						loginController.set("user",user);
-					}
-					
-					return permissionResult;
-				});			
-			}
-			else
-			{
-				return false;
-			}
-			
-		});
+			this.getRefset(this.currentRefsetId);
+		}
 	},
 	
-	actions :
+	handleRequestFailure : function(response,resourceType,callback,retrying,id)
 	{
-
+		// Failed response... check errorInfo.code / message
+		Ember.Logger.log("Failed response for our request (code,message)",response.meta.errorInfo.code,response.meta.errorInfo.message);
 		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		var _this = this;
+		
+		switch(response.meta.errorInfo.code)
+		{
+			case "401":
+			{
+				if (user.token === null)
+				{
+					// User is not logged in, so prompt to login
+					Bootstrap.GNM.push('Authentication Required','The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
+			
+					var loginController = _this.get('controllers.login');	
+					loginController.showLoginForm();
+				}
+				else
+				{
+					// User is logged in, but it not permitted to access the requested resource
+					Bootstrap.GNM.push('Not Authorised','You do not have permission to access the ' + resourceType + ' you have requested.', 'warning');
+					
+			        BootstrapDialog.show({
+			            title: '<img src="assets/img/login.white.png"> Not Authorised',
+			            closable: false,
+			            message: 'You do not have permission to access the ' + resourceType + ' you have requested.',
+			            buttons: [{
+			                label: 'OK',
+			                action: function(dialog) {
+			                	// Go to parent route....
+			                    dialog.close();
+			                }
+			            }]
+			        });
+				}
+				
+				break;
+			}
+
+			case "404":
+			{
+				// Not found
+				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
+
+				// Need to deal with this in the template as well...
+				break;
+			}
+			
+			default :
+			{
+				// Other error, worth retrying...
+			
+				if (retrying < numAutoServerRetries)
+				{
+					var waitPeriod = _this.getRetryWaitPeriod(retrying);
+					
+					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retrying) + ' times. Will retry in ' + waitPeriod + ' seconds.', 'warning');
+					
+					var retry = Ember.run.later(function()
+					{
+						Ember.Logger.log("calling callback",callback);
+						return _this[callback](id,retrying);
+					},waitPeriod * 1000);
+					
+					return retry;
+				}
+				else
+				{
+					// Too many errors. Time to prompt the user
+					Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts have failed.', 'danger');
+					
+			        BootstrapDialog.show({
+			            title: '<img src="assets/img/login.white.png"> Communication Failure',
+			            closable: false,
+			            message: '<p>There has been a problem communicating with the server.</p><p>We have tried ' + (numAutoServerRetries +1) + ' times already.</p><p>Would you like to keep trying or give up?</p>',
+			            buttons: 
+			            [
+			             	{
+			             		label: 'Give up',
+			             		action: function(dialog)
+			             		{
+			             			// Go to parent route....
+			             			dialog.close();
+			             		}
+			             	},
+			             	{
+			             		label: 'Continue Trying',
+			             		cssClass: 'btn-primary',
+			             		action: function(dialog)
+			             		{
+			             			_this[callback](id);
+			             			dialog.close();
+			             		}
+			             	}
+			             ]
+			        });
+				}
+				
+				break;
+			}
+		}
 	}
 });
