@@ -16,6 +16,11 @@ export default Ember.Route.extend({
 
 	actions : 
 	{
+		goBack : function()
+		{
+			this.transitionTo('refsets');
+		},
+		
 		showLoginForm: function() 
 		{
 			Ember.Logger.log('routes.resfets.refset:actions:showLoginForm');

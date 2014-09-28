@@ -92,15 +92,13 @@ export default Ember.ObjectController.extend({
 	
 	getRefset : function(id,retry)
 	{
-		Ember.Logger.log("controllers.data:getRefset");
+		Ember.Logger.log("controllers.data:getRefset (id,retrying)",id,retrying);
 
 		this.set("currentRefsetId",id);
 		
 		var _this = this;
 		var retrying = (typeof retry === "undefined" ? 0 : retry);
 
-		Ember.Logger.log("controllers.data:getRefset (id,retrying)",id,retrying);
-		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
@@ -153,7 +151,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Refset','getRefset',retrying,id);
+				var failureResponse = _this.handleRequestFailure(response,'Refset','getRefset',[id],retrying);
 			}
 
 			return response;
@@ -173,7 +171,7 @@ export default Ember.ObjectController.extend({
 		}
 	},
 	
-	handleRequestFailure : function(response,resourceType,callback,retrying,id)
+	handleRequestFailure : function(response,resourceType,callbackFn,callbackParams,retrying)
 	{
 		// Failed response... check errorInfo.code / message
 		Ember.Logger.log("Failed response for our request (code,message)",response.meta.errorInfo.code,response.meta.errorInfo.message);
@@ -214,6 +212,8 @@ export default Ember.ObjectController.extend({
 			        });
 				}
 				
+				return 401;
+				
 				break;
 			}
 
@@ -222,7 +222,10 @@ export default Ember.ObjectController.extend({
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
-				// Need to deal with this in the template as well...
+				// Need to deal with this in the template as well...report to the user that what they want cannot be found.
+				
+				return 404;
+				
 				break;
 			}
 			
@@ -238,8 +241,9 @@ export default Ember.ObjectController.extend({
 					
 					var retry = Ember.run.later(function()
 					{
-						Ember.Logger.log("calling callback",callback);
-						return _this[callback](id,retrying);
+						var params = callbackParams;
+						params.push(retrying);
+             			return _this[callbackFn].apply(_this,params);
 					},waitPeriod * 1000);
 					
 					return retry;
@@ -259,7 +263,8 @@ export default Ember.ObjectController.extend({
 			             		label: 'Give up',
 			             		action: function(dialog)
 			             		{
-			             			// Go to parent route....
+			             			// Go to parent route.... location.href = ".." ?????
+			             			_this.send("goBack");
 			             			dialog.close();
 			             		}
 			             	},
@@ -268,7 +273,7 @@ export default Ember.ObjectController.extend({
 			             		cssClass: 'btn-primary',
 			             		action: function(dialog)
 			             		{
-			             			_this[callback](id);
+			             			_this[callbackFn].apply(_this,callbackParams);
 			             			dialog.close();
 			             		}
 			             	}

@@ -42,7 +42,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user),timeout: 5000}).then(function(response)
+		var result = ajax('x' + RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user),timeout: 5000}).then(function(response)
 		{	
 			return response;
 		},
