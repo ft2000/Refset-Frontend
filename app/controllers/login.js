@@ -116,8 +116,8 @@ export default Ember.ObjectController.extend({
 				{
 					if (permissionResult)
 					{
-						user.autoLogoutTime = new Date(new Date().getTime() + _this.loginExpiryLength),
-						user.loginDeclined	= false
+						user.autoLogoutTime = new Date(new Date().getTime() + _this.loginExpiryLength);
+						user.loginDeclined	= false;
 
 						_this.saveUserToLocalStore(user);
          				_this.initUserInteractionEvents();

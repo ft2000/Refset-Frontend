@@ -1,9 +1,3 @@
-import RefsetsAdapter from '../adapters/refsets';
-var refsetsAdapter = RefsetsAdapter.create();
-
-import MembersAdapter from '../adapters/simple-members';
-var membersAdapter = MembersAdapter.create();
-
 export default Ember.ObjectController.extend({
 
 	needs 			: ["data"],
@@ -13,11 +7,11 @@ export default Ember.ObjectController.extend({
 	
 	init : function()
 	{
-		var dataController = this.get('controllers.data');
 	},
 		
 	getRefset : function(user,id)
 	{
+		var dataController = this.get('controllers.data');
 		dataController.getRefset(user,id);
 	},
 

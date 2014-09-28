@@ -4,9 +4,6 @@ var refsetsAdapter = RefsetsAdapter.create();
 import MembersAdapter from '../adapters/simple-members';
 var membersAdapter = MembersAdapter.create();
 
-import LoginAdapter	from '../adapters/login';
-var loginAdapter = LoginAdapter.create();
-
 var numAutoServerRetries 		= 4;
 var autoServerRetryInterval 	= 5; // Seconds
 var autoServerRetryMultiplier 	= 1.5; // Amount to increase wait period before retrying again.
@@ -152,6 +149,7 @@ export default Ember.ObjectController.extend({
 			else
 			{
 				var failureResponse = _this.handleRequestFailure(response,'Refset','getRefset',[id],retrying);
+				// Do something with this?
 			}
 
 			return response;
@@ -189,8 +187,6 @@ export default Ember.ObjectController.extend({
 				{
 					// User is not logged in, so prompt to login
 					Bootstrap.GNM.push('Authentication Required','The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
-			
-					var loginController = _this.get('controllers.login');	
 					loginController.showLoginForm();
 				}
 				else
@@ -213,8 +209,6 @@ export default Ember.ObjectController.extend({
 				}
 				
 				return 401;
-				
-				break;
 			}
 
 			case "404":
@@ -225,8 +219,6 @@ export default Ember.ObjectController.extend({
 				// Need to deal with this in the template as well...report to the user that what they want cannot be found.
 				
 				return 404;
-				
-				break;
 			}
 			
 			default :

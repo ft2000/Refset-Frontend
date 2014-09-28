@@ -11,17 +11,15 @@ var concepts = {
 
 export default Ember.Handlebars.makeBoundHelper(function(id)
 {
-	return 'unknown';
-	
 	if (typeof concepts[id] === "undefined")
 	{
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
-		var result = membersAdapter.find(user,id);
+		var foundMembers = membersAdapter.find(user,id);
 		var memberObj;
 		
-		var result = Ember.RSVP.Promise.all([result]).then(function(resultObj)
+		var result = Ember.RSVP.Promise.all([foundMembers]).then(function(resultObj)
 		{
 			Ember.Logger.log("resultObj",resultObj);
 			
@@ -29,7 +27,6 @@ export default Ember.Handlebars.makeBoundHelper(function(id)
 			{
 				memberObj = resultObj.data;
 				Ember.Logger.log("memberObj",memberObj);
-
 				concepts[id] = memberObj.label.replace(/ *\([^)]*\) */g, "");
 			}
 			else
