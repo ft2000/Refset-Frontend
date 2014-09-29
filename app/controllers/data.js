@@ -221,10 +221,6 @@ export default Ember.ObjectController.extend({
 				else
 				{
 					// Too many errors. Time to prompt the user
-					
-					var loginController = this.get('controllers.login');
-					var loginDialogOpen = loginController.loginDialogOpen;
-					
 					if (!loginDialogOpen)
 					{
 						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed.', 'danger');
@@ -289,7 +285,7 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		var refsets = refsetsAdapter.findAll(user).then(function(response)
+		refsetsAdapter.findAll(user).then(function(response)
 		{	
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -463,7 +459,7 @@ export default Ember.ObjectController.extend({
 
 		if (typeof this.concepts[id] !== "undefined")
 		{
-			return new Ember.RSVP.Promise(function(resolve,reject){resolve(_this.concepts[id]);});
+			return new Ember.RSVP.Promise(function(resolve){resolve(_this.concepts[id]);});
 		}
 		
 		if (!retrying)
