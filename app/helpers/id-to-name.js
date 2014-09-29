@@ -11,6 +11,13 @@ var concepts = {
 
 export default Ember.Handlebars.makeBoundHelper(function(id)
 {
+	Ember.Logger.log("helpers.id-to-name:id",id);
+	
+	if (typeof id === "undefined")
+	{
+		return ""; // Not actually got any ID. It's just Ember tryign to render an empty model
+	}
+		
 	if (typeof concepts[id] === "undefined")
 	{
 		var loginController = this.get('controllers.login');

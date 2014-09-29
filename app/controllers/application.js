@@ -1,6 +1,6 @@
 export default Ember.ObjectController.extend({
 
-	needs : ["login"],
+	needs : ["login","data"],
 	
 	user : Ember.computed.alias("controllers.login.user"),
 	
@@ -8,7 +8,7 @@ export default Ember.ObjectController.extend({
 	showLogoutTimer 		: Ember.computed.alias("controllers.login.showLogoutTimer"),
 	autoLoggedOut			: Ember.computed.alias("controllers.login.autoLoggedOut"),
 	logoutProgressDisplay	: Ember.computed.alias("controllers.login.logoutProgressDisplay"),
-	
+
 	init : function()
 	{
 		window.addEventListener("dragover",function(e)
@@ -20,9 +20,20 @@ export default Ember.ObjectController.extend({
 		{
 			e = e || event;
 			e.preventDefault();
-		},false);	
+		},false);
 	},
 	
+	currentPathDidChange : function()
+	{
+		var newPath = this.get('currentPath');
+		Ember.Logger.log("controllers.application:currentPathDidChange (path)",newPath);
+		
+		 window.document.title = newPath;
+		 
+		var controller = this.get('controllers.data');
+		controller.applicationPathChanged();
+	}.observes('currentPath'),
+
 	actions :
 	{
 		showLoginForm: function() 

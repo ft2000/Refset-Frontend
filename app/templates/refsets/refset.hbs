@@ -1,6 +1,15 @@
-{{#if authError}}
-	You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
+{{#if error}}
+
+	{{#if unauthorised}}
+		You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
+	{{/if}}
+
+	{{#if notFound}}
+		We cannot find the Refset you are looking for
+	{{/if}}
+
 {{else}}
+
 	<div class="dashboard">
 			{{#bs-panel heading="Refset Header" type="info" collapsible="true"}}
 				<form id="refsetEditForm" class="myForm">

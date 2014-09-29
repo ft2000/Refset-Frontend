@@ -197,7 +197,7 @@ export default Ember.ObjectController.extend({
 		var autoLogoutTime 		= new Date(this.user.autoLogoutTime);
 		var timeLeftToLogout 	= parseInt((autoLogoutTime.getTime() - new Date().getTime()) /1000); // seconds
 
-		if (this.user.token !== null && !this.logoutDialogOpen && timeLeftToLogout < 195)
+		if (this.user.token !== null && !this.logoutDialogOpen && timeLeftToLogout < 90)
 		{
 			this.set("logoutDialogOpen",true);
 			Bootstrap.ModalManager.open('logoutModal', '<img src="assets/img/login.png"> Snomed CT', 'logout-alert', this.logoutButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)

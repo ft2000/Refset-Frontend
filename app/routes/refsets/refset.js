@@ -10,10 +10,10 @@ export default Ember.Route.extend({
 		
 		Ember.Logger.log("routes.refsets.refset:beforeModel (id)",id);
 		
-		// Run next so that we do not prevent the UI being dislayed if the data is delayed...
+		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		return Ember.run.next(function(){_this.controllerFor('data').getRefset(id);});
 	},
-
+	
 	actions : 
 	{
 		goBack : function()

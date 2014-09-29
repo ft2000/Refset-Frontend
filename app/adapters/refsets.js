@@ -11,13 +11,13 @@ export default Ember.Object.extend({
 		};
 
 		return headers;
-	}, 
-	
+	},
+
 	findAll : function (user)
 	{
 		Ember.Logger.log("adapters.refsets:findAll (user)",user);
 		
-		return ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
 		{
 			if (result.meta.noOfRecords !== 0)
 			{					
@@ -34,6 +34,8 @@ export default Ember.Object.extend({
 			Ember.Logger.log("refsets findAll error",error);
 			return [];	
 		});
+		
+		return result;
 	},
 	
 	find : function (user,id)
@@ -42,7 +44,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax('x' + RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user),timeout: 5000}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user),timeout: 5000}).then(function(response)
 		{	
 			return response;
 		},
@@ -161,7 +163,6 @@ export default Ember.Object.extend({
 		});	
 		
 		return result;
-
 	},
 	
 });

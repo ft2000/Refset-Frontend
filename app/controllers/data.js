@@ -18,12 +18,90 @@ export default Ember.ObjectController.extend({
 	refset 				: {},
 	currentRefsetId		: null,
 	concepts 			: {},
+	dataLoadCountner	: 0,
+	retryQueue			: [],
 	
 	init : function()
 	{
 		Ember.Logger.log("controllers.data:init");
 		this.getAllRefsets();
+		this.processRetryQueue();
 	},
+
+	processRetryQueue : function()
+	{
+		if (this.retryQueue.length)
+		{
+			Ember.Logger.log("controllers.data:processRetryQueue (retryQueue)",this.retryQueue);
+		
+			// Copy and empty the queue so we can work on a queue that does not change
+			var queue = this.retryQueue;
+			this.set("retryQueue",[]);
+			
+			for (var q=queue.length -1;q>=0;q--)
+			{
+				var queueItem 	= queue[q];
+				var timeNow 	= new Date().getTime();
+			
+				if (queueItem.runTime <= timeNow)
+				{
+					queue.splice(q,1);
+					this[queueItem.callbackFn].apply(this,queueItem.params);
+					Bootstrap.GNM.push('Retrying communication','Retrying to request ' + queueItem.resourceType + ' from the server.', 'info');
+				}
+			}
+			
+			// Add anything left in our queue to the main one for future processing
+			queue = queue.concat(this.retryQueue);
+			this.set("retryQueue",queue);
+		}	
+		
+		var _this = this;
+		
+		Ember.run.later(function(){_this.processRetryQueue();},250);
+	},
+	
+	applicationPathChanged : function()
+	{
+		Ember.Logger.log("controllers.data:applicationPathChanged (retryQueue)",this.retryQueue);
+
+		this.set("dataLoadCountner",0);
+
+		var queue = this.retryQueue;
+		
+		for (var q=0;q<queue.length;q++)
+		{
+			var queueItem 	= queue[q];
+			Bootstrap.GNM.push('Aborting communication','Aborting queued request for ' + queueItem.resourceType + ' from the server.', 'info');			
+		}
+		
+		// Need to alert aborts before we do this...
+		this.set("retryQueue",[]);
+		
+		$('.waitAnim').hide();
+	},
+
+	showWaitAnim : function()
+	{
+		this.set("dataLoadCountner",this.dataLoadCountner+1);
+		
+		Ember.Logger.log("showWaitAnim",this.dataLoadCountner,this.currentPath);
+
+		$('.waitAnim').show();
+	},
+	
+	hideWaitAnim : function()
+	{
+		this.set("dataLoadCountner",this.dataLoadCountner-1);
+		
+		Ember.Logger.log("hideWaitAnim",this.dataLoadCountner,this.currentPath);
+
+		if (this.dataLoadCountner === 0)
+		{
+			$('.waitAnim').hide();
+		}
+	},
+
 	
 	getAllRefsets : function()
 	{
@@ -34,6 +112,8 @@ export default Ember.ObjectController.extend({
 		
 		Ember.Logger.log("controllers.refsets:getAllRefSets");
 	
+		this.showWaitAnim();
+		
 		refsetsAdapter.findAll(user).then(function(result)
 		{	
 			if (!result.dataError)
@@ -70,6 +150,8 @@ export default Ember.ObjectController.extend({
 				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
 			}
 
+			_this.hideWaitAnim();
+			
 		});
 	},
 
@@ -93,11 +175,16 @@ export default Ember.ObjectController.extend({
 
 		this.set("currentRefsetId",id);
 		
-		var _this = this;
-		var retrying = (typeof retry === "undefined" ? 0 : retry);
-
+		var _this 		= this;
+		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
+
+		if (!retrying)
+		{
+			this.showWaitAnim();
+		}
 		
 		var refset = refsetsAdapter.find(user,id).then(function(response)
 		{
@@ -112,9 +199,19 @@ export default Ember.ObjectController.extend({
 				
 				var idArray = _this.refset.members.map(function(member)
 				{
-					return member.referenceComponentId;
+					if (typeof member.referenceComponentId !== "undefined")
+					{
+						return member.referenceComponentId;						
+					}
+					else
+					{
+						return null;
+					}
 				});
-									
+				
+				// Strip nulls
+				idArray = $.grep(idArray,function(n){ return(n); });
+				
 				membersAdapter.findList(user,idArray).then(function(result)
 				{
 					if (result.status)
@@ -144,6 +241,8 @@ export default Ember.ObjectController.extend({
 					{
 						Ember.Logger.log("result.error",result.error);
 					}
+					
+					_this.hideWaitAnim();
 				});	
 			}
 			else
@@ -183,6 +282,8 @@ export default Ember.ObjectController.extend({
 		{
 			case "401":
 			{
+				this.set("refset",{error:1,unauthorised:1});
+
 				if (user.token === null)
 				{
 					// User is not logged in, so prompt to login
@@ -208,16 +309,22 @@ export default Ember.ObjectController.extend({
 			        });
 				}
 				
+				_this.hideWaitAnim();
+				
 				return 401;
 			}
 
 			case "404":
 			{
+				this.set("refset",{error:1,notFound:1});
+
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
 				// Need to deal with this in the template as well...report to the user that what they want cannot be found.
 				
+				_this.hideWaitAnim();
+
 				return 404;
 			}
 			
@@ -229,21 +336,33 @@ export default Ember.ObjectController.extend({
 				{
 					var waitPeriod = _this.getRetryWaitPeriod(retrying);
 					
-					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retrying) + ' times. Will retry in ' + waitPeriod + ' seconds.', 'warning');
+					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retrying) + ' times. Will retry loading ' + resourceType + ' in ' + waitPeriod + ' seconds.', 'warning');
 					
-					var retry = Ember.run.later(function()
+/*					
+					setTimeout(function()
 					{
 						var params = callbackParams;
 						params.push(retrying);
-             			return _this[callbackFn].apply(_this,params);
+						return _this[callbackFn].apply(_this,params);							
+						
 					},waitPeriod * 1000);
+*/					
+					var params = callbackParams;
+					params.push(retrying);
+
+					var runTime = new Date().getTime() + (waitPeriod * 1000);
 					
-					return retry;
+					var queue = _this.retryQueue;
+					queue.push({resourceType:resourceType,callbackFn:callbackFn,params:params,runTime:runTime});
+					
+					_this.set("retryQueue",queue);
+
+					return;
 				}
 				else
 				{
 					// Too many errors. Time to prompt the user
-					Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts have failed.', 'danger');
+					Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed.', 'danger');
 					
 			        BootstrapDialog.show({
 			            title: '<img src="assets/img/login.white.png"> Communication Failure',
@@ -257,6 +376,7 @@ export default Ember.ObjectController.extend({
 			             		{
 			             			// Go to parent route.... location.href = ".." ?????
 			             			_this.send("goBack");
+			        				_this.hideWaitAnim();
 			             			dialog.close();
 			             		}
 			             	},
