@@ -1,9 +1,6 @@
-import MembersAdapter 	from '../adapters/simple-members';
-var membersAdapter = MembersAdapter.create();
-
 var concepts = {
 		
-		'446609009' : 'Simple type reference set',
+		'446609009z' : 'Simple type reference set',
 		'900000000000496009' : 'Simple map type reference set',
 		'900000000000461009' : 'Concept type components',
 		'900000000000464001' : 'Reference set member type component'
@@ -15,34 +12,27 @@ export default Ember.Handlebars.makeBoundHelper(function(id)
 	
 	if (typeof id === "undefined")
 	{
-		return ""; // Not actually got any ID. It's just Ember tryign to render an empty model
+		return ""; // Not actually got any ID. It's just Ember trying to render an empty model
 	}
 		
 	if (typeof concepts[id] === "undefined")
 	{
-		var loginController = this.get('controllers.login');
-		var user = loginController.user;
+		var dataController = this.get('controllers.data');
 		
-		var foundMembers = membersAdapter.find(user,id);
-		var memberObj;
-		
-		var result = Ember.RSVP.Promise.all([foundMembers]).then(function(resultObj)
+		concepts[id] = dataController.getMember(id).then(function(response)
 		{
-			Ember.Logger.log("resultObj",resultObj);
-			
-			if (resultObj.status === "OK")
+			if (typeof response.label !== 'undefined')
 			{
-				memberObj = resultObj.data;
-				Ember.Logger.log("memberObj",memberObj);
-				concepts[id] = memberObj.label.replace(/ *\([^)]*\) */g, "");
+				concepts[id] = response.label.replace(/ *\([^)]*\) */g, "");
+				return concepts[id];
 			}
 			else
 			{
 				return 'unknown';
-			}
+			}	
 		});
 		
-		return result;
+		return concepts[id];
 	}
 	else
 	{

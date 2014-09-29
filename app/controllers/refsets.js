@@ -1,6 +1,6 @@
 export default Ember.ObjectController.extend({
 
-	needs 			: ["data"],
+	needs 			: ["data","login"],
 
 	published 		: Ember.computed.alias("controllers.data.publishedRefsets"),
 	unpublished 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
@@ -8,19 +8,14 @@ export default Ember.ObjectController.extend({
 	init : function()
 	{
 	},
-		
-	getRefset : function(user,id)
-	{
-		var dataController = this.get('controllers.data');
-		dataController.getRefset(user,id);
-	},
-
+	
 	actions :
 	{
 		refresh : function()
 		{
 			Ember.Logger.log("controllers.refsets:actions:refresh");
-			this.getAllRefsets(1);
+			var dataController = this.get('controllers.data');
+			dataController.getAllRefsets();
 		},
 	}
 });

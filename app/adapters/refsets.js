@@ -17,22 +17,17 @@ export default Ember.Object.extend({
 	{
 		Ember.Logger.log("adapters.refsets:findAll (user)",user);
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(result)
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(response)
 		{
-			if (result.meta.noOfRecords !== 0)
-			{					
-				return result.content.refsets;
-			}
-			else
-			{
-				Ember.Logger.log("Didn't get any data from server...",result.meta.message);
-				return {dataError : true};
-			}
+			return response;
 		},
-		function (error)
+		function (response)
 		{
-			Ember.Logger.log("refsets findAll error",error);
-			return [];	
+			Ember.Logger.log("adapters.refsets:findAll (error)",response);
+
+			return _this.returnErrorResponse(response);
 		});
 		
 		return result;

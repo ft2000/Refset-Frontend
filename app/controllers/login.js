@@ -36,6 +36,9 @@ export default Ember.ObjectController.extend({
 	{
 		var _this = this;
 		
+		// In case logout alert is showing, close it.
+		this.send("closeLogoutAlertModal");
+		
 		if (!this.loginDialogOpen)
 		{
 			this.set("loginDialogOpen",true);

@@ -16,8 +16,9 @@ export default Ember.Route.extend({
 	
 	actions : 
 	{
-		goBack : function()
+		abortDataRequest : function()
 		{
+			Ember.Logger.log("routes.refsets.refset:actions:abortDataRequest");
 			this.transitionTo('refsets');
 		},
 		

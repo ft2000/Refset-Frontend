@@ -4,6 +4,4 @@ export default Ember.ObjectController.extend({
 	
 	model : Ember.computed.alias("controllers.data.refset"),
 
-	currentPath : Ember.computed.alias("controllers.application.currentPath"),
-
 });
