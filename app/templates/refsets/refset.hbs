@@ -1,11 +1,20 @@
-{{#if authError}}
-	You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
+{{#if error}}
+
+	{{#if unauthorised}}
+		You need to <a href="#" {{action 'showLoginForm'}}>login</a> to access this refset
+	{{/if}}
+
+	{{#if notFound}}
+		We cannot find the Refset you are looking for
+	{{/if}}
+
 {{else}}
+
 	<div class="dashboard">
 			{{#bs-panel heading="Refset Header" type="info" collapsible="true"}}
 				<form id="refsetEditForm" class="myForm">
 					
-					<table>
+					<table width="100%>
 						
 						<tr>
 							{{#if published}}
@@ -25,8 +34,8 @@
 						</tr>
 	
 						<tr>
-							<td class="label">Refset Type</td><td class="content">{{id-to-name typeId}}</td>
-							<td class="label">Refset Members Type</td><td class="content">{{id-to-name componentTypeId}}</td>
+							<td class="label">Refset Type</td><td class="content">{{typeLabel}}</td>
+							<td class="label">Refset Members Type</td><td class="content">{{componentTypeLabel}}</td>
 						</tr>
 	
 						<tr>
@@ -68,9 +77,9 @@
 			{{/bs-panel}}
 
 			{{#unless published}}
-			<button {{action 'deleteRefset' id}} class="btn">Delete</button>
+			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
 			{{/unless}}
-			<button {{action 'exportRefset' id}} class="btn">Export</button>
+			<button {{action 'exportRefset' id}} class="btn btn-default">Export</button>
 			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
 		
 	</div>
