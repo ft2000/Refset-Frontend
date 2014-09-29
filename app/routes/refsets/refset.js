@@ -1,38 +1,27 @@
 import RefsetsAdapter 	from '../../adapters/refsets';
-
 var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.Route.extend({
         		
-	refset : {},
-	
-	model: function(params) 
+	beforeModel : function(params)
 	{
-		var _this = this;
+		var _this 	= this;
+		var id 		= params.params["refsets.refset"].id;
 		
-		var loginController = this.controllerFor('login');
-		var user = loginController.user;
-
-		var refsetController = this.controllerFor('refsets');
-		var result = refsetController.getRefset(user, params.id);
-
-		// We need to pause here for the above promise to be fulfilled so we can check the Auth Status
-		Ember.RSVP.Promise.all([result]).then(function()
-		{
-			if (result._result.authError)
-			{
-				_this.controllerFor('application').send('showLoginForm');
-				Ember.Logger.log("User needs to log in to access the API for this refset...");
-			}
-
-			_this.set("refset",result._result);
-		});
+		Ember.Logger.log("routes.refsets.refset:beforeModel (id)",id);
 		
-		return result;
+		// Run next so that we do not prevent the UI being displayed if the data is delayed...
+		return Ember.run.next(function(){_this.controllerFor('data').getRefset(id);});
 	},
 	
 	actions : 
 	{
+		abortDataRequest : function()
+		{
+			Ember.Logger.log("routes.refsets.refset:actions:abortDataRequest");
+			this.transitionTo('refsets');
+		},
+		
 		showLoginForm: function() 
 		{
 			Ember.Logger.log('routes.resfets.refset:actions:showLoginForm');

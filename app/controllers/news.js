@@ -16,18 +16,17 @@ export default Ember.ArrayController.extend({
 	    },
     ],
     
+    latestNews : [],
+    
+    init : function()
+    {
+    	this.getLatestNews();
+    },
+    
 	getLatestNews : function()
 	{
-		var latestNews = Ember.copy(this.model);
-		latestNews = latestNews.splice(0,1);
-		return latestNews;
+		var allNews = Ember.copy(this.model);
+		this.latestNews.setObjects(allNews.splice(0,1));
 	},
 
-	actions :
-	{
-		testMe : function(data)
-		{
-			Ember.Logger.log("testMe",data);
-		}
-	}
 });

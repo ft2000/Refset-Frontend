@@ -11,7 +11,9 @@
     "readSingleFile" : true,
     "handleDragOver" : true,
     "sessionStoreManager" : true,
-    "saveAs" : true
+    "saveAs" : true,
+    "BootstrapDialog" : true,
+    "Handlebars" : true
   },
   "browser" : true,
   "boss" : true,

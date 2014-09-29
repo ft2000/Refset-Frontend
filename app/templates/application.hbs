@@ -17,23 +17,28 @@
         <nav>
             <ul>
                 <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
-                <li>{{#link-to 'refsets'}}Refset{{/link-to}}</li>
+                <li>{{#link-to 'refsets'}}Refsets{{/link-to}}</li>
                 <li>{{#link-to 'news'}}News{{/link-to}}</li>
                 <li><span class="clrPrimary">Welcome</span> {{#if user.token}}{{user.firstName}} {{user.lastName}}{{else}}Guest{{/if}}</li>
             </ul>
         </nav>
 
+
     </header>
 
 	<section class="content contain pageLayout">
-
-		{{bs-breadcrumbs}}
+	
+		{{bs-growl-notifications}}
+	
+<!---		{{bs-breadcrumbs}}   --->
 		
 		{{outlet}} 
 
 		{{outlet modal}}
 
 	</section>
+
+	<div class="waitAnim"><img src="/assets/img/ajax-loader.gif"></div>
 
 	<footer class="pageLayout contain">
 		
@@ -60,5 +65,5 @@
         </nav>
 
 	</footer>
-
+	
 </div>

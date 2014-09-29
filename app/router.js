@@ -22,4 +22,20 @@ Router.map(function() {
 	  //this.route('catchall', {path: '/*wildcard'});
 });
 
+Ember.Route.reopen({
+	  getParentRoute: function(){
+	    var route = this;
+	    var handlerInfos = route.router.router.currentHandlerInfos;
+	    var parent, current;
+
+	    for (var i=0, l=handlerInfos.length; i<l; i++) {
+	      current = handlerInfos[i].handler;
+	      if((current.routeName === route.routeName)||(current.routeName.match(/./) && current.routeName.split('.')[1] === route.routeName )){
+	        return parent.routeName;
+	      }
+	      parent = current;
+	    }
+	  }
+	});
+	
 export default Router;
