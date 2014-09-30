@@ -380,9 +380,10 @@ export default Ember.ObjectController.extend({
 					{
 						if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
 						{
-							member.description 		= conceptData[member.referenceComponentId].label;
-							member.conceptactive 	= conceptData[member.referenceComponentId].active;
-							member.found 			= true;
+							member.description 				= conceptData[member.referenceComponentId].label;
+							member.conceptActive 			= conceptData[member.referenceComponentId].active;
+							member.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
+							member.found 					= true;
 						}
 						else
 						{

@@ -47,7 +47,7 @@
 							</tr>
 		
 							<tr>
-								<td class="label">ID</td><td class="content">{{id}}</td>
+								<td class="label">{{#if published}}SCTID{{else}}Temp ID{{/if}}</td><td class="content">{{id}}</td>
 								<td class="label">Module ID</td><td class="content">{{moduleId}}</td>
 							</tr>
 						
@@ -59,26 +59,30 @@
 			
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
-		             <h4 class="panel-title">Members ({{members.length}})</h4>
+		             <h4 class="panel-title">Members {{#if members.length}}({{members.length}}){{/if}}</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
 		            <div id="collapseTwo" class="panel-body collapse">
 						<ul class="list-group checkboxList">
 							{{#each members}}
-								<li {{bind-attr class=':list-group-item published::unpublishedMember'}}>
-									<label {{bind-attr class=':control-label found::disabled'}}>
-										{{#unless disabled}}<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}}>{{/unless}} 
-										{{description}}
-										{{#if found}}{{#unless conceptactive}}<br><span class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</span>{{/unless}}{{/if}}
-										<span class="referenceComponentId">{{referenceComponentId}}</span>
-									</label>
-									{{#if published}}
-										<span class="publishDate"><em>Effective date:</em> <b>{{date-format effectiveTime}}</b></span>
-									{{else}}
-										<label class="control-label">
-											<input type="checkbox" name="deleteConcept" {{bind-attr value='referenceComponentId'}}> Delete this concept from the Refset
-										</label>
+								<li {{bind-attr class=':list-group-item conceptActive::inactiveConcept deleteConcept:inactiveConcept'}}>
+
+									<label class="right">SCTID <span>{{referenceComponentId}}</span></label>
+									<p class="description">{{description}}</p>									
+									
+									{{#if found}}
+										<label>Member is active{{view 'toggle-switch' checkedBinding="active"}}</label>
+										<label>Last modified: <span>{{date-time-format effectiveTime}}</span></label>
+										<label>Last modified by: <span>unknown</span></label>
+										{{#if published}}
+											<label>Published: <span>unknown</span></label>
+										{{/if}}
+										<br>
+										<label>Concept effective time: <span>{{date-time-format conceptEffectiveTime}}</span></label>
+										{{#unless conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</label>{{/unless}}
 									{{/if}}
+
+									{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="deleteConcept"}}</label>{{/unless}}
 								</li>
 							{{/each}}
 						</ul>
