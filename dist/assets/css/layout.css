@@ -122,10 +122,22 @@ nav.loginRegisterButtons .warningText {
   float: right;
 }
 .myForm .label {
+  text-align: left;
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+  width: 100%;
   font-style: italic;
-  color: #ec971f;
+  color: #2e6da3;
+}
+.myForm .label span {
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 30px;
 }
 .myForm .content {
+  padding-top: 7px;
   font-weight: normal;
 }
 .checkboxList .control-label {
@@ -198,4 +210,30 @@ nav.loginRegisterButtons .warningText {
   height: 35px;
   text-indent: -9999px;
   width: 35px;
+}
+.panel-heading.accordion-toggle:after {
+  /* essential for enabling glyphicon */
+  font-family: 'Glyphicons Halflings';
+  /* symbol for "opening" panels */
+  content: "\e114";
+  float: right;
+  position: relative;
+  font-size: 15pt;
+  color: #2e6da3;
+}
+.panel-heading.accordion-toggle.collapsed:after {
+  /* symbol for "collapsed" panels */
+  content: "\e080";
+}
+.panel-heading:hover {
+  cursor: pointer;
+}
+.panel-heading:hover h4 {
+  text-decoration: underline;
+}
+.panel-title {
+  display: inline;
+  font-weight: 500;
+  font-size: 16px;
+  color: #2e6da3;
 }

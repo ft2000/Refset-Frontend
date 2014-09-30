@@ -1,5 +1,7 @@
 @warningColour 	: #c9302c;
 @infoColour 	: #ec971f;
+@labelColour	: #2E6DA3;
+@headingColour	: #00a7e1;
 
 @unpublishedBGColour : #EEFBEE;
 
@@ -188,12 +190,14 @@ nav.loginRegisterButtons
     
     .label
     {
+		.mylabels;
 		font-style : italic;
-		color : @infoColour;
+		color : @labelColour;
     }
     
     .content
     {
+		padding-top : 7px;
     	font-weight : normal;
     }
 }
@@ -289,4 +293,35 @@ nav.loginRegisterButtons
 	    text-indent:-9999px;
 	    width:35px;
 	}
+}
+
+.panel-heading.accordion-toggle:after {
+    /* essential for enabling glyphicon */
+    font-family:'Glyphicons Halflings';
+    /* symbol for "opening" panels */
+    content:"\e114";
+    float: right;
+    position: relative;
+    font-size: 15pt;
+    color: @labelColour;
+}
+.panel-heading.accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content:"\e080";
+}
+
+.panel-heading:hover {
+    cursor: pointer;
+}
+
+.panel-heading:hover h4 {
+    text-decoration: underline;
+}
+
+.panel-title 
+{
+	display : inline;
+	font-weight : 500;
+	font-size : 16px;
+	color : @labelColour;
 }

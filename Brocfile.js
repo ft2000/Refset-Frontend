@@ -44,6 +44,10 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
 app.import('vendor/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js');
 app.import('vendor/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css');
 
+//Bootstrap Switch
+app.import('vendor/bootstrap-switch-master/dist/js/bootstrap-switch.min.js');
+app.import('vendor/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.min.css');
+
 
 // JQuery plugins
 app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.js');

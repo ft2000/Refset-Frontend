@@ -11,71 +11,83 @@
 {{else}}
 
 	<div class="dashboard">
-			{{#bs-panel heading="Refset Header" type="info" collapsible="true"}}
-				<form id="refsetEditForm" class="myForm">
-					
-					<table width="100%>
+	    <div class="panel panel-info ember-view fade in panelNoPadding">
+	        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
+	             <h4 class="panel-title">Refset Header</h4>
+	        </div>
+	        <div class="panel-collapse collapse in">
+	            <div id="collapseOne" class="panel-body">
+	   				<form id="refsetEditForm" class="myForm">
 						
-						<tr>
-							{{#if published}}
-								<td class="label">Published on</td><td class="content">{{date-format publishedDate}}</td>
-							{{else}}
-								<td class="label">Not yet published</td>
-							{{/if}}
-						</tr>
-
-						<tr>
-							<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea></td>
-						</tr>
-	
-						<tr>
-							<td class="label">Language</td><td class="content">{{languageCode}}</td>
-							<td class="label">Active</td><td class="content">{{yes-no-format active}}</td>
-						</tr>
-	
-						<tr>
-							<td class="label">Refset Type</td><td class="content">{{typeLabel}}</td>
-							<td class="label">Refset Members Type</td><td class="content">{{componentTypeLabel}}</td>
-						</tr>
-	
-						<tr>
-							<td class="label">Created on</td><td class="content">{{date-format created}}</td>
-							<td class="label">by</td><td class="content">{{#if createdBy}}{{createdBy}}{{else}}unknown{{/if}}</td>
-						</tr>
-	
-						<tr>
-							<td class="label">ID</td><td class="content">{{id}}</td>
-							<td class="label">Module ID</td><td class="content">{{moduleId}}</td>
-						</tr>
-					
-					</table>
-				</form>
-			{{/bs-panel}}
+						<table width="100%>
+							
+							<tr>
+								<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea></td>
+							</tr>
+		
+							<tr>
+								<td class="label">Language</td><td class="content">{{code-to-language languageCode}}</td>
+								<td class="label">Published</td><td class="content">				
+								{{#if published}}
+									{{date-format publishedDate}}
+								{{else}}
+									Not yet published
+								{{/if}}								
+								</td>
+							</tr>
+		
+							<tr>
+								<td class="label">Refset Type</td><td class="content">{{typeLabel}}</td>
+								<td class="label">Refset Members Type</td><td class="content">{{componentTypeLabel}}</td>
+							</tr>
+		
+							<tr>
+								<td class="label">Created on</td><td class="content">{{date-format created}}</td>
+								<td class="label">Created by</td><td class="content">{{createdBy}}</td>
+							</tr>
+		
+							<tr>
+								<td class="label">ID</td><td class="content">{{id}}</td>
+								<td class="label">Module ID</td><td class="content">{{moduleId}}</td>
+							</tr>
+						
+						</table>
+					</form>
+					</div>
+				</div>
+			</div>
 			
-			{{#bs-panel heading="Members (ticks indicate ACTIVE concepts)" type="info" class="panelNoPadding" collapsible=true open=false}}
+		    <div class="panel panel-info ember-view fade in panelNoPadding">
+		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
+		             <h4 class="panel-title">Members ({{members.length}})</h4>
+		        </div>
+		        <div class="panel-collapse collapse in">
+		            <div id="collapseTwo" class="panel-body collapse">
+						<ul class="list-group checkboxList">
+							{{#each members}}
+								<li {{bind-attr class=':list-group-item published::unpublishedMember'}}>
+									<label {{bind-attr class=':control-label found::disabled'}}>
+										{{#unless disabled}}<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}}>{{/unless}} 
+										{{description}}
+										{{#if found}}{{#unless conceptactive}}<br><span class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</span>{{/unless}}{{/if}}
+										<span class="referenceComponentId">{{referenceComponentId}}</span>
+									</label>
+									{{#if published}}
+										<span class="publishDate"><em>Effective date:</em> <b>{{date-format effectiveTime}}</b></span>
+									{{else}}
+										<label class="control-label">
+											<input type="checkbox" name="deleteConcept" {{bind-attr value='referenceComponentId'}}> Delete this concept from the Refset
+										</label>
+									{{/if}}
+								</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+			</div>
 			
-				<ul class="list-group checkboxList">
-					{{#each members}}
-						<li {{bind-attr class=':list-group-item published::unpublishedMember'}}>
-							<label {{bind-attr class=':control-label found::disabled'}}>
-								<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}} {{bind-attr disabled='disabled'}}> 
-								{{description}}
-								{{#if found}}{{#unless conceptactive}}<br><span class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</span>{{/unless}}{{/if}}
-								<span class="referenceComponentId">{{referenceComponentId}}</span>
-							</label>
-							{{#if published}}
-								<span class="publishDate"><em>Effective date:</em> <b>{{date-format effectiveTime}}</b></span>
-							{{else}}
-								<label class="control-label">
-									<input type="checkbox" name="deleteConcept" {{bind-attr value='referenceComponentId'}}> Delete this concept from the Refset
-								</label>
-							{{/if}}
-						</li>
-					{{/each}}
-				</ul>
+			<script>setTimeout(function(){$("[name='conceptId']").bootstrapSwitch();},1000);</script>
 			
-			{{/bs-panel}}
-
 			{{#unless published}}
 			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
 			{{/unless}}
