@@ -4,6 +4,9 @@ var refsetsAdapter = RefsetsAdapter.create();
 import MembersAdapter from '../adapters/simple-members';
 var membersAdapter = MembersAdapter.create();
 
+import SnomedTypesAdapter from '../adapters/type-lookups';
+var snomedTypesAdapter = SnomedTypesAdapter.create();
+
 var numAutoServerRetries 		= 4;
 var autoServerRetryInterval 	= 5; // Seconds
 var autoServerRetryMultiplier 	= 1.5; // Amount to increase wait period before retrying again.
@@ -13,31 +16,45 @@ var autoServerRetryMultiplier 	= 1.5; // Amount to increase wait period before r
 
 export default Ember.ObjectController.extend({
 	
-	needs 				: ["login","refsets"],
+	needs 					: ["login"],
 	
-	refsets 			: [],
-	unpublishedRefsets	: [],
-	publishedRefsets	: [],
-	refset 				: {},
-	currentRefsetId		: null,
-	dataLoadCountner	: 0,
-	retryQueue			: [],
-	
-	// Will ditch this later once data is stable in API
-	concepts : {
-			
-			'446609009' 			: {label:'Simple type reference set'},
-			'900000000000496009' 	: {label:'Simple map type reference set'},
-			'900000000000461009' 	: {label:'Concept type components'},
-			'900000000000464001' 	: {label:'Reference set member type component'}
-	},
-	
+	refsets 				: [],
+	unpublishedRefsets		: [],
+	publishedRefsets		: [],
+	refset 					: {},
+	currentRefsetId			: null,
+	showWaitCounter			: 0,
+	hideWaitCounter			: 0,
+	callsInProgressCounter	: 0,
+	retryQueue				: [],
+	moduleTypes				: {},
+	refsetTypes				: {},
+	componentTypes			: {},
+	refsetTypesArray		: [],
+	componentTypesArray		: [],
+	moduleTypesArray		: [],
+
 	init : function()
 	{
 		Ember.Logger.log("controllers.data:init");
 		this.processRetryQueue();
 	},
 
+	initialiseAppData : function()
+	{		
+		Ember.Logger.log("controllers.data:initialiseAppData");
+
+		var p1 = this.getSnomedRefsetTypes();
+		var p2 = this.getSnomedModulesTypes();
+		var p3 = this.getSnomedComponentTypes();
+		
+		return Ember.RSVP.all([p1,p2,p3]).then(function(){
+			
+			return true;
+			
+		});
+	},
+	
 	processRetryQueue : function()
 	{
 		if (this.retryQueue.length)
@@ -73,7 +90,8 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.data:applicationPathChanged (retryQueue)",this.retryQueue);
 
-		this.set("dataLoadCountner",0);
+		this.set("showWaitCounter",this.callsInProgressCounter);
+		this.set("hideWaitCounter",0);
 
 		var queue = this.retryQueue;
 		
@@ -103,22 +121,22 @@ export default Ember.ObjectController.extend({
 		}
 	},
 	
-	showWaitAnim : function()
+	showWaitAnim : function(fn)
 	{
-		this.set("dataLoadCountner",this.dataLoadCountner+1);
+		this.set("showWaitCounter",this.showWaitCounter+1);
 		
-		Ember.Logger.log("showWaitAnim",this.dataLoadCountner,this.currentPath);
+//		Ember.Logger.log("showWaitAnim (show,wait,calls,fn)",this.showWaitCounter,this.hideWaitCounter,this.callsInProgressCounter,fn);
 
 		$('.waitAnim').show();
 	},
 	
-	hideWaitAnim : function()
+	hideWaitAnim : function(fn)
 	{
-		this.set("dataLoadCountner",this.dataLoadCountner-1);
+		this.set("hideWaitCounter",this.hideWaitCounter+1);
 		
-		Ember.Logger.log("hideWaitAnim",this.dataLoadCountner,this.currentPath);
+//		Ember.Logger.log("hideWaitAnim (show,wait,calls,fn)",this.showWaitCounter,this.hideWaitCounter,this.callsInProgressCounter,fn);
 
-		if (this.dataLoadCountner === 0)
+		if (this.showWaitCounter === this.hideWaitCounter)
 		{
 			$('.waitAnim').hide();
 		}
@@ -150,7 +168,16 @@ export default Ember.ObjectController.extend({
 		{
 			case "401":
 			{
-				this.set("refset",{error:1,unauthorised:1});
+				switch (resourceType)
+				{
+					case 'Refset':
+					{
+						this.set("refset",{error:1,unauthorised:1});
+						break;
+					}
+				}
+				
+				// Question here is, has the user's token been updated?
 
 				if (user.token === null)
 				{
@@ -177,23 +204,32 @@ export default Ember.ObjectController.extend({
 			        });
 				}
 				
-				_this.hideWaitAnim();
+				_this.hideWaitAnim(callbackFn);
 				
-				return 401;
+				return;
 			}
 
 			case "404":
 			{
-				this.set("refset",{error:1,notFound:1});
+				// Only going to work for refsets!!!!!!
+				
+				switch (resourceType)
+				{
+					case 'Refset':
+					{
+						this.set("refset",{error:1,notFound:1});
+						break;
+					}
+				}
 
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
 				// Need to deal with this in the template as well...report to the user that what they want cannot be found.
 				
-				_this.hideWaitAnim();
+				_this.hideWaitAnim(callbackFn);
 
-				return 404;
+				return;
 			}
 			
 			default :
@@ -237,7 +273,7 @@ export default Ember.ObjectController.extend({
 				             		{
 				             			// Go to parent route.... location.href = ".." ?????
 				             			_this.send("abortDataRequest",resourceType);
-				        				_this.hideWaitAnim();
+				        				_this.hideWaitAnim(callbackFn);
 				             			dialog.close();
 				             		}
 				             	},
@@ -257,11 +293,12 @@ export default Ember.ObjectController.extend({
 					{
 						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed. Giving up.', 'danger');
              			_this.send("abortDataRequest",resourceType);
-        				_this.hideWaitAnim();						
+        				_this.hideWaitAnim(callbackFn);						
 					}
+					
 				}
 				
-				break;
+				return;
 			}
 		}
 	},
@@ -280,16 +317,20 @@ export default Ember.ObjectController.extend({
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
 		if (!retrying)
 		{
-			this.showWaitAnim();
+			this.showWaitAnim('getAllRefSets');
 		}
 		
 		refsetsAdapter.findAll(user).then(function(response)
 		{	
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim();
+				_this.hideWaitAnim('getAllRefsets');
 				
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
@@ -341,20 +382,25 @@ export default Ember.ObjectController.extend({
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
 		if (!retrying)
 		{
-			this.showWaitAnim();
+			this.showWaitAnim('getRefset');
 		}
 		
 		var refset = refsetsAdapter.find(user,id).then(function(response)
 		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim();
+				_this.hideWaitAnim('getRefset');
 
 				// Successful response for our request
 				Ember.Logger.log("Successful response for our request",response);
 				
+				response.content.refset.meta = {};
 				_this.set("refset",response.content.refset);
 				
 				// Now get member data...
@@ -370,7 +416,7 @@ export default Ember.ObjectController.extend({
 						return null;
 					}
 				});		
-				
+
 				// Strip nulls
 				idArray = $.grep(idArray,function(n){ return(n); });
 				
@@ -378,33 +424,27 @@ export default Ember.ObjectController.extend({
 				{
 					var MemberData = _this.refset.members.map(function(member)
 					{
+						member.meta = {};
+
 						if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
 						{
-							member.description 				= conceptData[member.referenceComponentId].label;
-							member.conceptActive 			= conceptData[member.referenceComponentId].active;
-							member.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
-							member.found 					= true;
+							member.meta.description 			= conceptData[member.referenceComponentId].label;
+							member.meta.conceptActive 			= conceptData[member.referenceComponentId].active;
+							member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
+							member.meta.found 					= true;
+							member.meta.deleteConcept			= false;
 						}
 						else
 						{
-							member.description 		= 'concept not found';
-							member.found 			= false;
+							member.meta.description 			= 'Concept not found in Snomed CT database';
+							member.meta.found 					= false;
+							member.meta.deleteConcept			= false;
 						}
 						
 						return member;
-					});	
+					});
 					
 					_this.refset.members.setObjects(MemberData);
-				});
-
-				_this.getMember(_this.refset.typeId).then(function(conceptData)
-				{
-					 _this.set("refset.typeLabel",conceptData.label.replace(/ *\([^)]*\) */g, ""));
-				});
-
-				_this.getMember(_this.refset.componentTypeId).then(function(conceptData)
-				{
-					 _this.set("refset.componentTypeLabel",conceptData.label.replace(/ *\([^)]*\) */g, ""));
 				});
 
 			}
@@ -426,14 +466,18 @@ export default Ember.ObjectController.extend({
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
 		if (!retrying)
 		{
-			this.showWaitAnim();
+			this.showWaitAnim('getMembers');
 		}
 		
 		var memberDetails = membersAdapter.findList(user,members).then(function(response)
 		{
-			_this.hideWaitAnim();
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim('getMembers');
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -441,6 +485,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
+				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
 				return {};
 			}			
 		});	
@@ -463,14 +508,18 @@ export default Ember.ObjectController.extend({
 			return new Ember.RSVP.Promise(function(resolve){resolve(_this.concepts[id]);});
 		}
 		
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
 		if (!retrying)
 		{
-			this.showWaitAnim();
+			this.showWaitAnim('getMember');
 		}
 		
 		var memberDetails = membersAdapter.find(user,id).then(function(response)
 		{
-			_this.hideWaitAnim();
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim('getMember');
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -479,11 +528,153 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
+				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
 				return {label:'not found'};
 			}			
 		});	
 		
 		return memberDetails;
+	},
+	
+	getSnomedRefsetTypes : function(retry)
+	{
+		Ember.Logger.log("controllers.refsets:getSnomedRefsetTypes (retry)",retry);
+		
+		if (this.refsetTypes.length)
+		{
+			return;
+		}
+		
+		var _this 		= this;
+		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retrying)
+		{
+			this.showWaitAnim('getSnomedRefsetTypes');
+		}
+		
+		var promise = snomedTypesAdapter.getRefsetTypes(user).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				_this.hideWaitAnim('getSnomedRefsetTypes');
+				_this.set("refsetTypes",response.content.refsetTypes);
+				
+				for (var x=0;x<RefsetENV.APP.supportedSnomedTypes.refsetTypes.length;x++)
+				{
+					var id = RefsetENV.APP.supportedSnomedTypes.refsetTypes[x];	
+					_this.refsetTypesArray.pushObject({id:id,label:response.content.refsetTypes[id].replace(/ *\([^)]*\) */g, "")});
+				}
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
+			}
+			return response;
+		});	
+		
+		return promise; 
+	},
+
+	getSnomedModulesTypes : function(retry)
+	{
+		Ember.Logger.log("controllers.refsets:getSnomedModulesTypes (retry)",retry);
+		
+		if (this.moduleTypes.length)
+		{
+			return;
+		}
+
+		var _this 		= this;
+		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retrying)
+		{
+			this.showWaitAnim('getSnomedModulesTypes');
+		}
+		
+		var promise = snomedTypesAdapter.getModules(user).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				_this.hideWaitAnim('getSnomedModulesTypes');
+				_this.set("moduleTypes",response.content.modules);	
+				
+				for (var id in response.content.modules)
+				{
+					_this.moduleTypesArray.pushObject({id:id,label:response.content.modules[id].replace(/ *\([^)]*\) */g, "")});
+				}
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Module Types','getSnomedModulesTypes',[],retrying);
+			}
+			return response;
+		});	
+		
+		return promise;
+	},
+
+	getSnomedComponentTypes : function(retry)
+	{
+		Ember.Logger.log("controllers.refsets:getSnomedComponentTypes (retry)",retry);
+		
+		if (this.componentTypes.length)
+		{
+			return;
+		}
+
+		var _this 		= this;
+		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retrying)
+		{
+			this.showWaitAnim('getSnomedComponentTypes');
+		}
+		
+		var promise = snomedTypesAdapter.getComponentTypes(user).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				_this.hideWaitAnim('getSnomedComponentTypes');
+				_this.set("componentTypes",response.content.componentTypes);
+
+				for (var x=0;x<RefsetENV.APP.supportedSnomedTypes.componentTypes.length;x++)
+				{
+					var id = RefsetENV.APP.supportedSnomedTypes.componentTypes[x];					
+					_this.componentTypesArray.pushObject({id:id,label:response.content.componentTypes[id].replace(/ *\([^)]*\) */g, "")});
+				}
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Component Types','getSnomedComponentTypes',[],retrying);
+			}
+			
+			return response;
+		});		
+		
+		return promise;
 	},
 
 });

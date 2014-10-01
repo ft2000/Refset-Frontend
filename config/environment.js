@@ -28,9 +28,16 @@ module.exports = function(environment) {
     	// Refsets API
         refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
         conceptsApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
+        snomedTypesApiBaseUrl : 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/',
         
         numItemsPerPage : 10,
         numItemsPerPageDashboard : 5,
+        
+        supportedSnomedTypes :
+        {
+        	refsetTypes : ['446609009','900000000000496009'],
+        	componentTypes : ['900000000000461009','900000000000462002']
+        },
         
         loginExpiry : 20, // minutes before you are logged out
         }

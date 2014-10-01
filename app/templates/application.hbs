@@ -19,7 +19,7 @@
                 <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
                 <li>{{#link-to 'refsets'}}Refsets{{/link-to}}</li>
                 <li>{{#link-to 'news'}}News{{/link-to}}</li>
-                <li><span class="clrPrimary">Welcome</span> {{#if user.token}}{{user.firstName}} {{user.lastName}}{{else}}Guest{{/if}}</li>
+                <li><span class="clrPrimary">Welcome</span> {{#if user.token}}{{user.givenName}} {{user.surname}}{{else}}Guest{{/if}}</li>
             </ul>
         </nav>
 

@@ -1,11 +1,10 @@
 <div class="dashboard">
 	<div class="colMed inner">
 		{{#bs-panel heading="Create New Refset" type="info"}}
-			{{#with refset}}
 			<form class="myForm" id="newRefsetForm" name="newRefsetForm">
 
 				<label class="control-label" for="description">Refset Description</label>
-				<textarea id="description" name="description">{{unbound description}}</textarea>
+				<textarea id="description" name="description" {{bind-attr value='description'}}></textarea>
 
 				<label class="control-label" for="languageCode">Language</label>
 				<select id="type" name="languageCode" class="input-xlarge">
@@ -13,32 +12,25 @@
 				</select>
 
 				<label class="control-label" for="typeId">Refset Type</label>
-				<select id="type" name="typeId" class="input-xlarge">
-					<option value="446609009">Simple type reference set</option>
-<!---					
-					<option value="900000000000512005">Query specification type reference set</option>
-					<option value="900000000000496009">Simple map type reference set</option>
-					<option value="447250001">Complex map type reference set</option>
-					<option value="609331003">Extended map type reference set</option>
-					<option value="900000000000456007">Reference set descriptor reference set</option>
-					<option value="900000000000516008">Annotation type reference set</option>
-					<option value="900000000000506000">Language type reference set</option>
-					<option value="900000000000480006">Attribute value type reference set</option>
-					<option value="900000000000538005">Description format reference set</option>
-					<option value="609430003">Concept model reference set</option>
-					<option value="900000000000534007">Module dependency reference set </option>
---->
-				</select>
+				{{view Em.Select 
+				  contentBinding="refsetTypesArray" 
+				  optionLabelPath="content.label" 
+				  optionValuePath="content.id" 
+				  valueBinding="typeId" }}
 
 				<label class="control-label" for="componentTypeId">Refset Components Type</label>
-				<select id="type" name="componentTypeId" class="input-xlarge">
-					<option value="900000000000461009">Concept type components</option>
-<!---
-					<option value="900000000000462002">Description type components</option>
-					<option value="900000000000464001">Reference set member type component</option>
-					<option value="900000000000463007">Relationship type component</option>
---->
-				</select>
+				{{view Em.Select 
+				  contentBinding="componentTypesArray" 
+				  optionLabelPath="content.label" 
+				  optionValuePath="content.id" 
+				  valueBinding="componentTypeId" }}
+
+				<label class="control-label" for="moduleId">Module</label>
+				{{view Em.Select 
+				  contentBinding="moduleTypesArray" 
+				  optionLabelPath="content.label" 
+				  optionValuePath="content.id" 
+				  valueBinding="moduleId" }}
 
 			    <label class="control-label" for="active">
 			    	<input name="active" id="active" value="1" type="checkbox" {{bind-attr checked="active"}}>
@@ -54,15 +46,11 @@
 			    	<input name="import" id="import-members" value="1" type="checkbox" {{action "toggleMembersImportForm" on="change"}} {{bind-attr checked="doImportMembers"}}>
 			    	Do you wish to import Members?
 			    </label>
-				{{/with}}
 
 				{{#if doImportPublishedRefset}}
-					{{#with refset}}
 						<label class="control-label" for="id">ID</label>
 						<input id="id" name="id" placeholder="ID" type="text" {{bind-attr value="id"}}>
 
-						<label class="control-label" for="moduleId">Module ID</label>
-						<input id="moduleId" name="moduleId" placeholder="Module ID" type="text" {{bind-attr value="moduleId"}}>
 
 						<label class="control-label" for="created">Creation Date</label>
 						<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}} data-provide="datepicker" data-date-format="MM d, yyyy">
@@ -72,7 +60,6 @@
 
 						<label class="control-label" for="publishedDate">Date Published</label>
 						<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}} data-provide="datepicker">
-					{{/with}}
 				{{/if}}
 
 			</form>

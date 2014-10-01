@@ -4,6 +4,7 @@ export default Ember.ObjectController.extend({
 
 	published 		: Ember.computed.alias("controllers.data.publishedRefsets"),
 	unpublished 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
+	user 			: Ember.computed.alias("controllers.login.user"),
 	
 	init : function()
 	{
