@@ -5,14 +5,23 @@ var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
-	needs : ["login","utilities","refsets","refsets/upload"],
+	needs : ["login","utilities","refsets","refsets/upload","data"],
 
-	model 	: RefsetModel.create(),
-	
+	refsetTypesArray 	: Ember.computed.alias("controllers.data.refsetTypesArray"),
+	componentTypesArray : Ember.computed.alias("controllers.data.componentTypesArray"),
+	moduleTypesArray 	: Ember.computed.alias("controllers.data.moduleTypesArray"),
+	languagesArray		: [{id:'en_US',label:'International English'}],
+		
 	doImportPublishedRefset 	: false,
-	doImportMembers 			: false,
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+	
+	createEmptyRefset : function()
+	{
+		this.set("model",RefsetModel.create());
+		this.set("doImportPublishedRefset",false);
+		Ember.Logger.log("controllers.refsets.new:createEmptyRefset",this.model);
+	},
 	
 	create : function()
 	{

@@ -149,7 +149,7 @@ export default Ember.ObjectController.extend({
 	// Log the user out of the app
 	logout : function()
 	{
-		var user = this.user;
+		var user = $.extend(true, {}, this.user);
 		
 		// This has the effect of logging the user out
 		user.token = null;
@@ -338,7 +338,7 @@ export default Ember.ObjectController.extend({
 		// If user elects to use the app as a guest then we need to record that fact in order so we can choose not to show the login form if they open another window.
 		continueAsGuest : function()
 		{
-			var user = this.user;
+			var user = $.extend(true, {}, this.user);
 			user.loginDeclined = true;
 
 			this.saveUserToLocalStore(user);
@@ -352,7 +352,7 @@ export default Ember.ObjectController.extend({
 		{
 			this.send("closeLogoutAlertModal");
 
-			var user = this.user;
+			var user = $.extend(true, {}, this.user);
 			
 			user.autoLogoutTime	= new Date(new Date().getTime() + this.loginExpiryLength);
 						

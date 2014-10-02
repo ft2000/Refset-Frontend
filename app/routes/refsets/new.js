@@ -1,4 +1,11 @@
 export default Ember.Route.extend({
+	
+	beforeModel : function()
+	{
+		Ember.Logger.log("routes.refsets.new:beforeModel");
+		this.controllerFor('refsets.new').createEmptyRefset();
+	},
+/*
 	model: function() 
 	{
 		var newRefsetController 	= this.controllerFor('refsets.new');
@@ -11,7 +18,7 @@ export default Ember.Route.extend({
 			doImportMembers 		: newRefsetController.doImportMembers,			
 		});
 	},
-
+*/
 	actions :
 	{
 		initRefsetImport : function()

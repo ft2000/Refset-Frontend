@@ -177,6 +177,7 @@ label + label {
 }
 .checkboxList p.description {
   font-size: 14px;
+  font-weight: 500;
 }
 #logoutWarningModel .heading {
   font-size: 18px;

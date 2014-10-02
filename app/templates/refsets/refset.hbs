@@ -22,7 +22,7 @@
 						<table width="100%>
 							
 							<tr>
-								<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control">{{unbound description}}</textarea></td>
+								<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control" {{bind-attr value=description}}></textarea></td>
 							</tr>
 		
 							<tr>
@@ -37,8 +37,8 @@
 							</tr>
 		
 							<tr>
-								<td class="label">Refset Type</td><td class="content">{{typeLabel}}</td>
-								<td class="label">Refset Members Type</td><td class="content">{{componentTypeLabel}}</td>
+								<td class="label">Refset Type</td><td class="content">{{snomed-id-to-label typeId refsetTypes}}</td>
+								<td class="label">Refset Members Type</td><td class="content">{{snomed-id-to-label componentTypeId componentTypes}}</td>
 							</tr>
 		
 							<tr>
@@ -48,7 +48,7 @@
 		
 							<tr>
 								<td class="label">{{#if published}}SCTID{{else}}Temp ID{{/if}}</td><td class="content">{{id}}</td>
-								<td class="label">Module ID</td><td class="content">{{moduleId}}</td>
+								<td class="label">Module</td><td class="content">{{snomed-id-to-label moduleId moduleTypes}}</td>
 							</tr>
 						
 						</table>
@@ -65,24 +65,24 @@
 		            <div id="collapseTwo" class="panel-body collapse">
 						<ul class="list-group checkboxList">
 							{{#each members}}
-								<li {{bind-attr class=':list-group-item conceptActive::inactiveConcept deleteConcept:inactiveConcept'}}>
+								<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
 
 									<label class="right">SCTID <span>{{referenceComponentId}}</span></label>
-									<p class="description">{{description}}</p>									
+									<p class="description">{{meta.description}}</p>									
 									
-									{{#if found}}
-										<label>Member is active{{view 'toggle-switch' checkedBinding="active"}}</label>
+									{{#if meta.found}}
+										<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
 										<label>Last modified: <span>{{date-time-format effectiveTime}}</span></label>
 										<label>Last modified by: <span>unknown</span></label>
 										{{#if published}}
 											<label>Published: <span>unknown</span></label>
 										{{/if}}
 										<br>
-										<label>Concept effective time: <span>{{date-time-format conceptEffectiveTime}}</span></label>
-										{{#unless conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</label>{{/unless}}
+										<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
+										{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</label>{{/unless}}
 									{{/if}}
 
-									{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="deleteConcept"}}</label>{{/unless}}
+									{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
 								</li>
 							{{/each}}
 						</ul>
