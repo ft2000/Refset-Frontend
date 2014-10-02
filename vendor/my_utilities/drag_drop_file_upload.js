@@ -34,3 +34,20 @@ function handleDragOver(evt)
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
+
+function handleDragEnter(evt) 
+{
+	this.classList.add('over');
+}
+
+function handleDragLeave(evt) 
+{
+	try {
+	    if(evt.relatedTarget == 3) return;
+	} catch(err) {}
+	
+	if (typeof evt.relatedTarget.id === "undefined" && evt.target.id === "fileUploadDropZone") return;
+	if (typeof evt.target.id === "undefined" && evt.relatedTarget.id === "fileUploadDropZone") return;
+	
+	this.classList.remove('over');
+}

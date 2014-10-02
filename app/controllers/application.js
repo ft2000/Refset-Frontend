@@ -1,3 +1,8 @@
+Ember.TextField.reopen(
+{
+	  attributeBindings: ['data-provide','data-date-format','data-date-clear-btn','data-date-autoclose']
+});
+
 export default Ember.ObjectController.extend({
 
 	needs : ["login","data"],

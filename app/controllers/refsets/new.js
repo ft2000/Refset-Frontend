@@ -11,46 +11,67 @@ export default Ember.ObjectController.extend({
 	componentTypesArray : Ember.computed.alias("controllers.data.componentTypesArray"),
 	moduleTypesArray 	: Ember.computed.alias("controllers.data.moduleTypesArray"),
 	languagesArray		: [{id:'en_US',label:'International English'}],
-		
-	doImportPublishedRefset 	: false,
+
+	disablePublishedFormFields : true,
+	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+		
+	model : RefsetModel.create(),
 	
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
-		this.set("doImportPublishedRefset",false);
-		Ember.Logger.log("controllers.refsets.new:createEmptyRefset",this.model);
+		this.set("model.meta.createdDateInput",null);
+		this.set("model.meta.publishedDateInput",null);
+		this.set("disablePublishedFormFields",true);
+
+		Ember.run.scheduleOnce('afterRender', this, function(){
+			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
+			document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
+		});
 	},
 	
 	create : function()
 	{
-		// Need to serialise the form into the model
+		Ember.Logger.log("controllers.refsets.new:create");
+		
+		var Refset = {};
+		
+		Refset.typeId = this.get("model.typeId");
+		Refset.componentTypeId = this.get("model.componentTypeId");
+		Refset.moduleId = this.get("model.moduleId");
+		Refset.active = this.get("model.active");
+		Refset.languageCode = this.get("model.languageCode");
+		Refset.description = this.get("model.description");
 
-		var URLSerialisedData 	= $('#newRefsetForm').serialize();
-
+		if (!this.disablePublishedFormFields)
+		{
+			Refset.id = this.get("model.id");
+			Refset.published = this.get("model.published");
+			Refset.publishedDate = this.get("model.publishedDate");
+			Refset.created = this.get("model.created");
+		}
+		
+		Ember.Logger.log(Refset);
+		
+/*
 		var MemberData = [];
 		$("#importedMemberForm input[type=checkbox]:checked").each(function ()
 		{
 			MemberData.push(parseInt($(this).val()));
 		});
-
-		var utilitiesController = this.get('controllers.utilities');		
-		var refsetData = utilitiesController.deserialiseURLString(URLSerialisedData);
-		
-		refsetData.active = (typeof refsetData.active !== "undefined" && refsetData.active === "1") ? true : false;
-
-		delete refsetData["import"];
-		delete refsetData["import-members"];
-		
-		this.set("model",refsetData);	
+*/
 		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
 		var _this = this;
 
-		refsetsAdapter.create(user,this.model).then(function(refset)
+		refsetsAdapter.create(user,Refset).then(function(refset)
 		{
 			if (refset.meta.status === "CREATED")
 			{
@@ -58,15 +79,16 @@ export default Ember.ObjectController.extend({
 				
 				var refsetId = refset.content.id;
 				
+/*
 				MemberData.map(function(member)
 				{
 					Ember.Logger.log("Adding member",member);
 					refsetsAdapter.addMember(user,refsetId,member);
 				});
-				
+*/				
 				_this.set("model",RefsetModel.create());
-				var uploadAdapter = _this.get('controllers.refsets/upload');		
-				uploadAdapter.clearMembers();
+//				var uploadAdapter = _this.get('controllers.refsets/upload');		
+//				uploadAdapter.clearMembers();
 				
 				_this.transitionToRoute('refsets.refset',refsetId);
 			}
@@ -108,6 +130,11 @@ export default Ember.ObjectController.extend({
 				var uploadController = this.get('controllers.refsets/upload');
 				uploadController.clearMemberList();
 			}
+		},
+		
+		clearForm : function()
+		{
+			this.createEmptyRefset();
 		},
 
     }

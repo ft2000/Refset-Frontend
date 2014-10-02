@@ -11,6 +11,7 @@
     "ember-load-initializers": "stefanpenner/ember-load-initializers#0.0.2",
     "ember-addons.bs_for_ember": "~0.7.0",
     "bootstrap": "~3.2.0",
-    "ember-forms": "*"
+    "ember-forms": "*",
+    "moment": "~2.8.3"
   }
 }
