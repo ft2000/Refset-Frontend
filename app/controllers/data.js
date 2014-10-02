@@ -33,6 +33,7 @@ export default Ember.ObjectController.extend({
 	refsetTypesArray		: [],
 	componentTypesArray		: [],
 	moduleTypesArray		: [],
+	initialised				: false,
 
 	init : function()
 	{
@@ -44,14 +45,30 @@ export default Ember.ObjectController.extend({
 	{		
 		Ember.Logger.log("controllers.data:initialiseAppData");
 
-		var p1 = this.getSnomedRefsetTypes();
-		var p2 = this.getSnomedModulesTypes();
-		var p3 = this.getSnomedComponentTypes();
+		var p1 = this.getSnomedRefsetTypes().then(function(p){return typeof p.meta.errorInfo === "undefined";});
+		var p2 = this.getSnomedModulesTypes().then(function(p){return typeof p.meta.errorInfo === "undefined";});
+		var p3 = this.getSnomedComponentTypes().then(function(p){return typeof p.meta.errorInfo === "undefined";});
 		
 		return Ember.RSVP.all([p1,p2,p3]).then(function(){
+			return {refsets:p1._result,modules:p2._result,components:p3._result};
+		}).then(function(init)
+		{
+			if (!init.refsets)
+			{
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Types. Retrying.', 'warning');	
+			}
+
+			if (!init.modules)
+			{
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Modules Types. Retrying.', 'warning');	
+			}
+
+			if (!init.components)
+			{
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Component Types. Retrying.', 'warning');	
+			}
 			
-			return true;
-			
+			return (init.refsets && init.refsets && init.refsets);
 		});
 	},
 	
@@ -88,23 +105,34 @@ export default Ember.ObjectController.extend({
 	
 	applicationPathChanged : function()
 	{
-		Ember.Logger.log("controllers.data:applicationPathChanged (retryQueue)",this.retryQueue);
+		Ember.Logger.log("controllers.data:applicationPathChanged (retryQueue,initialised)",this.retryQueue,this.initialised);
 
-		this.set("showWaitCounter",this.callsInProgressCounter);
-		this.set("hideWaitCounter",0);
-
-		var queue = this.retryQueue;
-		
-		for (var q=0;q<queue.length;q++)
+		if (!this.initalised)
 		{
-			var queueItem 	= queue[q];
-			Bootstrap.GNM.push('Aborting communication','Aborting queued request for ' + queueItem.resourceType + ' from the server.', 'info');			
+			if (this.refsetTypesArray.length && this.componentTypesArray.length && this.moduleTypesArray.length)
+			{
+				this.set("initialised",true);
+			}
 		}
 		
-		// Need to alert aborts before we do this...
-		this.set("retryQueue",[]);
-		
-		$('.waitAnim').hide();
+		if (this.initialised)
+		{
+			this.set("showWaitCounter",this.callsInProgressCounter);
+			this.set("hideWaitCounter",0);
+
+			var queue = this.retryQueue;
+			
+			for (var q=0;q<queue.length;q++)
+			{
+				var queueItem 	= queue[q];
+				Bootstrap.GNM.push('Aborting communication','Aborting queued request for ' + queueItem.resourceType + ' from the server.', 'info');			
+			}
+			
+			// Need to alert aborts before we do this...
+			this.set("retryQueue",[]);
+			
+			$('.waitAnim').hide();
+		}
 	},
 	
 	authenticationStatusChanged : function()
@@ -257,7 +285,7 @@ export default Ember.ObjectController.extend({
 				else
 				{
 					// Too many errors. Time to prompt the user
-					if (!loginDialogOpen)
+					if (!this.loginDialogOpen || !this.initialised)
 					{
 						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed.', 'danger');
 
@@ -404,6 +432,11 @@ export default Ember.ObjectController.extend({
 				_this.set("refset",response.content.refset);
 				
 				// Now get member data...
+				
+				if (typeof _this.refset.members === "undefined")
+				{
+					_this.set("refset.members",[]);
+				}
 				
 				var idArray = _this.refset.members.map(function(member)
 				{

@@ -1,110 +1,103 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{#bs-panel heading="Create New Refset" type="info"}}
-			<form class="myForm" id="newRefsetForm" name="newRefsetForm">
+<h1>Create New Refset</h1>
 
-				<label class="control-label" for="description">Refset Description</label>
-				<textarea id="description" name="description" {{bind-attr value='description'}}></textarea>
+<div class="panel panel-info ember-view fade in panelNoPadding">
+    <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#refsetHeader">
+         <h4 class="panel-title">Refset Header</h4>
+    </div>
+    <div class="panel-collapse collapse in">
+        <div id="refsetHeader" class="panel-body">
 
-				<label class="control-label" for="languageCode">Language</label>
-				<select id="type" name="languageCode" class="input-xlarge">
-					<option value="en_US">US English</option>
-				</select>
+			<label>Are you importing a Published Refset? {{view 'toggle-switch' checkedBinding="doImportPublishedRefset"}}</label>
 
-				<label class="control-label" for="typeId">Refset Type</label>
-				{{view Em.Select 
-				  contentBinding="refsetTypesArray" 
-				  optionLabelPath="content.label" 
-				  optionValuePath="content.id" 
-				  valueBinding="typeId" }}
-
-				<label class="control-label" for="componentTypeId">Refset Components Type</label>
-				{{view Em.Select 
-				  contentBinding="componentTypesArray" 
-				  optionLabelPath="content.label" 
-				  optionValuePath="content.id" 
-				  valueBinding="componentTypeId" }}
-
-				<label class="control-label" for="moduleId">Module</label>
-				{{view Em.Select 
-				  contentBinding="moduleTypesArray" 
-				  optionLabelPath="content.label" 
-				  optionValuePath="content.id" 
-				  valueBinding="moduleId" }}
-
-			    <label class="control-label" for="active">
-			    	<input name="active" id="active" value="1" type="checkbox" {{bind-attr checked="active"}}>
-			    	Refset is active?
-			    </label>
-
-			    <label class="control-label" for="import">
-			    	<input name="import" id="import" value="1" type="checkbox" {{action "togglePublishedRefsetImportForm" on="change"}} {{bind-attr checked="doImportPublishedRefset"}}>
-			    	Are you importing a Published Refset?
-			    </label>
-
-			    <label class="control-label" for="import-members">
-			    	<input name="import" id="import-members" value="1" type="checkbox" {{action "toggleMembersImportForm" on="change"}} {{bind-attr checked="doImportMembers"}}>
-			    	Do you wish to import Members?
-			    </label>
-
-				{{#if doImportPublishedRefset}}
-						<label class="control-label" for="id">ID</label>
-						<input id="id" name="id" placeholder="ID" type="text" {{bind-attr value="id"}}>
-
-
-						<label class="control-label" for="created">Creation Date</label>
-						<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}} data-provide="datepicker" data-date-format="MM d, yyyy">
-
-						<label class="control-label" for="createdBy">Created By</label>
-						<input id="createdBy" name="createdBy" placeholder="refset created by" type="text"  {{bind-attr value="createdBy"}}>
-
-						<label class="control-label" for="publishedDate">Date Published</label>
-						<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}} data-provide="datepicker">
-				{{/if}}
-
-			</form>
-
-			{{#if doImportMembers}}
-
-				<b>Import Members (flat file)</b>
-				<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
-
-				<input type="file" id="refsetUploadFileInput" />
-
-				<div id="fileUploadDropZone" class="fileUploadDropZone">Drop files here</div>
-				
-				<a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a>
-
-			{{/if}}
-
-			<button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>
-
-		{{/bs-panel}}
-
-		<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
-	</div>
+			<label class="control-label" for="description">Refset Description</label>
+			{{textarea value=description}}
+	
+			<label class="control-label" for="languageCode">Language</label>
+			{{view Em.Select 
+			  contentBinding="languagesArray"
+			  optionLabelPath="content.label" 
+			  optionValuePath="content.id" 
+			  valueBinding="languageCode" }}
+	
+			<label class="control-label" for="typeId">Refset Type</label>
+			{{view Em.Select 
+			  contentBinding="refsetTypesArray" 
+			  optionLabelPath="content.label" 
+			  optionValuePath="content.id" 
+			  valueBinding="typeId" }}
+	
+			<label class="control-label" for="componentTypeId">Refset Components Type</label>
+			{{view Em.Select 
+			  contentBinding="componentTypesArray" 
+			  optionLabelPath="content.label" 
+			  optionValuePath="content.id" 
+			  valueBinding="componentTypeId" }}
+	
+			<label class="control-label" for="moduleId">Module</label>
+			{{view Em.Select 
+			  contentBinding="moduleTypesArray" 
+			  optionLabelPath="content.label" 
+			  optionValuePath="content.id" 
+			  valueBinding="moduleId" }}
 
 	
-	{{#if doImportMembers}}
-	<div class="colMed inner">
-		{{#if getConceptDataInProgress}}
-			{{#bs-panel heading="Importing member concepts" type="info"}}
-				<img src="assets/img/googleballs-animated.gif">
-				<p><b>Please wait...</b></p>
-			{{/bs-panel}}
-		{{else}}
-			{{#if importError}}
-				{{#bs-panel heading="Importing members failed" type="info"}}
-					<p><b{{importError}}</b></p>
+			{{#if doImportPublishedRefset}}
+					<label class="control-label" for="id">ID</label>
+					<input id="id" name="id" placeholder="ID" type="text" {{bind-attr value="id"}}>
+	
+	
+					<label class="control-label" for="created">Creation Date</label>
+					<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}} data-provide="datepicker" data-date-format="MM d, yyyy">
+	
+					<label class="control-label" for="createdBy">Created By</label>
+					<input id="createdBy" name="createdBy" placeholder="refset created by" type="text"  {{bind-attr value="createdBy"}}>
+	
+					<label class="control-label" for="publishedDate">Date Published</label>
+					<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}} data-provide="datepicker">
+			{{/if}}
+
+		</div>
+	</div>
+</div>
+
+
+<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
+<div class="panel panel-info ember-view fade in panelNoPadding">
+    <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#refsetMembers">
+         <h4 class="panel-title">Import Members</h4>
+    </div>
+    <div class="panel-collapse collapse in">
+        <div id="refsetMembers" class="panel-body collapse">
+		            	
+			<b>Import Members (flat file)</b>
+			<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
+		
+			<input type="file" id="refsetUploadFileInput" />
+		
+			<div id="fileUploadDropZone" class="fileUploadDropZone">Drop files here</div>
+			
+			<a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a>
+		
+			{{#if getConceptDataInProgress}}
+				{{#bs-panel heading="Importing member concepts" type="info"}}
+					<img src="assets/img/googleballs-animated.gif">
+					<p><b>Please wait...</b></p>
 				{{/bs-panel}}
 			{{else}}
-				{{#if members}}
-					{{#bs-panel heading="Member concepts to be imported" type="info" class="panelNoPadding"}}
-						{{member-list members=members}}
+				{{#if importError}}
+					{{#bs-panel heading="Importing members failed" type="info"}}
+						<p><b{{importError}}</b></p>
 					{{/bs-panel}}
+				{{else}}
+					{{#if members}}
+						{{#bs-panel heading="Member concepts to be imported" type="info" class="panelNoPadding"}}
+							{{member-list members=members}}
+						{{/bs-panel}}
+					{{/if}}
 				{{/if}}
 			{{/if}}
-		{{/if}}
+		</div>
 	</div>
-	{{/if}}
 </div>
+
+<button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>

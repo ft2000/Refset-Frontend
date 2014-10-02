@@ -35,8 +35,15 @@ module.exports = function(environment) {
         
         supportedSnomedTypes :
         {
-        	refsetTypes : ['446609009','900000000000496009'],
-        	componentTypes : ['900000000000461009','900000000000462002']
+        	refsetTypes 	: ['446609009','900000000000496009'],
+        	componentTypes 	: ['900000000000461009','900000000000462002']
+        },
+        
+        defaultSnomedTypes :
+        {
+        	refsetType 		: '446609009',
+        	componentType 	: '900000000000461009',
+        	moduleType 		: '900000000000207008',
         },
         
         loginExpiry : 20, // minutes before you are logged out
