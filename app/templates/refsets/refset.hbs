@@ -22,7 +22,7 @@
 						<table width="100%>
 							
 							<tr>
-								<td class="content" colspan="4"><textarea name="description" placeholder="Description" rows=2 class="ember-view ember-text-area form-control" {{bind-attr value=description}}></textarea></td>
+								<td class="content" colspan="4">{{textarea value=description}}</td>
 							</tr>
 		
 							<tr>
@@ -42,8 +42,8 @@
 							</tr>
 		
 							<tr>
-								<td class="label">Created on</td><td class="content">{{date-format created}}</td>
-								<td class="label">Created by</td><td class="content">{{createdBy}}</td>
+								<td class="label">Creation Date on</td><td class="content">{{date-format created}}</td>
+								<td class="label">Last Updated by</td><td class="content">{{createdBy}}</td>
 							</tr>
 		
 							<tr>

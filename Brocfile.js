@@ -48,6 +48,8 @@ app.import('vendor/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css');
 app.import('vendor/bootstrap-switch-master/dist/js/bootstrap-switch.min.js');
 app.import('vendor/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.min.css');
 
+//Moment (date functions)
+app.import('vendor/moment/min/moment.min.js');
 
 // JQuery plugins
 app.import('vendor/jquery.formatDateTime-master/dist/jquery.formatDateTime.min.js');
@@ -68,8 +70,6 @@ app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
 // Bootstrap Date Picker
 app.import('vendor/bootstrap-datepicker-release/js/bootstrap-datepicker.js');
 app.import('vendor/bootstrap-datepicker-release/css/datepicker3.css');
-
-
 
 // Bootstrap fonts
 var fontOpenSans = pickFiles('vendor/bootstrap/dist', {

@@ -65,6 +65,10 @@ nav.loginRegisterButtons .warningText {
   padding: 25px;
   text-align: center;
 }
+.fileUploadDropZone.over {
+  border: 2px dashed red;
+  color: red;
+}
 #refsetUploadFileInput {
   border: none;
   height: inherit;
@@ -339,6 +343,14 @@ div.toggle-switch {
   text-indent: .5em;
   color: #868585;
   text-shadow: none;
+}
+.toggle-switch.inverted input[type="checkbox"] + div:before {
+  content: 'No';
+  color: #868585;
+}
+.toggle-switch.inverted input[type="checkbox"] + div:after {
+  content: 'Yes';
+  color: #2e6da3;
 }
 label {
   text-align: left;

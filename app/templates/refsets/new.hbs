@@ -7,59 +7,88 @@
     <div class="panel-collapse collapse in">
         <div id="refsetHeader" class="panel-body">
 
-			<label>Are you importing a Published Refset? {{view 'toggle-switch' checkedBinding="doImportPublishedRefset"}}</label>
+			<label>Are you importing a Published Refset? {{view 'toggle-switch-inverted' checkedBinding="disablePublishedFormFields"}}</label>
 
-			<label class="control-label" for="description">Refset Description</label>
-			{{textarea value=description}}
-	
-			<label class="control-label" for="languageCode">Language</label>
-			{{view Em.Select 
-			  contentBinding="languagesArray"
-			  optionLabelPath="content.label" 
-			  optionValuePath="content.id" 
-			  valueBinding="languageCode" }}
-	
-			<label class="control-label" for="typeId">Refset Type</label>
-			{{view Em.Select 
-			  contentBinding="refsetTypesArray" 
-			  optionLabelPath="content.label" 
-			  optionValuePath="content.id" 
-			  valueBinding="typeId" }}
-	
-			<label class="control-label" for="componentTypeId">Refset Components Type</label>
-			{{view Em.Select 
-			  contentBinding="componentTypesArray" 
-			  optionLabelPath="content.label" 
-			  optionValuePath="content.id" 
-			  valueBinding="componentTypeId" }}
-	
-			<label class="control-label" for="moduleId">Module</label>
-			{{view Em.Select 
-			  contentBinding="moduleTypesArray" 
-			  optionLabelPath="content.label" 
-			  optionValuePath="content.id" 
-			  valueBinding="moduleId" }}
+			<form id="refsetEditForm" class="myForm">
+				
+				<table width="100%>
+					
+					<tr>
+						<td class="content" colspan="4">
+							<label class="control-label" for="description">Refset Description</label>
+							{{textarea value=description}}
+						</td>
+					</tr>
 
-	
-			{{#if doImportPublishedRefset}}
-					<label class="control-label" for="id">ID</label>
-					<input id="id" name="id" placeholder="ID" type="text" {{bind-attr value="id"}}>
-	
-	
-					<label class="control-label" for="created">Creation Date</label>
-					<input id="created" name="created" placeholder="Created Date" type="text"  {{bind-attr value="created"}} data-provide="datepicker" data-date-format="MM d, yyyy">
-	
-					<label class="control-label" for="createdBy">Created By</label>
-					<input id="createdBy" name="createdBy" placeholder="refset created by" type="text"  {{bind-attr value="createdBy"}}>
-	
-					<label class="control-label" for="publishedDate">Date Published</label>
-					<input id="publishedDate" name="publishedDate" placeholder="Date Published" required="" type="text" {{bind-attr value="publishedDate"}} data-provide="datepicker">
-			{{/if}}
+					<tr>
+						<td class="label">Language</td>
+						<td class="content">{{view Em.Select 
+							contentBinding="languagesArray"
+							optionLabelPath="content.label"
+							optionValuePath="content.id"
+							valueBinding="languageCode"}}
+			  			</td>
+						<td class="label">Published Date</td><td class="content">				
+						{{view Em.TextField 
+							disabled=disablePublishedFormFields
+							placeholder="Not Applicable"
+						    valueBinding="meta.publishedDateInput"
+							data-provide="datepicker"
+							data-date-format="MM d, yyyy"
+							data-date-clear-btn="true"
+							data-date-autoclose="true"}}									
+						</td>
+					</tr>
 
+					<tr>
+						<td class="label">Refset Type</td>
+						<td class="content">
+							{{view Em.Select 
+							  contentBinding="refsetTypesArray" 
+							  optionLabelPath="content.label" 
+							  optionValuePath="content.id" 
+							  valueBinding="typeId"}}
+						</td>
+						<td class="label">Refset Members Type</td>
+						<td class="content">
+							{{view Em.Select 
+							  contentBinding="componentTypesArray" 
+							  optionLabelPath="content.label" 
+							  optionValuePath="content.id" 
+							  valueBinding="componentTypeId"}}
+			  			</td>
+					</tr>
+
+					<tr>
+						<td class="label">Creation Date</td>
+						<td class="content">
+							{{view Em.TextField 
+								disabled=disablePublishedFormFields
+								placeholder="Not Applicable"
+							    valueBinding="meta.createdDateInput"
+								data-provide="datepicker"
+								data-date-format="MM d, yyyy"
+								data-date-clear-btn="true"
+								data-date-autoclose="true"}}
+						</td>
+						<td class="label">Module</td><td class="content">
+							{{view Em.Select 
+							  contentBinding="moduleTypesArray" 
+							  optionLabelPath="content.label" 
+							  optionValuePath="content.id" 
+							  valueBinding="moduleId"}}
+			  			</td>
+					</tr>
+
+					<tr>
+						<td class="label">ID</td><td class="content" colspan=3>{{input type="text" value=id disabled=disablePublishedFormFields placeholder="Temporary ID will be auto-generated"}}</td>
+					</tr>
+				
+				</table>
+			</form>
 		</div>
 	</div>
 </div>
-
 
 <!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 <div class="panel panel-info ember-view fade in panelNoPadding">
@@ -74,9 +103,9 @@
 		
 			<input type="file" id="refsetUploadFileInput" />
 		
-			<div id="fileUploadDropZone" class="fileUploadDropZone">Drop files here</div>
+			<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drop files here</span></div>
 			
-			<a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a>
+			<p><a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a></p>
 		
 			{{#if getConceptDataInProgress}}
 				{{#bs-panel heading="Importing member concepts" type="info"}}
@@ -100,4 +129,5 @@
 	</div>
 </div>
 
+<button {{action "clearForm"}} class="btn btn-default">Clear Form</button>
 <button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>
