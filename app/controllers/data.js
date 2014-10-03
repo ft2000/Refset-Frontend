@@ -7,12 +7,11 @@ var membersAdapter = MembersAdapter.create();
 import SnomedTypesAdapter from '../adapters/type-lookups';
 var snomedTypesAdapter = SnomedTypesAdapter.create();
 
-var numAutoServerRetries 		= 4;
-var autoServerRetryInterval 	= 5; // Seconds
-var autoServerRetryMultiplier 	= 1.5; // Amount to increase wait period before retrying again.
-
 // Computed alias don't work in this controller - no container?
 
+var autoServerRetryInterval		= 5;	// Seconds before retrying
+var autoServerRetryMultiplier 	= 1.5; 	// Multiply autoServerRetryInterval by this between each retry (so wait period gets longer)
+var numAutoServerRetries		= 1; 	// Number of times to auto-retry before prompting user
 
 export default Ember.ObjectController.extend({
 	
@@ -55,17 +54,17 @@ export default Ember.ObjectController.extend({
 		{
 			if (!init.refsets)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Types. Retrying.', 'warning');	
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Types. retryCounter.', 'warning');	
 			}
 
 			if (!init.modules)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Modules Types. Retrying.', 'warning');	
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Modules Types. retryCounter.', 'warning');	
 			}
 
 			if (!init.components)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Component Types. Retrying.', 'warning');	
+				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Component Types. retryCounter.', 'warning');	
 			}
 			
 			return (init.refsets && init.refsets && init.refsets);
@@ -88,8 +87,9 @@ export default Ember.ObjectController.extend({
 				if (queueItem.runTime <= timeNow)
 				{
 					queue.splice(q,1);
+					
 					this[queueItem.callbackFn].apply(this,queueItem.params);
-					Bootstrap.GNM.push('Retrying communication','Retrying to request ' + queueItem.resourceType + ' from the server.', 'info');
+					Bootstrap.GNM.push('retryCounter communication','retryCounter to request ' + queueItem.resourceType + ' from the server.', 'info');
 				}
 			}
 			
@@ -149,21 +149,17 @@ export default Ember.ObjectController.extend({
 		}
 	},
 	
-	showWaitAnim : function(fn)
+	showWaitAnim : function()
 	{
 		this.set("showWaitCounter",this.showWaitCounter+1);
 		
-//		Ember.Logger.log("showWaitAnim (show,wait,calls,fn)",this.showWaitCounter,this.hideWaitCounter,this.callsInProgressCounter,fn);
-
 		$('.waitAnim').show();
 	},
 	
-	hideWaitAnim : function(fn)
+	hideWaitAnim : function()
 	{
 		this.set("hideWaitCounter",this.hideWaitCounter+1);
 		
-//		Ember.Logger.log("hideWaitAnim (show,wait,calls,fn)",this.showWaitCounter,this.hideWaitCounter,this.callsInProgressCounter,fn);
-
 		if (this.showWaitCounter === this.hideWaitCounter)
 		{
 			$('.waitAnim').hide();
@@ -182,29 +178,17 @@ export default Ember.ObjectController.extend({
 		return Math.ceil(autoServerRetryInterval * multiplier);
 	},
 	
-	handleRequestFailure : function(response,resourceType,callbackFn,callbackParams,retrying)
+	handleRequestFailure : function(response,resourceType,callbackFn,callbackParams,callingController,completeAction,retryCounter)
 	{
-		// Failed response... check errorInfo.code / message
-		Ember.Logger.log("Failed response for our request (code,message)",response.meta.errorInfo.code,response.meta.errorInfo.message);
-		
-		var loginController = this.get('controllers.login');
-		var user = loginController.user;
-		
 		var _this = this;
 		
 		switch(response.meta.errorInfo.code)
 		{
 			case "401":
 			{
-				switch (resourceType)
-				{
-					case 'Refset':
-					{
-						this.set("refset",{error:1,unauthorised:1});
-						break;
-					}
-				}
-				
+				var loginController = this.get('controllers.login');
+				var user = loginController.user;
+								
 				// Question here is, has the user's token been updated?
 
 				if (user.token === null)
@@ -212,6 +196,11 @@ export default Ember.ObjectController.extend({
 					// User is not logged in, so prompt to login
 					Bootstrap.GNM.push('Authentication Required','The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
 					loginController.showLoginForm();
+
+    				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+    				{
+        				callingController.send(completeAction,response);
+    				}				
 				}
 				else
 				{
@@ -232,7 +221,12 @@ export default Ember.ObjectController.extend({
 			        });
 				}
 				
-				_this.hideWaitAnim(callbackFn);
+				_this.hideWaitAnim();
+				
+				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				{
+    				callingController.send(completeAction,{error:1,unauthorised:1});
+				}
 				
 				return;
 			}
@@ -241,37 +235,37 @@ export default Ember.ObjectController.extend({
 			{
 				// Only going to work for refsets!!!!!!
 				
-				switch (resourceType)
-				{
-					case 'Refset':
-					{
-						this.set("refset",{error:1,notFound:1});
-						break;
-					}
-				}
-
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
-				// Need to deal with this in the template as well...report to the user that what they want cannot be found.
+				_this.hideWaitAnim();
 				
-				_this.hideWaitAnim(callbackFn);
+				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				{
+    				callingController.send(completeAction,{error:1,notFound:1});
+				}
 
 				return;
 			}
 			
 			default :
 			{
-				// Other error, worth retrying...
+				// Other error, worth retryCounter...
 			
-				if (retrying < numAutoServerRetries)
+				if (retryCounter < numAutoServerRetries)
 				{
-					var waitPeriod = _this.getRetryWaitPeriod(retrying);
+					var waitPeriod = _this.getRetryWaitPeriod(retryCounter);
 					
-					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retrying) + ' times. Will retry loading ' + resourceType + ' in ' + waitPeriod + ' seconds.', 'warning');
+					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retryCounter) + ' times. Will retry ' + resourceType + ' in ' + waitPeriod + ' seconds.', 'warning');
 									
+
 					var params = callbackParams;
-					params.push(retrying);
+					if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+					{
+						params.push(callingController);
+						params.push(completeAction);
+					}
+					params.push(retryCounter);
 
 					var runTime = new Date().getTime() + (waitPeriod * 1000);
 					
@@ -279,7 +273,7 @@ export default Ember.ObjectController.extend({
 					queue.push({resourceType:resourceType,callbackFn:callbackFn,params:params,runTime:runTime});
 					
 					_this.set("retryQueue",queue);
-
+					
 					return;
 				}
 				else
@@ -287,21 +281,25 @@ export default Ember.ObjectController.extend({
 					// Too many errors. Time to prompt the user
 					if (!this.loginDialogOpen || !this.initialised)
 					{
-						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed.', 'danger');
+						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to ' + resourceType + ' have failed.', 'danger');
 
 						BootstrapDialog.show({
-				            title: '<img src="assets/img/login.white.png"> Communication Failure',
+				            title: '<img src="assets/img/login.white.png"> Communication Failure : ' + resourceType,
 				            closable: false,
-				            message: '<p>There has been a problem communicating with the server.</p><p>We have tried ' + (numAutoServerRetries +1) + ' times already.</p><p>Would you like to keep trying or give up?</p>',
+				            message: '<p>There has been a problem communicating with the server.</p><p>We have tried ' + (numAutoServerRetries +1) + ' times already to ' + resourceType + '.</p><p>Would you like to keep trying or give up?</p>',
 				            buttons: 
 				            [
 				             	{
 				             		label: 'Give up',
 				             		action: function(dialog)
 				             		{
-				             			// Go to parent route.... location.href = ".." ?????
-				             			_this.send("abortDataRequest",resourceType);
-				        				_this.hideWaitAnim(callbackFn);
+				             			_this.hideWaitAnim();
+				        				
+				        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				        				{
+				            				callingController.send(completeAction,{error:1,commsError:1});
+				        				}
+				        				
 				             			dialog.close();
 				             		}
 				             	},
@@ -310,7 +308,15 @@ export default Ember.ObjectController.extend({
 				             		cssClass: 'btn-primary',
 				             		action: function(dialog)
 				             		{
-				             			_this[callbackFn].apply(_this,callbackParams);
+				    					var params = callbackParams;
+				    					if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				    					{
+				    						params.push(callingController);
+				    						params.push(completeAction);
+				    					}
+				    					params.push(retryCounter);
+				    					
+				    					_this[callbackFn].apply(_this,params);
 				             			dialog.close();
 				             		}
 				             	}
@@ -321,12 +327,17 @@ export default Ember.ObjectController.extend({
 					{
 						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed. Giving up.', 'danger');
              			_this.send("abortDataRequest",resourceType);
-        				_this.hideWaitAnim(callbackFn);						
+        				_this.hideWaitAnim();
+        				
+        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+        				{
+            				callingController.send(completeAction,{error:1,commsError:1});
+        				}
+
+        				return;
 					}
 					
 				}
-				
-				return;
 			}
 		}
 	},
@@ -335,21 +346,21 @@ export default Ember.ObjectController.extend({
 	// -----------------------------------------------------------------------------------------------
 	
 	
-	getAllRefsets : function(retry)
+	getAllRefsets : function(callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.refsets:getAllRefSets (retrying)",retrying);
-
+		Ember.Logger.log("controllers.refsets:getAllRefSets (retry)",retry);
+		
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 			
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getAllRefSets');
+			this.showWaitAnim();
 		}
 		
 		refsetsAdapter.findAll(user).then(function(response)
@@ -358,7 +369,7 @@ export default Ember.ObjectController.extend({
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim('getAllRefsets');
+				_this.hideWaitAnim();
 				
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
@@ -390,44 +401,42 @@ export default Ember.ObjectController.extend({
 				});			
 
 				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
+				callingController.send(completeAction,{error:0});
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'List of Refsets','getAllRefsets',[],retrying);
+				_this.handleRequestFailure(response,'Get list of refsets','getAllRefsets',[],callingController,completeAction,retryCounter);
 			}
 		});
 	},
 	
-	getRefset : function(id,retry)
+	getRefset : function(id,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.data:getRefset (id,retrying)",id,retrying);
+		Ember.Logger.log("controllers.data:getRefset (id,retry)",id,retry);
 
 		this.set("currentRefsetId",id);
 		
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getRefset');
+			this.showWaitAnim();
 		}
 		
-		var refset = refsetsAdapter.find(user,id).then(function(response)
+		refsetsAdapter.find(user,id).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim('getRefset');
+				_this.hideWaitAnim();
 
-				// Successful response for our request
-				Ember.Logger.log("Successful response for our request",response);
-				
 				response.content.refset.meta = {};
 				_this.set("refset",response.content.refset);
 				
@@ -453,64 +462,109 @@ export default Ember.ObjectController.extend({
 				// Strip nulls
 				idArray = $.grep(idArray,function(n){ return(n); });
 				
-				_this.getMembers(idArray).then(function(conceptData)
+				if (idArray.length)
 				{
-					var MemberData = _this.refset.members.map(function(member)
+					_this.getMembers(idArray).then(function(conceptData)
 					{
-						member.meta = {};
-
-						if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
+						var MemberData = _this.refset.members.map(function(member)
 						{
-							member.meta.description 			= conceptData[member.referenceComponentId].label;
-							member.meta.conceptActive 			= conceptData[member.referenceComponentId].active;
-							member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
-							member.meta.found 					= true;
-							member.meta.deleteConcept			= false;
-						}
-						else
-						{
-							member.meta.description 			= 'Concept not found in Snomed CT database';
-							member.meta.found 					= false;
-							member.meta.deleteConcept			= false;
-						}
+							member.meta = {};
+	
+							if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
+							{
+								member.meta.description 			= conceptData[member.referenceComponentId].label;
+								member.meta.conceptActive 			= conceptData[member.referenceComponentId].active;
+								member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
+								member.meta.found 					= true;
+								member.meta.deleteConcept			= false;
+							}
+							else
+							{
+								member.meta.description 			= 'Concept not found in Snomed CT database';
+								member.meta.found 					= false;
+								member.meta.deleteConcept			= false;
+							}
+							
+							return member;
+						});
 						
-						return member;
+						_this.refset.members.setObjects(MemberData);
+						callingController.send(completeAction,{error:0});
 					});
-					
-					_this.refset.members.setObjects(MemberData);
-				});
-
+				}
+				else
+				{
+					callingController.send(completeAction,{error:0});
+				}
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Refset','getRefset',[id],retrying);
+				_this.handleRequestFailure(response,'Get refset','getRefset',[id],callingController,completeAction,retryCounter);
+			}
+		});
+	},
+	
+	createRefset : function(refset,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:createRefset (callingController,completeAction,refset,retry)",callingController,completeAction,refset,retry);
+
+//		var callingController = this.get('controllers.refsets/new');
+		
+		
+		var _this 		= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		refsetsAdapter.create(user,refset).then(function(response)
+		{
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				Ember.Logger.log("Refset created:",response.content.id);
+				
+				refset.id = response.content.id;		
+/*
+				MemberData.map(function(member)
+				{
+					Ember.Logger.log("Adding member",member);
+					refsetsAdapter.addMember(user,refsetId,member);
+				});
+*/				
+				_this.set("model",refset);
+				
+				callingController.send(completeAction,{error:0,id:refset.id});				
+			}	
+			else
+			{
+				_this.handleRequestFailure(response,'Create refset','createRefset',[refset],callingController,completeAction,retryCounter);
 			}
 		});
 	},
 
-	
+
 	getMembers : function(members,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMembers (members,retry)",members,retry);
 
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getMembers');
+			this.showWaitAnim();
 		}
 		
 		var memberDetails = membersAdapter.findList(user,members).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
-			_this.hideWaitAnim('getMembers');
+			_this.hideWaitAnim();
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -518,7 +572,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
+				_this.handleRequestFailure(response,'Get refset member details','getMembers',[members],retryCounter);
 				return {};
 			}			
 		});	
@@ -531,7 +585,7 @@ export default Ember.ObjectController.extend({
 		Ember.Logger.log("controllers.refsets:getMember (id,retry)",id,retry);
 
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
@@ -543,16 +597,16 @@ export default Ember.ObjectController.extend({
 		
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getMember');
+			this.showWaitAnim();
 		}
 		
 		var memberDetails = membersAdapter.find(user,id).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
-			_this.hideWaitAnim('getMember');
+			_this.hideWaitAnim();
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -561,7 +615,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
+				_this.handleRequestFailure(response,'Get refset memebr details','getMember',[id],retryCounter);
 				return {label:'not found'};
 			}			
 		});	
@@ -579,16 +633,16 @@ export default Ember.ObjectController.extend({
 		}
 		
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getSnomedRefsetTypes');
+			this.showWaitAnim();
 		}
 		
 		var promise = snomedTypesAdapter.getRefsetTypes(user).then(function(response)
@@ -597,7 +651,7 @@ export default Ember.ObjectController.extend({
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim('getSnomedRefsetTypes');
+				_this.hideWaitAnim();
 				_this.set("refsetTypes",response.content.refsetTypes);
 				
 				for (var x=0;x<RefsetENV.APP.supportedSnomedTypes.refsetTypes.length;x++)
@@ -608,7 +662,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Refset Types','getSnomedRefsetTypes',[],retrying);
+				_this.handleRequestFailure(response,'Get refset types','getSnomedRefsetTypes',[],retryCounter);
 			}
 			return response;
 		});	
@@ -626,16 +680,16 @@ export default Ember.ObjectController.extend({
 		}
 
 		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getSnomedModulesTypes');
+			this.showWaitAnim();
 		}
 		
 		var promise = snomedTypesAdapter.getModules(user).then(function(response)
@@ -644,7 +698,7 @@ export default Ember.ObjectController.extend({
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim('getSnomedModulesTypes');
+				_this.hideWaitAnim();
 				_this.set("moduleTypes",response.content.modules);	
 				
 				for (var id in response.content.modules)
@@ -654,7 +708,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Module Types','getSnomedModulesTypes',[],retrying);
+				_this.handleRequestFailure(response,'Get module types','getSnomedModulesTypes',[],retryCounter);
 			}
 			return response;
 		});	
@@ -671,17 +725,17 @@ export default Ember.ObjectController.extend({
 			return;
 		}
 
-		var _this 		= this;
-		var retrying 	= (typeof retry === "undefined" ? 0 : retry);
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
 		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
 
-		if (!retrying)
+		if (!retryCounter)
 		{
-			this.showWaitAnim('getSnomedComponentTypes');
+			this.showWaitAnim();
 		}
 		
 		var promise = snomedTypesAdapter.getComponentTypes(user).then(function(response)
@@ -690,7 +744,7 @@ export default Ember.ObjectController.extend({
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim('getSnomedComponentTypes');
+				_this.hideWaitAnim();
 				_this.set("componentTypes",response.content.componentTypes);
 
 				for (var x=0;x<RefsetENV.APP.supportedSnomedTypes.componentTypes.length;x++)
@@ -701,7 +755,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Component Types','getSnomedComponentTypes',[],retrying);
+				_this.handleRequestFailure(response,'Get refset component types','getSnomedComponentTypes',[],retryCounter);
 			}
 			
 			return response;

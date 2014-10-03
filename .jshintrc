@@ -10,10 +10,13 @@
     "$" : true,
     "readSingleFile" : true,
     "handleDragOver" : true,
+    "handleDragEnter" : true,
+    "handleDragLeave" : true,
     "sessionStoreManager" : true,
     "saveAs" : true,
     "BootstrapDialog" : true,
-    "Handlebars" : true
+    "Handlebars" : true,
+    "moment" : true
   },
   "browser" : true,
   "boss" : true,

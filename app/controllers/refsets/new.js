@@ -1,7 +1,4 @@
 import RefsetModel 		from '../../models/refset';
-import RefsetsAdapter 	from '../../adapters/refsets';
-
-var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
@@ -16,6 +13,8 @@ export default Ember.ObjectController.extend({
 	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+	
+	dialogInstance : null,
 		
 	model : RefsetModel.create(),
 	
@@ -56,7 +55,8 @@ export default Ember.ObjectController.extend({
 			Refset.created = this.get("model.created");
 		}
 		
-		Ember.Logger.log(Refset);
+		// Need to validate the form at this point and abort if required fields are not completed
+		
 		
 /*
 		var MemberData = [];
@@ -64,43 +64,60 @@ export default Ember.ObjectController.extend({
 		{
 			MemberData.push(parseInt($(this).val()));
 		});
-*/
-		
-		var loginController = this.get('controllers.login');
-		var user = loginController.user;
-		
-		var _this = this;
 
-		refsetsAdapter.create(user,Refset).then(function(refset)
-		{
-			if (refset.meta.status === "CREATED")
-			{
-				Ember.Logger.log("Refset created:",refset.content.id);
-				
-				var refsetId = refset.content.id;
-				
-/*
-				MemberData.map(function(member)
-				{
-					Ember.Logger.log("Adding member",member);
-					refsetsAdapter.addMember(user,refsetId,member);
-				});
-*/				
-				_this.set("model",RefsetModel.create());
 //				var uploadAdapter = _this.get('controllers.refsets/upload');		
 //				uploadAdapter.clearMembers();
-				
-				_this.transitionToRoute('refsets.refset',refsetId);
-			}
-			else
-			{
-				Ember.Logger.log("Refset create failed:",refset.meta.message);				
-			}	
-		});
+
+*/
+		
+		this.dialogInstance = BootstrapDialog.show({
+            title: '<img src="assets/img/login.white.png"> Creating your refset',
+            closable: false,
+            message: '<br><br><div class="centre">We are creating your refset. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+            buttons: [{
+                label: 'OK',
+                cssClass: 'btn-primary',
+                action: function(dialogRef){
+                    dialogRef.close();
+                }
+            }]
+        });
+		this.dialogInstance.getModalFooter().hide();
+
+		var dataController = this.get('controllers.data');		
+		dataController.createRefset(Refset,this,'createRefsetComplete');
 	},
 
     actions :
     {
+    	createRefsetComplete : function(response)
+    	{
+    		Ember.Logger.log("controller.refsets.new:actions:createRefsetComplete",response);
+    		
+    		if (response.error)
+    		{
+    			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset creation failed.</h2></td></tr></table>';
+
+    			if (typeof response.unauthorised !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to log in.</p>';
+    			}
+
+    			if (typeof response.commsError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
+    			}
+
+    			this.dialogInstance.setMessage(message);
+    			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+    		{
+    			this.transitionToRoute('refsets.refset',response.id);
+    		}
+    	},
+    	
     	togglePublishedRefsetImportForm : function()
     	{
     		Ember.Logger.log("togglePublishedRefsetImportForm",this.doImportPublishedRefset);
