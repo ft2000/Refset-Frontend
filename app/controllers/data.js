@@ -11,7 +11,7 @@ var snomedTypesAdapter = SnomedTypesAdapter.create();
 
 var autoServerRetryInterval		= 5;	// Seconds before retrying
 var autoServerRetryMultiplier 	= 1.5; 	// Multiply autoServerRetryInterval by this between each retry (so wait period gets longer)
-var numAutoServerRetries		= 1; 	// Number of times to auto-retry before prompting user
+var numAutoServerRetries		= 5; 	// Number of times to auto-retry before prompting user
 
 export default Ember.ObjectController.extend({
 	

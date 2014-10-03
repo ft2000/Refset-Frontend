@@ -114,6 +114,7 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
+    			this.dialogInstance.close();
     			this.transitionToRoute('refsets.refset',response.id);
     		}
     	},
