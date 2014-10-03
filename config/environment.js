@@ -47,7 +47,7 @@ module.exports = function(environment) {
         },
         
         loginExpiry : 20, // minutes before you are logged out
-        }
+        },
   };
 
   if (environment === 'development') {

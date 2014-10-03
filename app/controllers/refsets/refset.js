@@ -10,8 +10,30 @@ export default Ember.ObjectController.extend({
 	componentTypes 	: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 	: Ember.computed.alias("controllers.data.moduleTypes"),
 
-	actions : 
+	initModel : function(params)
 	{
+		Ember.Logger.log("controllers.refsets.refset:initModel");
+		
+		var _this 			= this;
+		var id 				= params.params["refsets.refset"].id;
+		var dataController 	= this.get('controllers.data');
+		
+		// Run next so that we do not prevent the UI being displayed if the data is delayed...
+		return Ember.run.next(function(){dataController.getRefset(id,_this,'getRefsetComplete');});
+	},
+
+	actions :
+	{
+		getRefsetComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetComplete",response);
+			
+			if (response.error)
+			{
+				this.set("model",response);
+			}
+		},
+
 		updateRefset : function()
 		{
 			var dataController = this.get('controllers.data');

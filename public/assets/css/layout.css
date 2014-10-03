@@ -208,6 +208,16 @@ label + label {
 .clearBoth {
   clear: both;
 }
+.centre {
+  margin: auto;
+  text-align: center;
+  width: inherit;
+}
+.centre * {
+  margin: auto;
+  text-align: center;
+  width: inherit;
+}
 .waitAnim {
   position: fixed;
   top: 300px;
@@ -363,4 +373,7 @@ label span {
   font-size: 12px;
   margin-left: 10px;
   color: #000000;
+}
+tbody tr {
+  border: none;
 }

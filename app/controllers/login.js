@@ -181,11 +181,13 @@ export default Ember.ObjectController.extend({
 		Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png"> Snomed CT', 'registration', this.registerButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
 	},
 	
-   	   
    	init : function()
 	{	
+   		var _this = this;
+   		
    	   	// When we start up we want to check the Local Store to see if the user may already be logged in
-		this.monitorLoginViaLocalStore();
+   		this.monitorLoginViaLocalStore();
+   		setInterval(function(){_this.monitorLoginViaLocalStore;},1000);
 		
 		// Show the login form if needed
 		if(this.user.token === null && !this.user.loginDeclined)
@@ -246,14 +248,6 @@ export default Ember.ObjectController.extend({
 			this.set("autoLoggedOut",true);
 			this.logout();
 		}
-		
-		var _this = this;
-
-		// Run this function again in 1000 milliseconds time
-		Ember.run.later(function()
-		{
-			_this.monitorLoginViaLocalStore();
-		},1000);
 	},
 	
 	// Events handlers to detect ANY user interaction. Used to reset the inactivity timer.
@@ -293,7 +287,7 @@ export default Ember.ObjectController.extend({
 		{
 			this.logout();
 		},
-		
+
 		closeLoginModal : function()
 		{
 			if (this.loginDialogOpen)
@@ -320,7 +314,6 @@ export default Ember.ObjectController.extend({
 			
 			this.set("loginDialogOpen",false);
  		},
-
 		
 		// For now registration consists only of opening the users mail client with some pre-filled in information.
 		registerUser: function()
