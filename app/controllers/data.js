@@ -483,6 +483,9 @@ export default Ember.ObjectController.extend({
 								member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
 								member.meta.found 					= true;
 								member.meta.deleteConcept			= false;
+								
+								member.meta.originalActive			= member.active;
+								member.meta.originalModuleId		= member.moduleId;
 							}
 							else
 							{
@@ -541,9 +544,9 @@ export default Ember.ObjectController.extend({
 
 	deleteRefset : function(refsetId,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.data:deleteRefset (refsetId,callingController,completeAction,refset,retry)",refsetId,callingController,completeAction,retry);
+		Ember.Logger.log("controllers.data:deleteRefset (refsetId,callingController,completeAction,retry)",refsetId,callingController,completeAction,retry);
 
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 		
 		var loginController = this.get('controllers.login');
@@ -553,11 +556,36 @@ export default Ember.ObjectController.extend({
 		{
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
+				Bootstrap.GNM.push('Refset Service','Refset created', 'info');
 				callingController.send(completeAction,{error:0});				
 			}	
 			else
 			{
 				_this.handleRequestFailure(response,'Delete refset','deleteRefset',[refsetId],callingController,completeAction,retryCounter);
+			}
+		});
+	},
+	
+	updateRefset : function(refset,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:updateRefset (refset,callingController,completeAction,retry)",refset,callingController,completeAction,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		refsetsAdapter.update(user,refset).then(function(response)
+		{
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				Bootstrap.GNM.push('Refset Service','Refset updated', 'info');
+				callingController.send(completeAction,{error:0});				
+			}	
+			else
+			{
+				_this.handleRequestFailure(response,'Update refset','updateRefset',[refset],callingController,completeAction,retryCounter);
 			}
 		});
 	},

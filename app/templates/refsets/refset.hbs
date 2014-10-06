@@ -83,6 +83,7 @@
 												<label>Published: <span>unknown</span></label>
 											{{/if}}
 											<br>
+											<label>Module: <span>{{snomed-id-to-label moduleId moduleTypes}}</span></label>
 											<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
 											{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any refset export at this time</label>{{/unless}}
 										{{/if}}
