@@ -46,7 +46,7 @@
 							</tr>
 		
 							<tr>
-								<td class="label">Creation Date on</td><td class="content">{{date-format created}}</td>
+								<td class="label">Created</td><td class="content">{{date-time-format created}}</td>
 								<td class="label">Last Updated by</td><td class="content">{{createdBy}}</td>
 							</tr>
 		
@@ -60,35 +60,41 @@
 					</div>
 				</div>
 			</div>
-			
+
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
-		             <h4 class="panel-title">Members {{#if members.length}}({{members.length}}){{/if}}</h4>
+		             <h4 class="panel-title">Members ({{members.length}})</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
 		            <div id="collapseTwo" class="panel-body collapse">
 						<ul class="list-group checkboxList">
-							{{#each members}}
-								<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
+							{{#if members}}
+								{{#each members}}
+									<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
 
-									<label class="right">SCTID <span>{{referenceComponentId}}</span></label>
-									<p class="description">{{meta.description}}</p>									
-									
-									{{#if meta.found}}
-										<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
-										<label>Last modified: <span>{{date-time-format effectiveTime}}</span></label>
-										<label>Last modified by: <span>unknown</span></label>
-										{{#if published}}
-											<label>Published: <span>unknown</span></label>
+										<label class="right">SCTID <span>{{referenceComponentId}}</span></label>
+										<p class="description">{{meta.description}}</p>									
+
+										{{#if meta.found}}
+											<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
+											<label>Last modified: <span>{{date-time-format effectiveTime}}</span></label>
+											<label>Last modified by: <span>unknown</span></label>
+											{{#if published}}
+												<label>Published: <span>unknown</span></label>
+											{{/if}}
+											<br>
+											<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
+											{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any refset export at this time</label>{{/unless}}
 										{{/if}}
-										<br>
-										<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
-										{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any Refset export at this time</label>{{/unless}}
-									{{/if}}
 
-									{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
+										{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
+									</li>
+								{{/each}}
+							{{else}}
+								<li class='list-group-item'>
+									Your refset does not have any memebers yet...
 								</li>
-							{{/each}}
+							{{/if}}
 						</ul>
 					</div>
 				</div>

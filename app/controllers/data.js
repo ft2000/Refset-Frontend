@@ -21,7 +21,8 @@ export default Ember.ObjectController.extend({
 	unpublishedRefsets		: [],
 	publishedRefsets		: [],
 	refset 					: {},
-	currentRefsetId			: null,
+	currentRefset			: null,
+	currentAllRefsets		: null,
 	showWaitCounter			: 0,
 	hideWaitCounter			: 0,
 	callsInProgressCounter	: 0,
@@ -140,12 +141,15 @@ export default Ember.ObjectController.extend({
 		// Abandon any previous queued messages since we'll retry now
 		this.applicationPathChanged();
 		
-		this.getAllRefsets();
+		if (this.currentAllRefsets !== null)
+		{
+			this.getAllRefsets(this.currentAllRefsets.callingController,this.currentAllRefsets.completeAction);
+		}
 		
 		// If we are holding a refset then refresh it
-		if (this.currentRefsetId !== null)
+		if (this.currentRefset !== null)
 		{
-			this.getRefset(this.currentRefsetId);
+			this.getRefset(this.currentRefset.id,this.currentRefset.callingController,this.currentRefset.completeAction);
 		}
 	},
 	
@@ -352,7 +356,9 @@ export default Ember.ObjectController.extend({
 		
 		var _this 		= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
-			
+	
+		this.set("currentAllRefsets",{callingController:callingController,completeAction:completeAction});	
+		
 		var loginController = this.get('controllers.login');
 		var user = loginController.user;
 		
@@ -412,9 +418,9 @@ export default Ember.ObjectController.extend({
 	
 	getRefset : function(id,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.data:getRefset (id,retry)",id,retry);
+		Ember.Logger.log("controllers.data:getRefset (id,callingController,completeAction,retry)",id,callingController,completeAction,retry);
 
-		this.set("currentRefsetId",id);
+		this.set("currentRefset",{id:id,callingController:callingController,completeAction:completeAction});
 		
 		var _this 		= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -499,18 +505,15 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Get refset','getRefset',[id],callingController,completeAction,retryCounter);
+				_this.handleRequestFailure(response,'Refset','getRefset',[id],callingController,completeAction,retryCounter);
 			}
 		});
 	},
 	
 	createRefset : function(refset,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.data:createRefset (callingController,completeAction,refset,retry)",callingController,completeAction,refset,retry);
+		Ember.Logger.log("controllers.data:createRefset (retry,callingController,completeAction,retry)",retry,callingController,completeAction,refset);
 
-//		var callingController = this.get('controllers.refsets/new');
-		
-		
 		var _this 		= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 		
@@ -524,13 +527,7 @@ export default Ember.ObjectController.extend({
 				Ember.Logger.log("Refset created:",response.content.id);
 				
 				refset.id = response.content.id;		
-/*
-				MemberData.map(function(member)
-				{
-					Ember.Logger.log("Adding member",member);
-					refsetsAdapter.addMember(user,refsetId,member);
-				});
-*/				
+		
 				_this.set("model",refset);
 				
 				callingController.send(completeAction,{error:0,id:refset.id});				
@@ -542,7 +539,71 @@ export default Ember.ObjectController.extend({
 		});
 	},
 
+	deleteRefset : function(refsetId,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:deleteRefset (refsetId,callingController,completeAction,refset,retry)",refsetId,callingController,completeAction,retry);
 
+		var _this 		= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		refsetsAdapter.deleteRefset(user,refsetId).then(function(response)
+		{
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				callingController.send(completeAction,{error:0});				
+			}	
+			else
+			{
+				_this.handleRequestFailure(response,'Delete refset','deleteRefset',[refsetId],callingController,completeAction,retryCounter);
+			}
+		});
+	},
+	
+	addMembers : function(refsetId,members,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.refsets:addMembers (members,retry)",members,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user 			= loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retryCounter)
+		{
+			this.showWaitAnim();
+		}
+		
+		var result = refsetsAdapter.addMembers(user,refsetId,members).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim();
+
+			callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
+
+			// response needs to be changed since it contains no meta info
+			// for now I'll ignore it...
+			/*
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				return response.content.outcome;
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],retryCounter);
+				return {};
+			}
+			*/
+		});
+	},
+	
+	
 	getMembers : function(members,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMembers (members,retry)",members,retry);

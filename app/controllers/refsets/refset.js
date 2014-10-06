@@ -9,6 +9,7 @@ export default Ember.ObjectController.extend({
 	refsetTypes 	: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 	: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 	: Ember.computed.alias("controllers.data.moduleTypes"),
+	dialogInstance	: null,
 
 	initModel : function(params)
 	{
@@ -30,6 +31,7 @@ export default Ember.ObjectController.extend({
 			
 			if (response.error)
 			{
+				// Model will then contain attributes that will modify the display...
 				this.set("model",response);
 			}
 		},
@@ -111,27 +113,88 @@ export default Ember.ObjectController.extend({
 			{
 				var blob = new Blob([exportFile], {type: "text/plain;charset=utf-8"});
 				saveAs(blob, id + ".rf2");
-			});
-			
+			});	
 		},	
 		
 		deleteRefset : function(id)
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
 			
-			var loginController = this.controllerFor('login');
-			var user = loginController.user;
-			
 			var _this = this;
+			var refset = this.get("model");
 			
-			refsetsAdapter.deleteRefset(user, id).then(function()
-			{
-				var refsetController = _this.controllerFor('refsets');
-				refsetController.getAllRefsets(1);
-				
-				_this.transitionTo('refsets');
-			});
-			
+			this.dialogInstance = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Delete refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Are you sure you wish to delete this refset?</div><br><br><div class="centre">' + refset.description + '<br><br>',
+	            buttons: [{
+	                label: 'No. Do not delete',
+	                cssClass: 'btn-default left',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            },
+                {
+	                label: 'Yes. Delete refset',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    _this.send("doDeleteRefset",id);
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
 		},	
+		
+		doDeleteRefset : function(id)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
+						
+			this.dialogInstance = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Deleting your refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Deleting. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			
+			this.dialogInstance.getModalFooter().hide();
+			
+			var dataController = this.get('controllers.data');
+			dataController.deleteRefset(id,this,'deleteRefsetComplete');
+		},
+	
+		deleteRefsetComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefsetComplete",response);
+			
+    		if (response.error)
+    		{
+    			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset deletion failed.</h2></td></tr></table>';
+
+    			if (typeof response.unauthorised !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">You are not authorised to delete refsets. You may need to log in.</p>';
+    			}
+
+    			if (typeof response.commsError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
+    			}
+
+    			this.dialogInstance.setMessage(message);
+    			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+    		{
+    			this.dialogInstance.close();
+    			this.transitionToRoute('refsets');
+    		}
+		},
 	}
 });

@@ -10,10 +10,10 @@ nav.loginRegisterButtons .warningText {
   color: red;
 }
 /* Dashboard panels */
-.dashboard .panelNoPadding .panel-body {
+.panelNoPadding .panel-body {
   padding: 0;
 }
-.dashboard .panelNoPadding .panel-body .list-group {
+.panelNoPadding .panel-body .list-group {
   margin: 0;
 }
 .list-group-item {
@@ -164,7 +164,8 @@ label + label {
 .checkboxList .disabled {
   color: #c9302c;
 }
-.checkboxList .inactiveConcept {
+.checkboxList .inactiveConcept,
+.checkboxList .deleteConcept {
   background-color: #fbeeee;
 }
 .checkboxList .referenceComponentId {

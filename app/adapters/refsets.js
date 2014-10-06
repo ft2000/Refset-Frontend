@@ -112,6 +112,7 @@ export default Ember.Object.extend({
 		var _this = this;
 
 		var member = {referenceComponentId : referenceComponentId, active:true};
+//		delete member["meta"];
 			
 		var jsonFormatMemberData = JSON.stringify(member);
 		
@@ -124,6 +125,31 @@ export default Ember.Object.extend({
 			return _this.returnErrorResponse(response);
 		});
 
+		return result;	
+	},
+	
+	addMembers : function (user,refsetId,members)
+	{
+		Ember.Logger.log("adapters.refsets:addMembers (user,refsetId,members)",user,refsetId,members);
+
+		var _this = this;
+		
+		var idArray = members.map(function(member)
+		{
+			return member.referenceComponentId;
+		});
+			
+		var jsonFormatMemberData = JSON.stringify(idArray);
+
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/members', {headers:_this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response)
+		{			
+			return response;
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});
+		
 		return result;	
 	},
 	

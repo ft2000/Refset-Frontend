@@ -7,6 +7,18 @@ export default Ember.ArrayController.extend({
 	needs : ["login"],
 	
 	model : [],
+	
+	importRequiredFilteredModel : function()
+	{
+		var concepts = this.get('model');
+		
+		Ember.Logger.log("importRequiredFilteredModel concepts",concepts)
+
+		return concepts.filter(function(concept)
+		{
+			return !concept.meta.deleteConcept;
+		});
+	}.property('model'),
     
     importError : null,
 
@@ -23,9 +35,23 @@ export default Ember.ArrayController.extend({
 		this.model.setObjects([]);
 	},
 	
+	getMembersMarkedForImport : function()
+	{
+		var concepts = this.get('model');
+		
+		var conceptsToImport =  concepts.map(function(concept)
+		{
+			return concept.meta.deleteConcept ? null : concept;
+		});
+		
+		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n) });
+		
+		return conceptsToImport;
+	},
+	
     actions :
     {
-		uploadMemberList : function(members)
+		importFlatFile : function(members)
 		{
 			var _this = this;
 			var membersArray = members.split('\n');
@@ -44,26 +70,26 @@ export default Ember.ArrayController.extend({
 			var user = loginController.user;
 			
 			this.set("getConceptDataInProgress",true);
-			
+
 			var membersData = membersAdapter.findList(user,idArray).then(function(result)
 			{
+				Ember.Logger.log("result",result);
+
 				var membersData2;
 				
-				if (result.status)
+				if (typeof result.meta.errorInfo === "undefined")
 				{
-					var conceptData = result.data;
+					var conceptData = result.content.concepts;
 					
 					membersData2 = idArray.map(function(refCompId)
 					{
-						Ember.Logger.log("refCompId",refCompId,conceptData);
-						
 						if (conceptData[refCompId] !== null)
 						{
-							return {referenceComponentId:refCompId,description: conceptData[refCompId].label, active:conceptData[refCompId].active, found:true, disabled:!conceptData[refCompId].active};
+							return {referenceComponentId:refCompId, active:true, meta : {conceptActive:conceptData[refCompId].active, conceptEffectiveTime : conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: conceptData[refCompId].label,found:true, disabled:!conceptData[refCompId].active}};
 						}
 						else
 						{
-							return {referenceComponentId:refCompId,description: 'concept not found', active:false, found:false, disabled:true};
+							return {referenceComponentId:refCompId, active:false, meta : {conceptActive:false, conceptEffectiveTime:conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: 'concept not found',found:false, disabled:true}};
 						}
 					});	
 

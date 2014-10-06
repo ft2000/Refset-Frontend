@@ -17,7 +17,7 @@ function readSingleFile(evt)
 			var contents = e.target.result;
 
 			var controller = Refset.__container__.lookup("controller:refsets.upload");
-			controller.send('uploadMemberList',contents);
+			controller.send('importFlatFile',contents);
 		}
 		
 		r.readAsText(f);
@@ -32,7 +32,7 @@ function handleDragOver(evt)
 {
 	evt.stopPropagation();
 	evt.preventDefault();
-	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+	evt.dataTransfer.dropEffect = 'copy';
 }
 
 function handleDragEnter(evt) 
