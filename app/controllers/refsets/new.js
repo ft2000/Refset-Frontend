@@ -9,6 +9,8 @@ export default Ember.ObjectController.extend({
 	moduleTypesArray 	: Ember.computed.alias("controllers.data.moduleTypesArray"),
 	languagesArray		: [{id:'en_US',label:'International English'}],
 
+	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
+
 	disablePublishedFormFields : true,
 	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
@@ -24,6 +26,9 @@ export default Ember.ObjectController.extend({
 		this.set("model.meta.createdDateInput",null);
 		this.set("model.meta.publishedDateInput",null);
 		this.set("disablePublishedFormFields",true);
+		
+		var uploadController = this.get('controllers.refsets/upload');		
+		uploadController.clearMemberList();
 
 		Ember.run.scheduleOnce('afterRender', this, function(){
 			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
@@ -56,20 +61,7 @@ export default Ember.ObjectController.extend({
 		}
 		
 		// Need to validate the form at this point and abort if required fields are not completed
-		
-		
-/*
-		var MemberData = [];
-		$("#importedMemberForm input[type=checkbox]:checked").each(function ()
-		{
-			MemberData.push(parseInt($(this).val()));
-		});
-
-//				var uploadAdapter = _this.get('controllers.refsets/upload');		
-//				uploadAdapter.clearMembers();
-
-*/
-		
+				
 		this.dialogInstance = BootstrapDialog.show({
             title: '<img src="assets/img/login.white.png"> Creating your refset',
             closable: false,
@@ -93,7 +85,7 @@ export default Ember.ObjectController.extend({
     	createRefsetComplete : function(response)
     	{
     		Ember.Logger.log("controller.refsets.new:actions:createRefsetComplete",response);
-    		
+
     		if (response.error)
     		{
     			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset creation failed.</h2></td></tr></table>';
@@ -114,9 +106,55 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			this.dialogInstance.close();
-    			this.transitionToRoute('refsets.refset',response.id);
+    			var refsetId = response.id;
+    			
+    			var uploadController = this.get('controllers.refsets/upload');		
+    			var conceptsToImport = uploadController.getMembersMarkedForImport();
+    			
+    			if (conceptsToImport.length)
+    			{
+        			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing concepts. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+    		
+        			// Now initiate adding members to our new refset...
+        			
+        			var dataController = this.get('controllers.data');		
+        			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
+    			}
+    			else
+    			{
+        			this.dialogInstance.close();
+        			this.transitionToRoute('refsets.refset',response.id);
+    			}
     		}
+    	},
+    	
+    	addMembersComplete : function(response)
+    	{
+    		Ember.Logger.log("controller.refsets.new:actions:addMembersComplete",response);
+	
+    		if (response.error)
+    		{
+    			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Importing members failed.</h2></td></tr></table>';
+
+    			if (typeof response.unauthorised !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">You are not authorised to add members. You may need to log in.</p>';
+    			}
+
+    			if (typeof response.commsError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
+    			}
+
+    			this.dialogInstance.setMessage(message);
+    			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+			{
+    			this.dialogInstance.close();
+    			this.transitionToRoute('refsets.refset',response.refsetId);
+			}
     	},
     	
     	togglePublishedRefsetImportForm : function()
@@ -129,7 +167,7 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("togglePublishedRefsetImportForm",this.doImportPublishedRefset);
 			this.set("doImportMembers",$('#import-members').is(':checked'));
-			
+
 			if (this.doImportMembers)
 			{
 				Ember.run.next(this,function()
