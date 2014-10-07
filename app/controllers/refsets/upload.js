@@ -85,11 +85,11 @@ export default Ember.ArrayController.extend({
 					{
 						if (conceptData[refCompId] !== null)
 						{
-							return {referenceComponentId:refCompId, active:true, meta : {conceptActive:conceptData[refCompId].active, conceptEffectiveTime : conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: conceptData[refCompId].label,found:true, disabled:!conceptData[refCompId].active}};
+							return {referencedComponentId:refCompId, active:true, meta : {conceptActive:conceptData[refCompId].active, conceptEffectiveTime : conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: conceptData[refCompId].label,found:true, disabled:!conceptData[refCompId].active}};
 						}
 						else
 						{
-							return {referenceComponentId:refCompId, active:false, meta : {conceptActive:false, conceptEffectiveTime:conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: 'concept not found',found:false, disabled:true}};
+							return {referencedComponentId:refCompId, active:false, meta : {conceptActive:false, conceptEffectiveTime:conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: 'concept not found',found:false, disabled:true}};
 						}
 					});	
 

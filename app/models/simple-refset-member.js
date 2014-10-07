@@ -1,7 +1,7 @@
 export default Ember.Object.extend({
 	id:	null,
 	moduleId: null,
-	referenceComponentId: null,
+	referencedComponentId: null,
 	description: null,
 	effectiveTime : null,
 	active : true

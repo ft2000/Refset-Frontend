@@ -237,8 +237,6 @@ export default Ember.ObjectController.extend({
 
 			case "404":
 			{
-				// Only going to work for refsets!!!!!!
-				
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
@@ -248,6 +246,42 @@ export default Ember.ObjectController.extend({
 				{
     				callingController.send(completeAction,{error:1,notFound:1});
 				}
+
+				return;
+			}
+			
+			case "400":
+			{
+				// Bad Request
+				Bootstrap.GNM.push('Bad Request','Server rejected our request', 'warning');
+
+				_this.hideWaitAnim();
+				
+				BootstrapDialog.show({
+		            title: '<img src="assets/img/login.white.png"> Bad Request : ' + resourceType,
+		            closable: false,
+		            message: '<p>There has been a problem communicating with the server.</p><p>' + response.meta.errorInfo.message + '</p>',
+		            buttons: 
+		            [
+		             	{
+		             		label: 'OK',
+		             		action: function(dialog)
+		             		{
+		             			_this.hideWaitAnim();
+		        				
+		             			Ember.Logger.log("closing window",callingController,completeAction);
+		             			
+		             			
+		        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+		        				{
+		            				callingController.send(completeAction,{error:1,requestError:1});
+		        				}
+		        				
+		             			dialog.close();
+		             		}
+		             	}
+		             ]
+		        });
 
 				return;
 			}
@@ -455,9 +489,9 @@ export default Ember.ObjectController.extend({
 				
 				var idArray = _this.refset.members.map(function(member)
 				{
-					if (typeof member.referenceComponentId !== "undefined")
+					if (typeof member.referencedComponentId !== "undefined")
 					{
-						return member.referenceComponentId;						
+						return member.referencedComponentId;						
 					}
 					else
 					{
@@ -476,11 +510,11 @@ export default Ember.ObjectController.extend({
 						{
 							member.meta = {};
 	
-							if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
+							if (typeof conceptData[member.referencedComponentId] !== "undefined" && conceptData[member.referencedComponentId] !== null)
 							{
-								member.meta.description 			= conceptData[member.referenceComponentId].label;
-								member.meta.conceptActive 			= conceptData[member.referenceComponentId].active;
-								member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
+								member.meta.description 			= conceptData[member.referencedComponentId].label;
+								member.meta.conceptActive 			= conceptData[member.referencedComponentId].active;
+								member.meta.conceptEffectiveTime 	= conceptData[member.referencedComponentId].effectiveTime;
 								member.meta.found 					= true;
 								member.meta.deleteConcept			= false;
 								
@@ -613,21 +647,14 @@ export default Ember.ObjectController.extend({
 
 			_this.hideWaitAnim();
 
-			callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
-
-			// response needs to be changed since it contains no meta info
-			// for now I'll ignore it...
-			/*
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				return response.content.outcome;
+				callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],retryCounter);
-				return {};
+				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],callingController,completeAction,retryCounter);
 			}
-			*/
 		});
 	},
 	
@@ -661,7 +688,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Get refset member details','getMembers',[members],retryCounter);
+				_this.handleRequestFailure(response,'Get refset member details','getMembers',[members],callingController,completeAction,retryCounter);
 				return {};
 			}			
 		});	
@@ -704,7 +731,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Get refset memebr details','getMember',[id],retryCounter);
+				_this.handleRequestFailure(response,'Get refset memebr details','getMember',[id],callingController,completeAction,retryCounter);
 				return {label:'not found'};
 			}			
 		});	

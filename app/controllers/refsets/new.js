@@ -108,6 +108,8 @@ export default Ember.ObjectController.extend({
     		{
     			var refsetId = response.id;
     			
+    			this.transitionToRoute('refsets.refset',response.id);
+
     			var uploadController = this.get('controllers.refsets/upload');		
     			var conceptsToImport = uploadController.getMembersMarkedForImport();
     			
@@ -123,7 +125,6 @@ export default Ember.ObjectController.extend({
     			else
     			{
         			this.dialogInstance.close();
-        			this.transitionToRoute('refsets.refset',response.id);
     			}
     		}
     	},
@@ -146,6 +147,11 @@ export default Ember.ObjectController.extend({
     				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
     			}
 
+    			if (typeof response.requestError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">The API rejected our request.</p>';
+    			}
+
     			this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
     			this.dialogInstance.getModalFooter().show();
@@ -153,7 +159,6 @@ export default Ember.ObjectController.extend({
     		else
 			{
     			this.dialogInstance.close();
-    			this.transitionToRoute('refsets.refset',response.refsetId);
 			}
     	},
     	

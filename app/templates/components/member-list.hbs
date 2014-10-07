@@ -3,10 +3,10 @@
 	{{#each members}}
 		<li class="list-group-item">
 			<label {{bind-attr class=':control-label found::disabled'}}>
-				<input type="checkbox" name="conceptId" {{bind-attr value='referenceComponentId'}} {{bind-attr checked='active'}} {{bind-attr disabled='disabled'}}> 
+				<input type="checkbox" name="conceptId" {{bind-attr value='referencedComponentId'}} {{bind-attr checked='active'}} {{bind-attr disabled='disabled'}}> 
 				{{description}}
 				{{#if found}}{{#unless active}}<br><span class="warning">This concept is INACTIVE and so cannot be added to this Refset at this time</span>{{/unless}}{{/if}}
-				<span class="referenceComponentId">{{referenceComponentId}}</span>
+				<span class="referencedComponentId">{{referencedComponentId}}</span>
 			</label>
 		</li>
 	{{/each}}
