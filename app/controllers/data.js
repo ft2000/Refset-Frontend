@@ -33,6 +33,7 @@ export default Ember.ObjectController.extend({
 	refsetTypesArray		: [],
 	componentTypesArray		: [],
 	moduleTypesArray		: [],
+	languagesArray			: [{id:'en_US',label:'International English'}],
 	initialised				: false,
 
 	init : function()
@@ -237,8 +238,6 @@ export default Ember.ObjectController.extend({
 
 			case "404":
 			{
-				// Only going to work for refsets!!!!!!
-				
 				// Not found
 				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
@@ -248,6 +247,42 @@ export default Ember.ObjectController.extend({
 				{
     				callingController.send(completeAction,{error:1,notFound:1});
 				}
+
+				return;
+			}
+			
+			case "400":
+			{
+				// Bad Request
+				Bootstrap.GNM.push('Bad Request','Server rejected our request', 'warning');
+
+				_this.hideWaitAnim();
+				
+				BootstrapDialog.show({
+		            title: '<img src="assets/img/login.white.png"> Bad Request : ' + resourceType,
+		            closable: false,
+		            message: '<p>There has been a problem communicating with the server.</p><p>' + response.meta.errorInfo.message + '</p>',
+		            buttons: 
+		            [
+		             	{
+		             		label: 'OK',
+		             		action: function(dialog)
+		             		{
+		             			_this.hideWaitAnim();
+		        				
+		             			Ember.Logger.log("closing window",callingController,completeAction);
+		             			
+		             			
+		        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+		        				{
+		            				callingController.send(completeAction,{error:1,requestError:1});
+		        				}
+		        				
+		             			dialog.close();
+		             		}
+		             	}
+		             ]
+		        });
 
 				return;
 			}
@@ -346,7 +381,6 @@ export default Ember.ObjectController.extend({
 		}
 	},
 
-
 	// -----------------------------------------------------------------------------------------------
 	
 	
@@ -407,7 +441,11 @@ export default Ember.ObjectController.extend({
 				});			
 
 				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
-				callingController.send(completeAction,{error:0});
+
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});
+				}
 			}
 			else
 			{
@@ -455,9 +493,9 @@ export default Ember.ObjectController.extend({
 				
 				var idArray = _this.refset.members.map(function(member)
 				{
-					if (typeof member.referenceComponentId !== "undefined")
+					if (typeof member.referencedComponentId !== "undefined")
 					{
-						return member.referenceComponentId;						
+						return member.referencedComponentId;						
 					}
 					else
 					{
@@ -476,11 +514,12 @@ export default Ember.ObjectController.extend({
 						{
 							member.meta = {};
 	
-							if (typeof conceptData[member.referenceComponentId] !== "undefined" && conceptData[member.referenceComponentId] !== null)
+							if (typeof conceptData[member.referencedComponentId] !== "undefined" && conceptData[member.referencedComponentId] !== null)
 							{
-								member.meta.description 			= conceptData[member.referenceComponentId].label;
-								member.meta.conceptActive 			= conceptData[member.referenceComponentId].active;
-								member.meta.conceptEffectiveTime 	= conceptData[member.referenceComponentId].effectiveTime;
+								member.meta.description 			= conceptData[member.referencedComponentId].label;
+								member.meta.conceptActive 			= conceptData[member.referencedComponentId].active;
+								member.meta.conceptModuleId 		= conceptData[member.referencedComponentId].moduleId;
+								member.meta.conceptEffectiveTime 	= conceptData[member.referencedComponentId].effectiveTime;
 								member.meta.found 					= true;
 								member.meta.deleteConcept			= false;
 								
@@ -498,12 +537,19 @@ export default Ember.ObjectController.extend({
 						});
 						
 						_this.refset.members.setObjects(MemberData);
-						callingController.send(completeAction,{error:0});
+						
+						if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+						{
+							callingController.send(completeAction,{error:0});
+						}
 					});
 				}
 				else
 				{
-					callingController.send(completeAction,{error:0});
+					if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+					{
+						callingController.send(completeAction,{error:0});
+					}
 				}
 			}
 			else
@@ -533,8 +579,11 @@ export default Ember.ObjectController.extend({
 		
 				_this.set("model",refset);
 				
-				callingController.send(completeAction,{error:0,id:refset.id});				
-			}	
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,id:refset.id});				
+				}
+			}
 			else
 			{
 				_this.handleRequestFailure(response,'Create refset','createRefset',[refset],callingController,completeAction,retryCounter);
@@ -557,7 +606,11 @@ export default Ember.ObjectController.extend({
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				Bootstrap.GNM.push('Refset Service','Refset created', 'info');
-				callingController.send(completeAction,{error:0});				
+
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});				
+				}
 			}	
 			else
 			{
@@ -581,7 +634,10 @@ export default Ember.ObjectController.extend({
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				Bootstrap.GNM.push('Refset Service','Refset updated', 'info');
-				callingController.send(completeAction,{error:0});				
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});
+				}
 			}	
 			else
 			{
@@ -613,30 +669,30 @@ export default Ember.ObjectController.extend({
 
 			_this.hideWaitAnim();
 
-			callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
-
-			// response needs to be changed since it contains no meta info
-			// for now I'll ignore it...
-			/*
-			if (typeof response.meta.errorInfo === 'undefined')
+			if (typeof response.meta === "undefined" || typeof response.meta.errorInfo === 'undefined')
 			{
-				return response.content.outcome;
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
+				}
+				
+				_this.getRefset(refsetId);
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],retryCounter);
-				return {};
+				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],callingController,completeAction,retryCounter);
 			}
-			*/
 		});
+		
+		return result;
 	},
 	
 	
-	getMembers : function(members,retry)
+	getMembers : function(members,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMembers (members,retry)",members,retry);
 
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
@@ -661,7 +717,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Get refset member details','getMembers',[members],retryCounter);
+				_this.handleRequestFailure(response,'Get refset member details','getMembers',[members],callingController,completeAction,retryCounter);
 				return {};
 			}			
 		});	
@@ -669,7 +725,7 @@ export default Ember.ObjectController.extend({
 		return memberDetails;
 	},
 	
-	getMember : function(id,retry)
+	getMember : function(id,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMember (id,retry)",id,retry);
 
@@ -704,12 +760,51 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Get refset memebr details','getMember',[id],retryCounter);
+				_this.handleRequestFailure(response,'Get refset memebr details','getMember',[id],callingController,completeAction,retryCounter);
 				return {label:'not found'};
 			}			
 		});	
 		
 		return memberDetails;
+	},
+	
+	deleteMembers : function(refsetId,members,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.refsets:deleteMembers (members,retry)",members,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retryCounter)
+		{
+			this.showWaitAnim();
+		}
+		
+		refsetsAdapter.deleteMembers(user,refsetId,members).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim();
+
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,response.content.outcome);
+				}
+				
+				_this.getRefset(refsetId);		
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Delete refset members','deleteMembers',[refsetId,members],callingController,completeAction,retryCounter);
+			}
+		});	
 	},
 	
 	getSnomedRefsetTypes : function(retry)

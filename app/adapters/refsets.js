@@ -105,13 +105,13 @@ export default Ember.Object.extend({
 		return result;
 	},
 	
-	addMember : function (user,refsetId,referenceComponentId)
+	addMember : function (user,refsetId,referencedComponentId)
 	{
-		Ember.Logger.log("adapters.refsets:addMember (user,refsetId,referenceComponentId)",user,refsetId,referenceComponentId);
+		Ember.Logger.log("adapters.refsets:addMember (user,refsetId,referencedComponentId)",user,refsetId,referencedComponentId);
 
 		var _this = this;
 
-		var member = {referenceComponentId : referenceComponentId, active:true};
+		var member = {referencedComponentId : referencedComponentId, active:true};
 //		delete member["meta"];
 			
 		var jsonFormatMemberData = JSON.stringify(member);
@@ -134,12 +134,14 @@ export default Ember.Object.extend({
 
 		var _this = this;
 		
-		var idArray = members.map(function(member)
+		var importMembers = members.map(function(member)
 		{
-			return member.referenceComponentId;
+			var myMember = jQuery.extend(true, {}, member);
+			delete myMember["meta"];
+			return myMember;
 		});
 			
-		var jsonFormatMemberData = JSON.stringify(idArray);
+		var jsonFormatMemberData = JSON.stringify(members);
 
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/members', {headers:_this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response)
 		{			
@@ -151,6 +153,28 @@ export default Ember.Object.extend({
 		});
 		
 		return result;	
+	},
+	
+	deleteMembers : function(user,refsetid,members)
+	{
+		var _this = this;
+		
+		var data = members.map(function(member)
+		{
+			return member.referencedComponentId;
+		});
+		
+		var jsonFormatMemberData = JSON.stringify(data);
+
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/delete/' + refsetid + '/members', {headers:this.getHeaders(user), method:"delete", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response){
+			return response;	
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
 	},
 	
 	getRefsetExport : function(user,id)

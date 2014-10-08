@@ -5,10 +5,14 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","data","application"],
 	
-	model 			: Ember.computed.alias("controllers.data.refset"),
-	refsetTypes 	: Ember.computed.alias("controllers.data.refsetTypes"),
-	componentTypes 	: Ember.computed.alias("controllers.data.componentTypes"),
-	moduleTypes 	: Ember.computed.alias("controllers.data.moduleTypes"),
+	model 				: Ember.computed.alias("controllers.data.refset"),
+	refsetTypes 		: Ember.computed.alias("controllers.data.refsetTypes"),
+	componentTypes 		: Ember.computed.alias("controllers.data.componentTypes"),
+	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
+	
+	membersToDelete 	: [],
+	membersToAdd		: [],
+
 	dialogInstance	: null,
 
 	initModel : function(params)
@@ -59,7 +63,7 @@ export default Ember.ObjectController.extend({
 			});
 			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n) });
 
-			var membersToAdd 	= [];
+			this.set("membersToAdd",[]);
 					
 			var membersToDelete = refset.members.map(function(obj)
 			{
@@ -71,11 +75,11 @@ export default Ember.ObjectController.extend({
 				
 				return member;
 			});
-			membersToDelete = $.grep(membersToDelete,function(n){ return(n) });
+			this.set("membersToDelete",$.grep(membersToDelete,function(n){ return(n);}));
 						
 			var message = '<div class="centre">Are you sure you wish to save your changes to this refset?</div><br><div class="centre">' + refset.description + '<br><br>';
 				
-			if (membersToUpdate.length || membersToAdd.length || membersToDelete.length)
+			if (membersToUpdate.length || this.membersToAdd.length || this.membersToDelete.length)
 			{
 				message += '<div class="centre">You are ';				
 			}
@@ -84,29 +88,29 @@ export default Ember.ObjectController.extend({
 			{
 				message += 'Updating ' + membersToUpdate.length + ' members';
 				
-				if (membersToAdd.length || membersToDelete.length)
+				if (this.membersToAdd.length || this.membersToDelete.length)
 				{
 					message += ', ';
 				}
 			}
 			
-			if (membersToAdd.length)
+			if (this.membersToAdd.length)
 			{
-				message += 'Adding ' + membersToAdd.length + ' members';
+				message += 'Adding ' + this.membersToAdd.length + ' members';
 				
-				if (membersToDelete.length)
+				if (this.membersToDelete.length)
 				{
 					message += ', ';
 				}
 			}
 			
-			if (membersToDelete.length)
+			if (this.membersToDelete.length)
 			{
-				message += 'Deleting ' + membersToDelete.length + ' members';	
+				message += 'Deleting ' + this.membersToDelete.length + ' members';	
 			}
 
 			
-			if (membersToUpdate.length || membersToDelete.length || membersToAdd.length)
+			if (membersToUpdate.length || this.membersToDelete.length || this.membersToAdd.length)
 			{
 				message += '</div>';
 			}
@@ -126,14 +130,14 @@ export default Ember.ObjectController.extend({
 	                label: 'Yes. Update refset',
 	                cssClass: 'btn-primary',
 	                action: function(dialogRef){
-	                    _this.send("doUpdateRefset",membersToUpdate,membersToAdd,membersToDelete);
+	                    _this.send("doUpdateRefset",membersToUpdate);
 	                    dialogRef.close();
 	                }
 	            }]
 	        });			
 		},
 		
-		doUpdateRefset : function(membersToUpdate,membersToAdd,membersToDelete)
+		doUpdateRefset : function(membersToUpdate)
 		{
 			var dataController = this.get('controllers.data');
 			var Refset = $.extend(true, {}, dataController.refset);
@@ -143,12 +147,12 @@ export default Ember.ObjectController.extend({
 
 			Refset.members = membersToUpdate;
 			
-			Ember.Logger.log("controllers.refsets.refset:actions:doUpdateRefset (Refset,membersToUpdate,membersToAdd,membersToDelete)",Refset,membersToUpdate,membersToAdd,membersToDelete);
+			Ember.Logger.log("controllers.refsets.refset:actions:doUpdateRefset (Refset,membersToUpdate)",Refset,membersToUpdate);
 						
 			this.dialogInstance = BootstrapDialog.show({
 	            title: '<img src="assets/img/login.white.png"> Updating your refset',
 	            closable: false,
-	            message: '<br><br><div class="centre">Updating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            message: '<br><br><div class="centre">Updating. Please wait...<br><br><!-----><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            buttons: [{
 	                label: 'OK',
 	                cssClass: 'btn-primary',
@@ -189,13 +193,83 @@ export default Ember.ObjectController.extend({
     		else
     		{
     			// Now Add / Delete any necessary members...
-    			
-    			
+				if (this.membersToAdd.length)
+    			{
+    				// Need to add some members...
+
+					var oldMessage = this.dialogInstance.getMessage();
+    				Ember.Logger.log("----------------------------",oldMessage);
+    				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Adding new members</div><br><br><!----->');
+    				
+    				this.dialogInstance.setMessage(newMessage);
+
+    				var dataController = this.get('controllers.data');
+    				dataController.addMembers(this.get("model").id,this.membersToAdd,this,'addMembersComplete');
+    			}
+    			else
+    			{
+        			if (this.membersToDelete.length)
+    				{
+        				// Need to delete some members...
+        				
+        				var oldMessage = this.dialogInstance.getMessage();
+        				Ember.Logger.log("----------------------------",oldMessage);
+        				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
+        				
+        				this.dialogInstance.setMessage(newMessage);
+        				
+        				var dataController = this.get('controllers.data');
+        				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+    				}
+    				else
+    				{
+    					// Nothing do do...
+    	    			this.dialogInstance.close();
+
+//    	    			var dataController = this.get('controllers.data');
+//   	    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
+    				}
+    			}
+    		}	
+		},
+
+		addMembersComplete : function(response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:addMembersComplete",response);
+
+			if (this.membersToDelete.length)
+			{
+				// Need to delete some members...
+				
+				var oldMessage = this.dialogInstance.getMessage();
+				Ember.Logger.log("----------------------------",oldMessage);
+				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
+				
+				this.dialogInstance.setMessage(newMessage);
+				
+				var dataController = this.get('controllers.data');
+				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+			}
+			else
+			{
+				// Nothing do do...
     			this.dialogInstance.close();
 
-    			var dataController = this.get('controllers.data');
-    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');
-    		}	
+//    			var dataController = this.get('controllers.data');
+//   			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
+			}
+		},
+
+		
+		deleteMembersComplete : function(response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:deleteMembersComplete",response);
+
+			// Nothing do do...
+			this.dialogInstance.close();
+
+//			var dataController = this.get('controllers.data');
+//			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');  
 		},
 
 		exportRefset : function(id)

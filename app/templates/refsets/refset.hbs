@@ -28,9 +28,15 @@
 							<tr>
 								<td class="content" colspan="4">{{textarea value=description}}</td>
 							</tr>
-		
+	
 							<tr>
-								<td class="label">Language</td><td class="content">{{code-to-language languageCode}}</td>
+								<td class="label">Language</td><td class="content">
+									{{#if published}}
+										{{code-to-language languageCode}}
+									{{else}}
+										{{snomed-data-dropdown value=languageCode dataType="languagesArray"}}
+									{{/if}}
+								</td>
 								<td class="label">Published</td><td class="content">				
 								{{#if published}}
 									{{date-format publishedDate}}
@@ -41,18 +47,39 @@
 							</tr>
 		
 							<tr>
-								<td class="label">Refset Type</td><td class="content">{{snomed-id-to-label typeId refsetTypes}}</td>
-								<td class="label">Refset Members Type</td><td class="content">{{snomed-id-to-label componentTypeId componentTypes}}</td>
+								<td class="label">Refset Type</td><td class="content">
+									{{#if published}}
+										{{snomed-id-to-label typeId refsetTypes}}
+									{{else}}
+										{{snomed-data-dropdown value=typeId dataType="refsetTypesArray"}}
+									{{/if}}
+								</td>
+								<td class="label">Refset Members Type</td><td class="content">
+									{{#if published}}
+										{{snomed-id-to-label componentTypeId componentTypes}}
+									{{else}}
+										{{snomed-data-dropdown value=componentTypeId dataType="componentTypesArray"}}
+							  		{{/if}}		
+								</td>
 							</tr>
 		
 							<tr>
 								<td class="label">Created</td><td class="content">{{date-time-format created}}</td>
-								<td class="label">Last Updated by</td><td class="content">{{createdBy}}</td>
+								<td class="label">Module</td><td class="content">
+									{{#if published}}
+										{{snomed-id-to-label moduleId moduleTypes}}
+									{{else}}
+										{{snomed-data-dropdown value=moduleId dataType="moduleTypesArray"}}
+									{{/if}}
+								</td>
 							</tr>
 		
 							<tr>
-								<td class="label">{{#if published}}SCTID{{else}}Temp ID{{/if}}</td><td class="content">{{id}}</td>
-								<td class="label">Module</td><td class="content">{{snomed-id-to-label moduleId moduleTypes}}</td>
+								<td class="label">Last Updated</td><td class="content">{{date-time-format modifiedDate}}</td>
+								<td class="label">Last Updated by</td><td class="content">{{modifiedBy}}</td>
+							</tr>
+							<tr>
+								<td class="label">{{#if published}}SCTID{{else}}Temp ID{{/if}}</td><td class="content" colspan=3>{{id}}</td>
 							</tr>
 						
 						</table>
@@ -69,28 +96,39 @@
 		            <div id="collapseTwo" class="panel-body collapse">
 						<ul class="list-group checkboxList">
 							{{#if members}}
-								{{#each members}}
-									<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
-
-										<label class="right">SCTID <span>{{referenceComponentId}}</span></label>
-										<p class="description">{{meta.description}}</p>									
-
-										{{#if meta.found}}
-											<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
-											<label>Last modified: <span>{{date-time-format effectiveTime}}</span></label>
-											<label>Last modified by: <span>unknown</span></label>
-											{{#if published}}
-												<label>Published: <span>unknown</span></label>
+								{{#with view as outerView}}
+								
+									{{#each members}}
+										<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
+	
+											<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
+											<p class="description">{{meta.description}}</p>									
+	
+											{{#if meta.found}}
+												<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
+												<label>Last modified: <span>{{date-time-format modifiedDate}}</span></label>
+												<label>Last modified by: <span>{{modifiedBy}}</span></label>
+												{{#if published}}
+													<label>Published: <span>{{date-time-format effectiveTime}}</span></label>
+												{{/if}}
+												<br>
+												<label>Module:
+													<span>
+														{{#if published}}
+															{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
+														{{else}}
+															{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
+														 {{/if}}
+										 			</span>
+												</label>
+												<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
+												{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}
 											{{/if}}
-											<br>
-											<label>Module: <span>{{snomed-id-to-label moduleId moduleTypes}}</span></label>
-											<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
-											{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any refset export at this time</label>{{/unless}}
-										{{/if}}
-
-										{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
-									</li>
-								{{/each}}
+	
+											{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
+										</li>
+									{{/each}}
+								{{/with}}
 							{{else}}
 								<li class='list-group-item'>
 									Your refset does not have any memebers yet...
@@ -100,8 +138,6 @@
 					</div>
 				</div>
 			</div>
-			
-			<script>setTimeout(function(){$("[name='conceptId']").bootstrapSwitch();},1000);</script>
 			
 			{{#unless published}}
 			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>

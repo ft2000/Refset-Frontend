@@ -4,11 +4,6 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","utilities","refsets","refsets/upload","data"],
 
-	refsetTypesArray 	: Ember.computed.alias("controllers.data.refsetTypesArray"),
-	componentTypesArray : Ember.computed.alias("controllers.data.componentTypesArray"),
-	moduleTypesArray 	: Ember.computed.alias("controllers.data.moduleTypesArray"),
-	languagesArray		: [{id:'en_US',label:'International English'}],
-
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 
 	disablePublishedFormFields : true,
@@ -108,6 +103,8 @@ export default Ember.ObjectController.extend({
     		{
     			var refsetId = response.id;
     			
+    			this.transitionToRoute('refsets.refset',response.id);
+
     			var uploadController = this.get('controllers.refsets/upload');		
     			var conceptsToImport = uploadController.getMembersMarkedForImport();
     			
@@ -123,11 +120,10 @@ export default Ember.ObjectController.extend({
     			else
     			{
         			this.dialogInstance.close();
-        			this.transitionToRoute('refsets.refset',response.id);
     			}
     		}
     	},
-    	
+
     	addMembersComplete : function(response)
     	{
     		Ember.Logger.log("controller.refsets.new:actions:addMembersComplete",response);
@@ -146,6 +142,11 @@ export default Ember.ObjectController.extend({
     				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
     			}
 
+    			if (typeof response.requestError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">The API rejected our request.</p>';
+    			}
+
     			this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
     			this.dialogInstance.getModalFooter().show();
@@ -153,7 +154,6 @@ export default Ember.ObjectController.extend({
     		else
 			{
     			this.dialogInstance.close();
-    			this.transitionToRoute('refsets.refset',response.refsetId);
 			}
     	},
     	

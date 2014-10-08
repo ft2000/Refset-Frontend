@@ -168,7 +168,7 @@ label + label {
 .checkboxList .deleteConcept {
   background-color: #fbeeee;
 }
-.checkboxList .referenceComponentId {
+.checkboxList .referencedComponentId {
   font-size: 10px;
   font-style: italic;
   float: right;
