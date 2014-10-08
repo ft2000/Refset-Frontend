@@ -226,8 +226,8 @@ export default Ember.ObjectController.extend({
     					// Nothing do do...
     	    			this.dialogInstance.close();
 
-    	    			var dataController = this.get('controllers.data');
-    	    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
+//    	    			var dataController = this.get('controllers.data');
+//   	    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
     				}
     			}
     		}	
@@ -255,8 +255,8 @@ export default Ember.ObjectController.extend({
 				// Nothing do do...
     			this.dialogInstance.close();
 
-    			var dataController = this.get('controllers.data');
-    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
+//    			var dataController = this.get('controllers.data');
+//   			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
 			}
 		},
 
@@ -268,8 +268,8 @@ export default Ember.ObjectController.extend({
 			// Nothing do do...
 			this.dialogInstance.close();
 
-			var dataController = this.get('controllers.data');
-			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');  
+//			var dataController = this.get('controllers.data');
+//			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');  
 		},
 
 		exportRefset : function(id)

@@ -1,5 +1,4 @@
 import MembersAdapter 	from '../../adapters/simple-members';
-
 var membersAdapter = MembersAdapter.create();
 
 export default Ember.ArrayController.extend({
@@ -75,6 +74,10 @@ export default Ember.ArrayController.extend({
 			
 			this.set("getConceptDataInProgress",true);
 
+			var defaultMemberModuleId = $('#newRefsetModuleId').val();
+			
+			Ember.Logger.log("==================================",defaultMemberModuleId);
+
 			var membersData = membersAdapter.findList(user,idArray).then(function(result)
 			{
 				Ember.Logger.log("result",result);
@@ -87,15 +90,35 @@ export default Ember.ArrayController.extend({
 					
 					membersData2 = idArray.map(function(refCompId)
 					{
+						var member = {};
+						
+						member.referencedComponentId = refCompId;
+						member.moduleId = defaultMemberModuleId;
+						member.meta = {};
+						
 						if (conceptData[refCompId] !== null)
 						{
-							return {referencedComponentId:refCompId, active:true, meta : {conceptActive:conceptData[refCompId].active, conceptEffectiveTime : conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: conceptData[refCompId].label,found:true, disabled:!conceptData[refCompId].active}};
+							member.active 						= true;
+							member.meta.conceptActive 			= conceptData[refCompId].active;
+							member.meta.conceptEffectiveTime 	= conceptData[refCompId].effectiveTime;
+							member.meta.conceptModuleId 		= conceptData[refCompId].moduleId;
+							member.meta.description				= conceptData[refCompId].label;
+							member.meta.found 					= true;
+							member.meta.disabled				= !conceptData[refCompId].active;
 						}
 						else
 						{
-							return {referencedComponentId:refCompId, active:false, meta : {conceptActive:false, conceptEffectiveTime:conceptData[refCompId].effectiveTime, moduleId:conceptData[refCompId].module, description: 'concept not found',found:false, disabled:true}};
+							member.active 						= false;
+							member.meta.conceptActive 			= false;
+							member.meta.description				= 'concept not found';
+							member.meta.found 					= false;
+							member.meta.disabled				= true;
 						}
+						
+						return member;
 					});	
+
+					Ember.Logger.log("membersData2",membersData2);
 
 					_this.set("importError",null);
 					_this.model.setObjects(membersData2);

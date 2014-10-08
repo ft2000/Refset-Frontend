@@ -122,7 +122,7 @@
 										 			</span>
 												</label>
 												<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
-												{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE and so will not be included in any refset export at this time</label>{{/unless}}
+												{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}
 											{{/if}}
 	
 											{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
@@ -138,8 +138,6 @@
 					</div>
 				</div>
 			</div>
-			
-			<script>setTimeout(function(){$("[name='conceptId']").bootstrapSwitch();},1000);</script>
 			
 			{{#unless published}}
 			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
