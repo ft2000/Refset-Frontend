@@ -41,7 +41,11 @@ export default Ember.ArrayController.extend({
 		
 		var conceptsToImport =  concepts.map(function(concept)
 		{
-			return concept.meta.deleteConcept ? null : concept;
+			var validConcept = jQuery.extend(true, {}, concept);
+			
+			delete validConcept["meta"];
+			
+			return concept.meta.deleteConcept ? null : validConcept;
 		});
 		
 		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n) });

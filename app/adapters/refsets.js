@@ -140,9 +140,6 @@ export default Ember.Object.extend({
 			delete myMember["meta"];
 			return myMember;
 		});
-		
-		Ember.Logger.log("------------------------- members",members);
-		Ember.Logger.log("------------------------- importMembers",importMembers);
 			
 		var jsonFormatMemberData = JSON.stringify(members);
 
@@ -156,6 +153,28 @@ export default Ember.Object.extend({
 		});
 		
 		return result;	
+	},
+	
+	deleteMembers : function(user,refsetid,members)
+	{
+		var _this = this;
+		
+		var data = members.map(function(member)
+		{
+			return member.referencedComponentId;
+		});
+		
+		var jsonFormatMemberData = JSON.stringify(data);
+
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/delete/' + refsetid + '/members', {headers:this.getHeaders(user), method:"delete", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response){
+			return response;	
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
 	},
 	
 	getRefsetExport : function(user,id)

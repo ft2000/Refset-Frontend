@@ -4,11 +4,6 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","utilities","refsets","refsets/upload","data"],
 
-	refsetTypesArray 	: Ember.computed.alias("controllers.data.refsetTypesArray"),
-	componentTypesArray : Ember.computed.alias("controllers.data.componentTypesArray"),
-	moduleTypesArray 	: Ember.computed.alias("controllers.data.moduleTypesArray"),
-	languagesArray		: [{id:'en_US',label:'International English'}],
-
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 
 	disablePublishedFormFields : true,
@@ -128,7 +123,7 @@ export default Ember.ObjectController.extend({
     			}
     		}
     	},
-    	
+
     	addMembersComplete : function(response)
     	{
     		Ember.Logger.log("controller.refsets.new:actions:addMembersComplete",response);

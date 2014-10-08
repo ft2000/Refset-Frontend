@@ -1,6 +1,6 @@
 export default Ember.Object.extend({
 	id:	null,
-	moduleId: null,
+	moduleId: RefsetENV.APP.defaultSnomedTypes.moduleType,
 	referencedComponentId: null,
 	description: null,
 	effectiveTime : null,

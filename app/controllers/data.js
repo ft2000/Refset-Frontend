@@ -33,6 +33,7 @@ export default Ember.ObjectController.extend({
 	refsetTypesArray		: [],
 	componentTypesArray		: [],
 	moduleTypesArray		: [],
+	languagesArray			: [{id:'en_US',label:'International English'}],
 	initialised				: false,
 
 	init : function()
@@ -380,7 +381,6 @@ export default Ember.ObjectController.extend({
 		}
 	},
 
-
 	// -----------------------------------------------------------------------------------------------
 	
 	
@@ -441,7 +441,11 @@ export default Ember.ObjectController.extend({
 				});			
 
 				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
-				callingController.send(completeAction,{error:0});
+
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});
+				}
 			}
 			else
 			{
@@ -514,6 +518,7 @@ export default Ember.ObjectController.extend({
 							{
 								member.meta.description 			= conceptData[member.referencedComponentId].label;
 								member.meta.conceptActive 			= conceptData[member.referencedComponentId].active;
+								member.meta.conceptModuleId 		= conceptData[member.referencedComponentId].moduleId;
 								member.meta.conceptEffectiveTime 	= conceptData[member.referencedComponentId].effectiveTime;
 								member.meta.found 					= true;
 								member.meta.deleteConcept			= false;
@@ -532,12 +537,19 @@ export default Ember.ObjectController.extend({
 						});
 						
 						_this.refset.members.setObjects(MemberData);
-						callingController.send(completeAction,{error:0});
+						
+						if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+						{
+							callingController.send(completeAction,{error:0});
+						}
 					});
 				}
 				else
 				{
-					callingController.send(completeAction,{error:0});
+					if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+					{
+						callingController.send(completeAction,{error:0});
+					}
 				}
 			}
 			else
@@ -567,8 +579,11 @@ export default Ember.ObjectController.extend({
 		
 				_this.set("model",refset);
 				
-				callingController.send(completeAction,{error:0,id:refset.id});				
-			}	
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,id:refset.id});				
+				}
+			}
 			else
 			{
 				_this.handleRequestFailure(response,'Create refset','createRefset',[refset],callingController,completeAction,retryCounter);
@@ -591,7 +606,11 @@ export default Ember.ObjectController.extend({
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				Bootstrap.GNM.push('Refset Service','Refset created', 'info');
-				callingController.send(completeAction,{error:0});				
+
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});				
+				}
 			}	
 			else
 			{
@@ -615,7 +634,10 @@ export default Ember.ObjectController.extend({
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				Bootstrap.GNM.push('Refset Service','Refset updated', 'info');
-				callingController.send(completeAction,{error:0});				
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0});
+				}
 			}	
 			else
 			{
@@ -647,23 +669,30 @@ export default Ember.ObjectController.extend({
 
 			_this.hideWaitAnim();
 
-			if (typeof response.meta.errorInfo === 'undefined')
+			if (typeof response.meta === "undefined" || typeof response.meta.errorInfo === 'undefined')
 			{
-				callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,refsetId:refsetId,members:response.content.outcome});	
+				}
+				
+				_this.getRefset(refsetId);
 			}
 			else
 			{
 				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],callingController,completeAction,retryCounter);
 			}
 		});
+		
+		return result;
 	},
 	
 	
-	getMembers : function(members,retry)
+	getMembers : function(members,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMembers (members,retry)",members,retry);
 
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 
 		var loginController = this.get('controllers.login');
@@ -696,7 +725,7 @@ export default Ember.ObjectController.extend({
 		return memberDetails;
 	},
 	
-	getMember : function(id,retry)
+	getMember : function(id,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.refsets:getMember (id,retry)",id,retry);
 
@@ -737,6 +766,45 @@ export default Ember.ObjectController.extend({
 		});	
 		
 		return memberDetails;
+	},
+	
+	deleteMembers : function(refsetId,members,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.refsets:deleteMembers (members,retry)",members,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retryCounter)
+		{
+			this.showWaitAnim();
+		}
+		
+		refsetsAdapter.deleteMembers(user,refsetId,members).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim();
+
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,response.content.outcome);
+				}
+				
+				_this.getRefset(refsetId);		
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Delete refset members','deleteMembers',[refsetId,members],callingController,completeAction,retryCounter);
+			}
+		});	
 	},
 	
 	getSnomedRefsetTypes : function(retry)
