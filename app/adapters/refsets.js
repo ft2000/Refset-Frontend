@@ -136,12 +136,12 @@ export default Ember.Object.extend({
 		
 		var importMembers = members.map(function(member)
 		{
-			var myMember = jQuery.extend(true, {}, member);
+			var myMember = $.extend(true, {}, member);
 			delete myMember["meta"];
 			return myMember;
 		});
 			
-		var jsonFormatMemberData = JSON.stringify(members);
+		var jsonFormatMemberData = JSON.stringify(importMembers);
 
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/members', {headers:_this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response)
 		{			

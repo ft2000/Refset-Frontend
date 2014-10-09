@@ -49,7 +49,7 @@ export default Ember.ObjectController.extend({
 			
 			var membersToUpdate = refset.members.map(function(obj)
 			{
-				var member = jQuery.extend(true, {}, obj);
+				var member = $.extend(true, {}, obj);
 				
 				if (member.meta.deleteConcept) {return null;}
 				
@@ -67,7 +67,7 @@ export default Ember.ObjectController.extend({
 					
 			var membersToDelete = refset.members.map(function(obj)
 			{
-				var member = jQuery.extend(true, {}, obj);
+				var member = $.extend(true, {}, obj);
 				
 				if (!member.meta.deleteConcept) {return null;}
 				
