@@ -3,13 +3,17 @@ var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
-	needs : ["login","data","application"],
+	needs : ["login","data","application","refsets/upload"],
 	
 	model 				: Ember.computed.alias("controllers.data.refset"),
 	refsetTypes 		: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 		: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
 	
+	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
+	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
+	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+
 	membersToDelete 	: [],
 	membersToAdd		: [],
 
@@ -24,7 +28,21 @@ export default Ember.ObjectController.extend({
 		var dataController 	= this.get('controllers.data');
 		
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
-		return Ember.run.next(function(){dataController.getRefset(id,_this,'getRefsetComplete');});
+		Ember.run.next(function()
+		{
+			dataController.getRefset(id,_this,'getRefsetComplete');			
+		});
+		
+		var uploadController = this.get('controllers.refsets/upload');		
+		uploadController.clearMemberList();
+
+		Ember.run.scheduleOnce('afterRender', this, function(){
+			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
+			document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
+		});
 	},
 
 	actions :
@@ -47,6 +65,8 @@ export default Ember.ObjectController.extend({
 			var _this = this;
 			var refset = this.get("model");
 			
+			// Members we are going to update
+			
 			var membersToUpdate = refset.members.map(function(obj)
 			{
 				var member = $.extend(true, {}, obj);
@@ -63,8 +83,20 @@ export default Ember.ObjectController.extend({
 			});
 			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
 
-			this.set("membersToAdd",[]);
-					
+			
+			
+			// members we are going to import
+			
+			
+			var uploadController = this.get('controllers.refsets/upload');		
+			var conceptsToImport = uploadController.getMembersMarkedForImport();
+			
+			this.set("membersToAdd",conceptsToImport);
+			
+			
+			
+			// Members we are going to delete
+			
 			var membersToDelete = refset.members.map(function(obj)
 			{
 				var member = $.extend(true, {}, obj);
@@ -139,6 +171,7 @@ export default Ember.ObjectController.extend({
 		
 		doUpdateRefset : function(membersToUpdate)
 		{
+			var dataController = this.get('controllers.data');
 			var Refset = $.extend(true, {}, dataController.refset);
 			
 			// API barfs if we send it anything other than what it expects. So we keep extra data in meta so we can delete it easily...
@@ -163,7 +196,6 @@ export default Ember.ObjectController.extend({
 			
 			this.dialogInstance.getModalFooter().hide();
 			
-			var dataController = this.get('controllers.data');
 			dataController.updateRefset(Refset,this,'updateRefsetComplete');
 		},	
 		
@@ -231,6 +263,9 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:addMembersComplete",response);
 
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();
+			
 			if (this.membersToDelete.length)
 			{
 				// Need to delete some members...

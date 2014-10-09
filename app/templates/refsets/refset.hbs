@@ -69,7 +69,7 @@
 									{{#if published}}
 										{{snomed-id-to-label moduleId moduleTypes}}
 									{{else}}
-										{{snomed-data-dropdown value=moduleId dataType="moduleTypesArray"}}
+										{{snomed-data-dropdown value=moduleId dataType="moduleTypesArray" id="newRefsetModuleId"}}
 									{{/if}}
 								</td>
 							</tr>
@@ -89,11 +89,11 @@
 			</div>
 
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
-		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
+		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseMembers">
 		             <h4 class="panel-title">Members ({{members.length}})</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
-		            <div id="collapseTwo" class="panel-body collapse">
+		            <div id="collapseMembers" class="panel-body collapse">
 						<ul class="list-group checkboxList">
 							{{#if members}}
 								{{#with view as outerView}}
@@ -131,7 +131,7 @@
 								{{/with}}
 							{{else}}
 								<li class='list-group-item'>
-									Your refset does not have any memebers yet...
+									Your refset does not have any members yet...
 								</li>
 							{{/if}}
 						</ul>
@@ -139,6 +139,81 @@
 				</div>
 			</div>
 			
+			<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
+			<div class="panel panel-info ember-view fade in">
+			    <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#importMembersForm">
+			         <h4 class="panel-title">Import Members</h4>
+			    </div>
+			    <div class="panel-collapse collapse in">
+			        <div id="importMembersForm" class="panel-body collapse">
+					            	
+						<b>Import Members (flat file)</b>
+						<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
+					
+						<input type="file" id="refsetUploadFileInput" />
+					
+						<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drop files here</span></div>
+						
+						<p><a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a></p>
+					
+						{{#if getConceptDataInProgress}}		
+							<h2>Importing member file</h2>
+							<img src="assets/img/googleballs-animated.gif">
+							<p><b>Please wait...</b></p>
+						{{else}}
+							{{#if importError}}
+								<h2>Importing failed</h2>
+								<p><b{{importError}}</b></p>
+							{{/if}}
+						{{/if}}
+					</div>
+				</div>
+			</div>
+ 
+				{{#unless getConceptDataInProgress}}
+					{{#unless importError}}
+						{{#if potentialMembersToImport}}
+						    <div class="panel panel-info ember-view fade in panelNoPadding">
+						        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
+						             <h4 class="panel-title">Review Members to import({{potentialMembersToImport.length}})</h4>
+						        </div>
+						        <div class="panel-collapse collapse in">
+						            <div id="importMemberList" class="panel-body">
+										<ul class="list-group checkboxList">
+												{{#each potentialMembersToImport}}
+													<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+				
+														<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
+														<p class="description">{{meta.description}}</p>									
+				
+														{{#if meta.found}}
+															<label>Import as active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
+				
+															<label>Module:
+																<span>
+																	{{#if published}}
+																		{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
+																	{{else}}
+																		{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
+																	 {{/if}}
+													 			</span>
+															</label>
+																
+															<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
+															{{#unless meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
+														{{/if}}
+				
+														{{#unless published}}<label class="right clearRight">Import this concept {{view 'toggle-switch-inverted' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
+													</li>
+												{{/each}}
+										</ul>
+									</div>
+								</div>
+							</div>
+						{{/if}}
+					{{/unless}}
+				{{/unless}}
+
 			{{#unless published}}
 			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
 			{{/unless}}
