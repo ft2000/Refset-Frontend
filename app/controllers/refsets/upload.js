@@ -11,14 +11,14 @@ export default Ember.ArrayController.extend({
 	{
 		var concepts = this.get('model');
 		
-		Ember.Logger.log("importRequiredFilteredModel concepts",concepts)
+		Ember.Logger.log("importRequiredFilteredModel concepts",concepts);
 
 		return concepts.filter(function(concept)
 		{
 			return !concept.meta.deleteConcept;
 		});
 	}.property('model'),
-    
+	
     importError : null,
 
 	clearMemberList : function()
@@ -26,9 +26,13 @@ export default Ember.ArrayController.extend({
 		this.model.setObjects([]);
 	},
 	
+	overrideImportList : function(newList)
+	{
+		this.model.setObjects(newList);
+	},
+	
 	getConceptDataInProgress : false,
 
-	
 	clearMembers : function()
 	{
 		this.model.setObjects([]);
@@ -40,14 +44,14 @@ export default Ember.ArrayController.extend({
 		
 		var conceptsToImport =  concepts.map(function(concept)
 		{
-			var validConcept = jQuery.extend(true, {}, concept);
+			var validConcept = $.extend(true, {}, concept);
 			
 			delete validConcept["meta"];
 			
 			return concept.meta.deleteConcept ? null : validConcept;
 		});
 		
-		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n) });
+		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n); });
 		
 		return conceptsToImport;
 	},
@@ -76,12 +80,8 @@ export default Ember.ArrayController.extend({
 
 			var defaultMemberModuleId = $('#newRefsetModuleId').val();
 			
-			Ember.Logger.log("==================================",defaultMemberModuleId);
-
 			var membersData = membersAdapter.findList(user,idArray).then(function(result)
 			{
-				Ember.Logger.log("result",result);
-
 				var membersData2;
 				
 				if (typeof result.meta.errorInfo === "undefined")
@@ -118,8 +118,6 @@ export default Ember.ArrayController.extend({
 						return member;
 					});	
 
-					Ember.Logger.log("membersData2",membersData2);
-
 					_this.set("importError",null);
 					_this.model.setObjects(membersData2);
 				}
@@ -132,8 +130,6 @@ export default Ember.ArrayController.extend({
 				_this.set("getConceptDataInProgress",false);
 				return membersData2;
 			});
-			
-			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);			
 		},
 
     }

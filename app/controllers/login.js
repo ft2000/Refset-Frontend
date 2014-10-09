@@ -187,7 +187,7 @@ export default Ember.ObjectController.extend({
    		
    	   	// When we start up we want to check the Local Store to see if the user may already be logged in
    		this.monitorLoginViaLocalStore();
-   		setInterval(function(){_this.monitorLoginViaLocalStore;},1000);
+   		setInterval(function(){_this.monitorLoginViaLocalStore();},1000);
 		
 		// Show the login form if needed
 		if(this.user.token === null && !this.user.loginDeclined)
@@ -216,6 +216,7 @@ export default Ember.ObjectController.extend({
 	{
 		var controller 	= this.get('controllers.utilities');
 		var userData 	= controller.getDataFromSessionStore('user');
+		var refreshData = false;
 
 		if (userData.status === 'ok' && userData.data !== null)
 		{
@@ -224,10 +225,25 @@ export default Ember.ObjectController.extend({
 			{
 				this.initUserInteractionEvents();
 				this.send('closeLoginModal');
+				
+				refreshData = true;
+			}
+			else
+			{
+				if (this.user.token !== null && userData.data.token === null)
+				{
+					refreshData = true;
+				}				
 			}
 			
 			// Save the user record from the Local Store into this controller
 			this.set("user",userData.data);
+			
+			if (refreshData)
+			{
+				var dataController 	= this.get('controllers.data');
+				dataController.authenticationStatusChanged();				
+			}
 
 			// If we do not already have a username, then use the one from the Store. We only do this once, otherwise it will prevent you entering a username in the login form since it is bound to this value.
 			if (this.name === null)

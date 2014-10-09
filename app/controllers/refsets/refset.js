@@ -3,13 +3,17 @@ var refsetsAdapter = RefsetsAdapter.create();
 
 export default Ember.ObjectController.extend({
 		
-	needs : ["login","data","application"],
+	needs : ["login","data","application","refsets/upload"],
 	
 	model 				: Ember.computed.alias("controllers.data.refset"),
 	refsetTypes 		: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 		: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
 	
+	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
+	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
+	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+
 	membersToDelete 	: [],
 	membersToAdd		: [],
 
@@ -24,9 +28,79 @@ export default Ember.ObjectController.extend({
 		var dataController 	= this.get('controllers.data');
 		
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
-		return Ember.run.next(function(){dataController.getRefset(id,_this,'getRefsetComplete');});
+		Ember.run.next(function()
+		{
+			dataController.getRefset(id,_this,'getRefsetComplete');			
+		});
+		
+		var uploadController = this.get('controllers.refsets/upload');		
+		uploadController.clearMemberList();
+
+		Ember.run.scheduleOnce('afterRender', this, function(){
+			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
+			document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
+			document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
+		});
 	},
 
+	importListChanged: function()
+	{
+		// Need  to check if we have any duplicates...
+		var duplicates = [];
+		
+		var exisitingMembersArray = this.get("model").members;
+		var potentialMembersToImport = this.get("potentialMembersToImport");
+		
+		for (var m=0;m<exisitingMembersArray.length;m++)
+		{
+			var existingMember = exisitingMembersArray[m];
+			
+			for (var i=0;i<potentialMembersToImport.length;i++)
+			{
+				var importMember = potentialMembersToImport[i];
+				
+				if (existingMember.referencedComponentId === importMember.referencedComponentId)
+				{
+					duplicates.push(importMember.meta.description);
+					potentialMembersToImport[i] = null;
+				}
+			}
+			potentialMembersToImport= $.grep(potentialMembersToImport,function(n){ return(n) });
+		}
+		
+		var uploadController = this.get('controllers.refsets/upload');
+		uploadController.overrideImportList(potentialMembersToImport);
+
+		if (duplicates.length)
+		{
+			var message = 'Your import file contains ' + duplicates.length + ' concepts which are already included in this refset. These will be excluded from the import.<br><br>';
+			
+			for (var d=0;d<duplicates.length;d++)
+			{
+				message += duplicates[d] + '<br>';
+			}
+			
+			this.dialogInstance = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Import members',
+	            closable: false,
+	            message: message,
+	            buttons: [
+                {
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	            		dialogRef.close();
+	                }
+	            }]
+	        });	
+		}
+		
+		$("#importMembersForm").collapse('hide');
+		
+	}.observes('potentialMembersToImport.@each'),
+	
 	actions :
 	{
 		getRefsetComplete : function (response)
@@ -47,27 +121,41 @@ export default Ember.ObjectController.extend({
 			var _this = this;
 			var refset = this.get("model");
 			
+			// Members we are going to update
+			
 			var membersToUpdate = refset.members.map(function(obj)
 			{
-				var member = jQuery.extend(true, {}, obj);
+				var member = $.extend(true, {}, obj);
 				
 				if (member.meta.deleteConcept) {return null;}
 				
 				if (member.active === member.meta.originalActive && member.moduleId === member.meta.originalModuleId) {return null;}
 				
-				Ember.Logger.log(member.active,member.meta.originalActive,member.moduleId,member.meta.originalModuleId)				
+				Ember.Logger.log(member.active,member.meta.originalActive,member.moduleId,member.meta.originalModuleId);	
 				
 				delete member["meta"];
 				
 				return member;
 			});
-			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n) });
+			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
 
-			this.set("membersToAdd",[]);
-					
+			
+			
+			// members we are going to import
+			
+			
+			var uploadController = this.get('controllers.refsets/upload');		
+			var conceptsToImport = uploadController.getMembersMarkedForImport();
+			
+			this.set("membersToAdd",conceptsToImport);
+			
+			
+			
+			// Members we are going to delete
+			
 			var membersToDelete = refset.members.map(function(obj)
 			{
-				var member = jQuery.extend(true, {}, obj);
+				var member = $.extend(true, {}, obj);
 				
 				if (!member.meta.deleteConcept) {return null;}
 				
@@ -164,7 +252,6 @@ export default Ember.ObjectController.extend({
 			
 			this.dialogInstance.getModalFooter().hide();
 			
-			var dataController = this.get('controllers.data');
 			dataController.updateRefset(Refset,this,'updateRefsetComplete');
 		},	
 		
@@ -192,18 +279,18 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			// Now Add / Delete any necessary members...
+				var dataController = this.get('controllers.data');
+
+				// Now Add / Delete any necessary members...
 				if (this.membersToAdd.length)
     			{
     				// Need to add some members...
 
-					var oldMessage = this.dialogInstance.getMessage();
-    				Ember.Logger.log("----------------------------",oldMessage);
-    				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Adding new members</div><br><br><!----->');
+					var oldAddMessage = this.dialogInstance.getMessage();
+    				var newAddMessage = oldAddMessage.replace(/<!----->/,'<div class="centre">Adding new members</div><br><br><!----->');
     				
-    				this.dialogInstance.setMessage(newMessage);
+    				this.dialogInstance.setMessage(newAddMessage);
 
-    				var dataController = this.get('controllers.data');
     				dataController.addMembers(this.get("model").id,this.membersToAdd,this,'addMembersComplete');
     			}
     			else
@@ -212,22 +299,17 @@ export default Ember.ObjectController.extend({
     				{
         				// Need to delete some members...
         				
-        				var oldMessage = this.dialogInstance.getMessage();
-        				Ember.Logger.log("----------------------------",oldMessage);
-        				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
+        				var oldDelMessage = this.dialogInstance.getMessage();
+        				var newDelMessage = oldDelMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
         				
-        				this.dialogInstance.setMessage(newMessage);
+        				this.dialogInstance.setMessage(newDelMessage);
         				
-        				var dataController = this.get('controllers.data');
         				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
     				}
     				else
     				{
     					// Nothing do do...
     	    			this.dialogInstance.close();
-
-//    	    			var dataController = this.get('controllers.data');
-//   	    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
     				}
     			}
     		}	
@@ -237,12 +319,14 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:addMembersComplete",response);
 
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();
+			
 			if (this.membersToDelete.length)
 			{
 				// Need to delete some members...
 				
 				var oldMessage = this.dialogInstance.getMessage();
-				Ember.Logger.log("----------------------------",oldMessage);
 				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
 				
 				this.dialogInstance.setMessage(newMessage);
@@ -254,9 +338,6 @@ export default Ember.ObjectController.extend({
 			{
 				// Nothing do do...
     			this.dialogInstance.close();
-
-//    			var dataController = this.get('controllers.data');
-//   			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
 			}
 		},
 
@@ -267,9 +348,6 @@ export default Ember.ObjectController.extend({
 
 			// Nothing do do...
 			this.dialogInstance.close();
-
-//			var dataController = this.get('controllers.data');
-//			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');  
 		},
 
 		exportRefset : function(id)
@@ -366,5 +444,11 @@ export default Ember.ObjectController.extend({
     			this.transitionToRoute('refsets');
     		}
 		},
+		
+		clearImportList : function()
+		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();	
+		}
 	}
 });
