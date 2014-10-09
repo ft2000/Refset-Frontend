@@ -45,6 +45,61 @@ export default Ember.ObjectController.extend({
 		});
 	},
 
+	importListChanged: function()
+	{
+		// Need  to check if we have any duplicates...
+		
+		var duplicates = [];
+		
+		var exisitingMembersArray = this.get("model").members;
+		var potentialMembersToImport = this.get("potentialMembersToImport");
+		
+		for (var m=0;m<exisitingMembersArray.length;m++)
+		{
+			var existingMember = exisitingMembersArray[m];
+			
+			for (var i=0;i<potentialMembersToImport.length;i++)
+			{
+				var importMember = potentialMembersToImport[i];
+				
+				if (existingMember.referencedComponentId === importMember.referencedComponentId)
+				{
+					duplicates.push(importMember.meta.description);
+					potentialMembersToImport[i] = null;
+				}
+			}
+			potentialMembersToImport= $.grep(potentialMembersToImport,function(n){ return(n) });
+		}
+		
+		var uploadController 	= this.get('controllers.refsets/upload');
+		uploadController.set("model",potentialMembersToImport);
+
+		if (duplicates.length)
+		{
+			var message = 'Your import file contains ' + duplicates.length + ' concepts which are already included in this refset. These will be excluded from the import.<br><br>';
+			
+			for (var d=0;d<duplicates.length;d++)
+			{
+				message += duplicates[d] + '<br>';
+			}
+			
+			this.dialogInstance = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Import members',
+	            closable: false,
+	            message: message,
+	            buttons: [
+                {
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });	
+		}
+		
+	}.observes('potentialMembersToImport.@each'),
+	
 	actions :
 	{
 		getRefsetComplete : function (response)
@@ -388,5 +443,11 @@ export default Ember.ObjectController.extend({
     			this.transitionToRoute('refsets');
     		}
 		},
+		
+		clearImportList : function()
+		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();	
+		}
 	}
 });

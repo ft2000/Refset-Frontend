@@ -192,6 +192,12 @@ export default Ember.ObjectController.extend({
 		{
 			this.createEmptyRefset();
 		},
+		
+		clearImportList : function()
+		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();	
+		}
 
     }
 });

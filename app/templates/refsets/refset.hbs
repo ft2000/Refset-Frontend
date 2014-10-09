@@ -155,7 +155,11 @@
 						<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drop files here</span></div>
 						
 						<p><a href="/assets/temp/sample_refset.txt" target="_blank">Click here to download the latest sample refset file which you can use in the form above</a></p>
-					
+						
+						{{#if potentialMembersToImport}}
+							<button {{action 'clearImportList' id}} class="btn btn-default">Clear import list</button>
+						{{/if}}
+						
 						{{#if getConceptDataInProgress}}		
 							<h2>Importing member file</h2>
 							<img src="assets/img/googleballs-animated.gif">

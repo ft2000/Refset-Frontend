@@ -18,7 +18,7 @@ export default Ember.ArrayController.extend({
 			return !concept.meta.deleteConcept;
 		});
 	}.property('model'),
-    
+	
     importError : null,
 
 	clearMemberList : function()
@@ -28,7 +28,6 @@ export default Ember.ArrayController.extend({
 	
 	getConceptDataInProgress : false,
 
-	
 	clearMembers : function()
 	{
 		this.model.setObjects([]);
@@ -76,12 +75,8 @@ export default Ember.ArrayController.extend({
 
 			var defaultMemberModuleId = $('#newRefsetModuleId').val();
 			
-			Ember.Logger.log("==================================",defaultMemberModuleId);
-
 			var membersData = membersAdapter.findList(user,idArray).then(function(result)
 			{
-				Ember.Logger.log("result",result);
-
 				var membersData2;
 				
 				if (typeof result.meta.errorInfo === "undefined")
@@ -118,8 +113,6 @@ export default Ember.ArrayController.extend({
 						return member;
 					});	
 
-					Ember.Logger.log("membersData2",membersData2);
-
 					_this.set("importError",null);
 					_this.model.setObjects(membersData2);
 				}
@@ -132,8 +125,6 @@ export default Ember.ArrayController.extend({
 				_this.set("getConceptDataInProgress",false);
 				return membersData2;
 			});
-			
-			Ember.Logger.log("controllers.refsets.upload:actions:uploadMemberList (membersData)",membersData);			
 		},
 
     }
