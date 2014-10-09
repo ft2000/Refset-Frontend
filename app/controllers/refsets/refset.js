@@ -55,13 +55,13 @@ export default Ember.ObjectController.extend({
 				
 				if (member.active === member.meta.originalActive && member.moduleId === member.meta.originalModuleId) {return null;}
 				
-				Ember.Logger.log(member.active,member.meta.originalActive,member.moduleId,member.meta.originalModuleId)				
+				Ember.Logger.log(member.active,member.meta.originalActive,member.moduleId,member.meta.originalModuleId);	
 				
 				delete member["meta"];
 				
 				return member;
 			});
-			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n) });
+			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
 
 			this.set("membersToAdd",[]);
 					
@@ -139,7 +139,6 @@ export default Ember.ObjectController.extend({
 		
 		doUpdateRefset : function(membersToUpdate)
 		{
-			var dataController = this.get('controllers.data');
 			var Refset = $.extend(true, {}, dataController.refset);
 			
 			// API barfs if we send it anything other than what it expects. So we keep extra data in meta so we can delete it easily...
@@ -192,18 +191,18 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			// Now Add / Delete any necessary members...
+				var dataController = this.get('controllers.data');
+
+				// Now Add / Delete any necessary members...
 				if (this.membersToAdd.length)
     			{
     				// Need to add some members...
 
-					var oldMessage = this.dialogInstance.getMessage();
-    				Ember.Logger.log("----------------------------",oldMessage);
-    				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Adding new members</div><br><br><!----->');
+					var oldAddMessage = this.dialogInstance.getMessage();
+    				var newAddMessage = oldAddMessage.replace(/<!----->/,'<div class="centre">Adding new members</div><br><br><!----->');
     				
-    				this.dialogInstance.setMessage(newMessage);
+    				this.dialogInstance.setMessage(newAddMessage);
 
-    				var dataController = this.get('controllers.data');
     				dataController.addMembers(this.get("model").id,this.membersToAdd,this,'addMembersComplete');
     			}
     			else
@@ -212,22 +211,17 @@ export default Ember.ObjectController.extend({
     				{
         				// Need to delete some members...
         				
-        				var oldMessage = this.dialogInstance.getMessage();
-        				Ember.Logger.log("----------------------------",oldMessage);
-        				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
+        				var oldDelMessage = this.dialogInstance.getMessage();
+        				var newDelMessage = oldDelMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
         				
-        				this.dialogInstance.setMessage(newMessage);
+        				this.dialogInstance.setMessage(newDelMessage);
         				
-        				var dataController = this.get('controllers.data');
         				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
     				}
     				else
     				{
     					// Nothing do do...
     	    			this.dialogInstance.close();
-
-//    	    			var dataController = this.get('controllers.data');
-//   	    			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
     				}
     			}
     		}	
@@ -242,7 +236,6 @@ export default Ember.ObjectController.extend({
 				// Need to delete some members...
 				
 				var oldMessage = this.dialogInstance.getMessage();
-				Ember.Logger.log("----------------------------",oldMessage);
 				var newMessage = oldMessage.replace(/<!----->/,'<div class="centre">Deleting unwanted members</div><br><br><!----->');
 				
 				this.dialogInstance.setMessage(newMessage);
@@ -254,9 +247,6 @@ export default Ember.ObjectController.extend({
 			{
 				// Nothing do do...
     			this.dialogInstance.close();
-
-//    			var dataController = this.get('controllers.data');
-//   			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');    					
 			}
 		},
 
@@ -267,9 +257,6 @@ export default Ember.ObjectController.extend({
 
 			// Nothing do do...
 			this.dialogInstance.close();
-
-//			var dataController = this.get('controllers.data');
-//			dataController.getRefset(this.get("model").id,this,'getRefsetComplete');  
 		},
 
 		exportRefset : function(id)

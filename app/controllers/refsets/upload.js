@@ -11,7 +11,7 @@ export default Ember.ArrayController.extend({
 	{
 		var concepts = this.get('model');
 		
-		Ember.Logger.log("importRequiredFilteredModel concepts",concepts)
+		Ember.Logger.log("importRequiredFilteredModel concepts",concepts);
 
 		return concepts.filter(function(concept)
 		{
@@ -47,7 +47,7 @@ export default Ember.ArrayController.extend({
 			return concept.meta.deleteConcept ? null : validConcept;
 		});
 		
-		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n) });
+		conceptsToImport = $.grep(conceptsToImport,function(n){ return(n); });
 		
 		return conceptsToImport;
 	},
