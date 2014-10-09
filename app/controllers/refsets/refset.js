@@ -48,7 +48,6 @@ export default Ember.ObjectController.extend({
 	importListChanged: function()
 	{
 		// Need  to check if we have any duplicates...
-		
 		var duplicates = [];
 		
 		var exisitingMembersArray = this.get("model").members;
@@ -71,8 +70,8 @@ export default Ember.ObjectController.extend({
 			potentialMembersToImport= $.grep(potentialMembersToImport,function(n){ return(n) });
 		}
 		
-		var uploadController 	= this.get('controllers.refsets/upload');
-		uploadController.set("model",potentialMembersToImport);
+		var uploadController = this.get('controllers.refsets/upload');
+		uploadController.overrideImportList(potentialMembersToImport);
 
 		if (duplicates.length)
 		{
@@ -92,11 +91,13 @@ export default Ember.ObjectController.extend({
 	                label: 'OK',
 	                cssClass: 'btn-primary',
 	                action: function(dialogRef){
-	                    dialogRef.close();
+	            		dialogRef.close();
 	                }
 	            }]
 	        });	
 		}
+		
+		$("#importMembersForm").collapse('hide');
 		
 	}.observes('potentialMembersToImport.@each'),
 	

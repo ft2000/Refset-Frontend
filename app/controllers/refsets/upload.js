@@ -26,6 +26,11 @@ export default Ember.ArrayController.extend({
 		this.model.setObjects([]);
 	},
 	
+	overrideImportList : function(newList)
+	{
+		this.model.setObjects(newList);
+	},
+	
 	getConceptDataInProgress : false,
 
 	clearMembers : function()
