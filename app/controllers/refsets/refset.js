@@ -49,7 +49,7 @@ export default Ember.ObjectController.extend({
 
 	importListChanged: function()
 	{
-		if (this.importListChangedInProgress) {return;};
+		if (this.importListChangedInProgress) {return;}
 		
 		this.importListChangedInProgress = true;
 		
