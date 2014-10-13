@@ -238,8 +238,8 @@ export default Ember.ObjectController.extend({
 			
 			// Save the user record from the Local Store into this controller
 			this.set("user",userData.data);
-			
-			if (this.getSecondsLeftToAutoLogout() < 0)
+	
+			if (this.user.token !== null && this.getSecondsLeftToAutoLogout() < 0)
 			{
 				this.send("closeLogoutAlertModal");
 				this.showLoginForm();

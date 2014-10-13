@@ -1,69 +1,67 @@
-<div class="wrapper">
+<div id="header" class="container-fluid">
 
-	<header>
-		
-		{{#link-to 'dashboard' class='logo'}}IHTSDO logo{{/link-to}}
+	<div class="login-buttons">
+		{{#if user.token}}
+			<a href="#" {{action 'logout'}}>Logout</a>
+			{{#if showLogoutTimer}}{{bs-progress progressBinding="logoutProgressDisplay" type="danger" stripped="true"}} <p class="warningText">Logging you out in {{logoutTimerDisplay}} seconds{{/if}}</p>
+		{{else}}
+			<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
+			<a href="#" {{action 'showRegistrationForm'}}>Register</a>
+		{{/if}}
+	</div>
 
-		<nav class="loginRegisterButtons">
-			{{#if user.token}}
-				<a href="#" {{action 'logout'}}>Logout</a>
-				{{#if showLogoutTimer}}{{bs-progress progressBinding="logoutProgressDisplay" type="danger" stripped="true"}} <p class="warningText">Logging you out in {{logoutTimerDisplay}} seconds{{/if}}</p>
-			{{else}}
-				<a href="#" {{action 'showLoginForm'}}>Login</a> &bull;
-				<a href="#" {{action 'showRegistrationForm'}}>Register</a>
-			{{/if}}
-		</nav>
+    <nav class="navbar navbar-right navbar-brand" role="navigation">
+		<ul class="nav navbar-nav">
+			<li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Refsets <span class="caret"></span></a>
+				<ul class="dropdown-menu" role="menu">
+					<li>{{#link-to 'refsets'}}Browse Refsets{{/link-to}}</li>
+					{{#if user.token}}<li>{{#link-to 'refsets.new'}}New Refset{{/link-to}}</li>{{/if}}
+				</ul>
+			</li>
+			
+            <li>{{#link-to 'news'}}News{{/link-to}}</li>
+            <li class="snomed-person-icon"><div class="text-primary">Welcome</div> {{#if user.token}}{{user.givenName}} {{user.surname}}{{else}}Guest{{/if}}</li>
+        </ul>
+    </nav>
 
-        <nav>
-            <ul>
-                <li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
-                <li>{{#link-to 'refsets'}}Refsets{{/link-to}}</li>
-                <li>{{#link-to 'news'}}News{{/link-to}}</li>
-                <li><span class="clrPrimary">Welcome</span> {{#if user.token}}{{user.givenName}} {{user.surname}}{{else}}Guest{{/if}}</li>
-            </ul>
-        </nav>
+</div>
 
+<div id="body" class="container-fluid">		
 
-    </header>
+	{{bs-growl-notifications}}
 
-	<section class="content contain pageLayout">
+	{{outlet}} 
+
+	{{outlet modal}}
+
+</div>
+
+<div class="waitAnim"><img src="/assets/img/ajax-loader.gif"></div>
+
+<div id="footer" class="container-fluid">	
 	
-		{{bs-growl-notifications}}
-	
-<!---		{{bs-breadcrumbs}}   --->
-		
-		{{outlet}} 
+	<hr>
 
-		{{outlet modal}}
+	<div class="share">
+		<span><small>Share</small></span>
+		<ul>
+			<li><a href="#" class="linkedin">linkedin</a></li>
+			<li><a href="#" class="twitter">twitter</a></li>
+			<li><a href="#" class="google">googleplus</a></li>
+		</ul>
+	</div>
 
-	</section>
+	<nav>
+        <ul>
+            <li><small>{{#link-to 'privacy-statement'}}Privacy{{/link-to}}</small></li>
+            <li><small>{{#link-to 'cookie-policy'}}Cookie policy{{/link-to}}</small></li>
+            <li><small>{{#link-to 'accessibility'}}Accessibility{{/link-to}}</small></li>
+            <li><small>{{#link-to 'terms-and-conditions'}}Terms and conditions{{/link-to}}</small></li>
+            <li><small>{{#link-to 'site-map'}}Site map{{/link-to}}</small></li>
+            <li><small><a href="http://www.ihtsdo.org/" target="_blank">&copy; Copyright IHTSDO 2014</a></small></li>
+        </ul>
+    </nav>
 
-	<div class="waitAnim"><img src="/assets/img/ajax-loader.gif"></div>
-
-	<footer class="pageLayout contain">
-		
-		<hr>
-
-		<div class="share">
-			<span><small>Share</small></span>
-			<ul>
-				<li><a href="#" class="linkedin">linkedin</a></li>
-				<li><a href="#" class="twitter">twitter</a></li>
-				<li><a href="#" class="google">googleplus</a></li>
-			</ul>
-		</div>
-
-		<nav>
-            <ul>
-                <li><small>{{#link-to 'privacy-statement'}}Privacy{{/link-to}}</small></li>
-                <li><small>{{#link-to 'cookie-policy'}}Cookie policy{{/link-to}}</small></li>
-                <li><small>{{#link-to 'accessibility'}}Accessibility{{/link-to}}</small></li>
-                <li><small>{{#link-to 'terms-and-conditions'}}Terms and conditions{{/link-to}}</small></li>
-                <li><small>{{#link-to 'site-map'}}Site map{{/link-to}}</small></li>
-                <li><small><a href="http://www.ihtsdo.org/" target="_blank">&copy; Copyright IHTSDO 2014</a></small></li>
-            </ul>
-        </nav>
-
-	</footer>
-	
 </div>

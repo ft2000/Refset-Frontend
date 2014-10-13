@@ -22,8 +22,8 @@ var pickFiles = require('broccoli-static-compiler');
 
 //Bootstrap Stuff
 app.import('vendor/bootstrap/dist/js/bootstrap.min.js');
-app.import('vendor/bootstrap/dist/css/bootstrap.min.css');
-app.import('vendor/bootstrap/dist/css/bootstrap-theme.min.css');
+//app.import('vendor/bootstrap/dist/css/bootstrap.min.css');
+//app.import('vendor/bootstrap/dist/css/bootstrap-theme.min.css');
 
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-core.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-basic.min.js');
@@ -42,7 +42,7 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
 
 //Bootstrap Modal
 app.import('vendor/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js');
-app.import('vendor/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css');
+//app.import('vendor/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css');
 
 //Bootstrap Switch
 app.import('vendor/bootstrap-switch-master/dist/js/bootstrap-switch.min.js');
