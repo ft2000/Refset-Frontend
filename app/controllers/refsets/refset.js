@@ -95,6 +95,7 @@ export default Ember.ObjectController.extend({
 				this.dialogInstance = BootstrapDialog.show({
 		            title: '<img src="assets/img/login.white.png"> Import members',
 		            closable: false,
+		            type : BootstrapDialog.TYPE_WARNING,
 		            message: message,
 		            buttons: [
 	                {
