@@ -18,7 +18,7 @@ export default Ember.ObjectController.extend({
 	membersToAdd		: [],
 
 	members				: [],
-	
+
 	dialogInstance	: null,
 
 	initModel : function(params)
