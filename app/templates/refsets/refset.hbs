@@ -106,7 +106,7 @@
 										<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
 	
 											<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
-											<p class="description">{{meta.description}}</p>									
+											<p class="description">{{meta.description}} {{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}</p>							
 	
 											{{#if meta.found}}
 												<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
@@ -126,7 +126,6 @@
 										 			</span>
 												</label>
 												<label>Effective time: <span>{{date-time-format effectiveTime}}</span></label>
-												{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}
 											{{/if}}
 	
 											{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
