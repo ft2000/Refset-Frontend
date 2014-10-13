@@ -61,6 +61,9 @@ export default Ember.ArrayController.extend({
 		importFlatFile : function(members)
 		{
 			var _this = this;
+			
+			members = members.replace(/\r?\n|\r/g,"\n");
+			
 			var membersArray = members.split('\n');
 			
 			var idArray = membersArray.map(function(refCompId)

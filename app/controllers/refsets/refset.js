@@ -368,7 +368,7 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:exportRefset (id)",id);
 			
-			var loginController = this.controllerFor('login');
+			var loginController = this.get('controllers.login');
 			var user = loginController.user;
 			
 			refsetsAdapter.getRefsetExport(user, id).then(function(exportFile)

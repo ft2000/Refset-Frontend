@@ -181,7 +181,10 @@ export default Ember.Object.extend({
 	{
 		var _this = this;
 
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(response){
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(response)
+		{
+		Ember.Logger.log("----------------------------------------",response);
+			
 			return response;	
 		},
 		function (response)
