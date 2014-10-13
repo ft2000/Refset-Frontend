@@ -78,10 +78,12 @@
 								<td class="label">Last Updated</td><td class="content">{{date-time-format modifiedDate}}</td>
 								<td class="label">Last Updated by</td><td class="content">{{modifiedBy}}</td>
 							</tr>
+
 							<tr>
-								<td class="label">{{#if published}}SCTID{{else}}Temp ID{{/if}}</td><td class="content" colspan=3>{{id}}</td>
+								<td class="label">SCTID</td><td class="content">{{#if published}}{{id}}{{/if}}</td>
+								<td class="label">UUID</td><td class="content">{{id}}</td>
 							</tr>
-						
+
 						</table>
 					</form>
 					</div>
