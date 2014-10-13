@@ -1,3 +1,5 @@
+<h1>View Refset</h1>
+
 {{#if error}}
 
 	{{#if unauthorised}}
@@ -104,7 +106,7 @@
 										<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
 	
 											<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
-											<p class="description">{{meta.description}}</p>									
+											<p class="description">{{meta.description}} {{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}</p>							
 	
 											{{#if meta.found}}
 												<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
@@ -123,8 +125,7 @@
 														 {{/if}}
 										 			</span>
 												</label>
-												<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
-												{{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}
+												<label>Effective time: <span>{{date-time-format effectiveTime}}</span></label>
 											{{/if}}
 	
 											{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
@@ -150,7 +151,7 @@
 			        <div id="importMembersForm" class="panel-body collapse">
 					            	
 						<b>Import Members (flat file)</b>
-						<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
+						<p>To import potential members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below. You will then have an opportunity to review the members before initialting the actual import.</p>
 					
 						<input type="file" id="refsetUploadFileInput" />
 					
@@ -175,50 +176,49 @@
 					</div>
 				</div>
 			</div>
- 
-				{{#unless getConceptDataInProgress}}
-					{{#unless importError}}
-						{{#if potentialMembersToImport}}
-						    <div class="panel panel-info ember-view fade in panelNoPadding">
-						        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
-						             <h4 class="panel-title">Review Members to import({{potentialMembersToImport.length}})</h4>
-						        </div>
-						        <div class="panel-collapse collapse in">
-						            <div id="importMemberList" class="panel-body">
-										<ul class="list-group checkboxList">
-											{{#each potentialMembersToImport}}
-												<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-			
-													<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
-													<p class="description">{{meta.description}}</p>									
-			
-													{{#if meta.found}}
-														<label>Import as active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
-			
-														<label>Module:
-															<span>
-																{{#if published}}
-																	{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
-																{{else}}
-																	{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
-																 {{/if}}
-												 			</span>
-														</label>
-															
-														<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
-														{{#unless meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
-													{{/if}}
-			
-													{{#unless published}}<label class="right clearRight">Import this concept {{view 'toggle-switch-inverted' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
-												</li>
-											{{/each}}
-										</ul>
-									</div>
+
+			{{#unless getConceptDataInProgress}}
+				{{#unless importError}}
+					{{#if potentialMembersToImport}}
+					    <div class="panel panel-info ember-view fade in panelNoPadding">
+					        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
+					             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
+					        </div>
+					        <div class="panel-collapse collapse in">
+					            <div id="importMemberList" class="panel-body">
+									<ul class="list-group checkboxList">
+										{{#each potentialMembersToImport}}
+											<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+		
+												<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
+												<p class="description">{{meta.description}}</p>									
+		
+												{{#if meta.found}}
+													<label>Import as active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
+		
+													<label>Module:
+														<span>
+															{{#if published}}
+																{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
+															{{else}}
+																{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
+															 {{/if}}
+											 			</span>
+													</label>
+														
+													{{#unless meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
+												{{/if}}
+		
+												{{#unless published}}<label class="right clearRight">Import this concept {{view 'toggle-switch-inverted' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
+											</li>
+										{{/each}}
+									</ul>
 								</div>
 							</div>
-						{{/if}}
-					{{/unless}}
+						</div>
+					{{/if}}
 				{{/unless}}
+			{{/unless}}
 
 			{{#unless published}}
 			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>

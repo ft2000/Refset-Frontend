@@ -42,6 +42,11 @@ export default Ember.ObjectController.extend({
 		this.processRetryQueue();
 	},
 
+	clearRefset : function()
+	{
+		this.set("refset",{});
+	},
+	
 	initialiseAppData : function()
 	{		
 		Ember.Logger.log("controllers.data:initialiseAppData");

@@ -61,6 +61,9 @@ export default Ember.ArrayController.extend({
 		importFlatFile : function(members)
 		{
 			var _this = this;
+			
+			members = members.replace(/\r?\n|\r/g,"\n");
+			
 			var membersArray = members.split('\n');
 			
 			var idArray = membersArray.map(function(refCompId)
@@ -88,6 +91,8 @@ export default Ember.ArrayController.extend({
 				{
 					var conceptData = result.content.concepts;
 					
+					var conceptsNotFound = []; 
+					
 					membersData2 = idArray.map(function(refCompId)
 					{
 						var member = {};
@@ -105,19 +110,36 @@ export default Ember.ArrayController.extend({
 							member.meta.description				= conceptData[refCompId].label;
 							member.meta.found 					= true;
 							member.meta.disabled				= !conceptData[refCompId].active;
+
+							return member;
 						}
 						else
 						{
-							member.active 						= false;
-							member.meta.conceptActive 			= false;
-							member.meta.description				= 'concept not found';
-							member.meta.found 					= false;
-							member.meta.disabled				= true;
-						}
-						
-						return member;
+							conceptsNotFound.push(refCompId);
+							
+							return null;
+						}					
 					});	
-
+					
+					membersData2 = $.grep(membersData2,function(n){ return(n) });
+					
+					if (conceptsNotFound.length)
+					{
+						BootstrapDialog.show({
+				            title: '<img src="assets/img/login.white.png"> Concept SCTIDs not found',
+				            type : BootstrapDialog.TYPE_WARNING,
+				            closable: false,
+				            message: '<br><br><div class="centre">We have failed to find the following concept SCTIDs in our database.<br>They cannot, therefore, be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
+				            buttons: [{
+				                label: 'OK',
+				                cssClass: 'btn-primary',
+				                action: function(dialogRef){
+				                    dialogRef.close();
+				                }
+				            }]
+				        });
+					}
+					
 					_this.set("importError",null);
 					_this.model.setObjects(membersData2);
 				}

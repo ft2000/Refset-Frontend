@@ -1,8 +1,8 @@
-import RefsetModel 		from '../../models/refset';
+import RefsetModel from '../../models/refset';
 
 export default Ember.ObjectController.extend({
 		
-	needs : ["login","utilities","refsets","refsets/upload","data"],
+	needs : ["login","utilities","refsets/upload","data"],
 
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 
@@ -12,9 +12,7 @@ export default Ember.ObjectController.extend({
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	
 	dialogInstance : null,
-		
-	model : RefsetModel.create(),
-	
+
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
@@ -25,6 +23,9 @@ export default Ember.ObjectController.extend({
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();
 
+		var dataController = this.get('controllers.data');		
+		dataController.clearRefset();
+	
 		Ember.run.scheduleOnce('afterRender', this, function(){
 			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
 			document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
@@ -114,12 +115,13 @@ export default Ember.ObjectController.extend({
     		
         			// Now initiate adding members to our new refset...
         			
-        			var dataController = this.get('controllers.data');		
+        			var dataController = this.get('controllers.data');	
         			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
     			}
     			else
     			{
-        			this.dialogInstance.close();
+        			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br>');
+    				this.dialogInstance.getModalFooter().show();
     			}
     		}
     	},
@@ -153,7 +155,8 @@ export default Ember.ObjectController.extend({
     		}
     		else
 			{
-    			this.dialogInstance.close();
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">Members imported.<br><br>');
+    			this.dialogInstance.getModalFooter().show();
 			}
     	},
     	

@@ -82,8 +82,8 @@
     <div class="panel-collapse collapse in">
         <div id="refsetMembers" class="panel-body collapse">
 		            	
-			<b>Import Members (flat file)</b>
-			<p>To import members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below.</p>
+			<b>Import potential members (flat file)</b>
+			<p>To import potential members from a flat-file of concept IDs, either use the browse button to locate your file, or drag a file below. You will then have an opportunity to review the members before initialting the actual import.</p>
 		
 			<input type="file" id="refsetUploadFileInput" />
 		
@@ -114,7 +114,7 @@
 		{{#if potentialMembersToImport}}
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
-		             <h4 class="panel-title">Review Members to import({{potentialMembersToImport.length}})</h4>
+		             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
 		            <div id="collapseTwo" class="panel-body">
@@ -138,7 +138,6 @@
 									 			</span>
 											</label>
 												
-											<label>Concept effective time: <span>{{date-time-format meta.conceptEffectiveTime}}</span></label>
 											{{#unless meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
 										{{/if}}
 
