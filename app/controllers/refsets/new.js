@@ -114,12 +114,13 @@ export default Ember.ObjectController.extend({
     		
         			// Now initiate adding members to our new refset...
         			
-        			var dataController = this.get('controllers.data');		
+        			var dataController = this.get('controllers.data');	
         			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
     			}
     			else
     			{
-        			this.dialogInstance.close();
+        			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br>');
+    				this.dialogInstance.getModalFooter().show();
     			}
     		}
     	},
@@ -153,7 +154,8 @@ export default Ember.ObjectController.extend({
     		}
     		else
 			{
-    			this.dialogInstance.close();
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">Members imported.<br><br>');
+    			this.dialogInstance.getModalFooter().show();
 			}
     	},
     	

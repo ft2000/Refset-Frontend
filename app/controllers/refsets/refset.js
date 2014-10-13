@@ -16,8 +16,8 @@ export default Ember.ObjectController.extend({
 
 	membersToDelete 	: [],
 	membersToAdd		: [],
-
-	members				: [],
+	
+	importListChangedInProgress	: false,
 
 	dialogInstance	: null,
 
@@ -49,58 +49,69 @@ export default Ember.ObjectController.extend({
 
 	importListChanged: function()
 	{
+		if (this.importListChangedInProgress) {return;};
+		
+		this.importListChangedInProgress = true;
+		
+		Ember.Logger.log("controllers.refsets.refset:importListChanged");
+		
 		// Need  to check if we have any duplicates...
 		var duplicates = [];
 		
-		var exisitingMembersArray = this.get("model").members;
+		var existingMembersArray = this.get("model").members;
 		var potentialMembersToImport = this.get("potentialMembersToImport");
 		
-		for (var m=0;m<exisitingMembersArray.length;m++)
+		if (typeof existingMembersArray !== "undefined")
 		{
-			var existingMember = exisitingMembersArray[m];
-			
-			for (var i=0;i<potentialMembersToImport.length;i++)
+			for (var m=0;m<existingMembersArray.length;m++)
 			{
-				var importMember = potentialMembersToImport[i];
+				var existingMember = existingMembersArray[m];
 				
-				if (existingMember.referencedComponentId === importMember.referencedComponentId)
+				for (var i=0;i<potentialMembersToImport.length;i++)
 				{
-					duplicates.push(importMember.meta.description);
-					potentialMembersToImport[i] = null;
+					var importMember = potentialMembersToImport[i];
+					
+					if (existingMember.referencedComponentId === importMember.referencedComponentId)
+					{
+						duplicates.push(importMember.meta.description);
+						potentialMembersToImport[i] = null;
+					}
 				}
+				potentialMembersToImport = $.grep(potentialMembersToImport,function(n){ return(n) });
 			}
-			potentialMembersToImport= $.grep(potentialMembersToImport,function(n){ return(n) });
-		}
-		
-		var uploadController = this.get('controllers.refsets/upload');
-		uploadController.overrideImportList(potentialMembersToImport);
-
-		if (duplicates.length)
-		{
-			var message = 'Your import file contains ' + duplicates.length + ' concepts which are already included in this refset. These will be excluded from the import.<br><br>';
 			
-			for (var d=0;d<duplicates.length;d++)
+			var uploadController = this.get('controllers.refsets/upload');
+			uploadController.overrideImportList(potentialMembersToImport);
+			
+			if (duplicates.length)
 			{
-				message += duplicates[d] + '<br>';
+				var message = 'Your import file contains ' + duplicates.length + ' concepts which are already included in this refset. These will be excluded from the import.<br><br>';
+				
+				for (var d=0;d<duplicates.length;d++)
+				{
+					message += duplicates[d] + '<br>';
+				}
+				
+				this.dialogInstance = BootstrapDialog.show({
+		            title: '<img src="assets/img/login.white.png"> Import members',
+		            closable: false,
+		            message: message,
+		            buttons: [
+	                {
+		                label: 'OK',
+		                cssClass: 'btn-primary',
+		                action: function(dialogRef){
+		            		dialogRef.close();
+		                }
+		            }]
+		        });	
 			}
 			
-			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Import members',
-	            closable: false,
-	            message: message,
-	            buttons: [
-                {
-	                label: 'OK',
-	                cssClass: 'btn-primary',
-	                action: function(dialogRef){
-	            		dialogRef.close();
-	                }
-	            }]
-	        });	
+			$("#importMembersForm").collapse('hide');
 		}
-		
-		$("#importMembersForm").collapse('hide');
-		
+
+		this.importListChangedInProgress = false;
+
 	}.observes('potentialMembersToImport.@each'),
 	
 	actions :
