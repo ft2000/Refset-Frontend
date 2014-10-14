@@ -55,7 +55,26 @@ export default Ember.ArrayController.extend({
 		
 		return conceptsToImport;
 	},
-	
+
+	addConceptsToImportList : function(membersToAddToList)
+	{
+		var membersToImport = [];
+		
+		var membersToImportOriginal = this.get("model");
+
+		membersToImportOriginal.map(function(member)
+		{
+			membersToImport.push(member);
+		});
+		
+		membersToAddToList.map(function(member)
+		{
+			membersToImport.push(member);
+		});
+		
+		this.model.setObjects(membersToImport);
+	},
+
     actions :
     {
     	importSingleMember : function(member)
@@ -70,20 +89,10 @@ export default Ember.ArrayController.extend({
 			member.meta.deleteConcept 			= false;
 			member.meta.found 					= true;
 			member.meta.disabled				= false;
-			
-			var membersToImportOriginal = this.get("model");
-			
-			var membersToImport = [];
-			
-			membersToImportOriginal.map(function(existingMember)
-			{
-				membersToImport.push(existingMember);
-			});
-			
-			membersToImport.push(member);
-			
-			this.model.setObjects(membersToImport);
+						
+			this.addConceptsToImportList([member]);
     	},
+    	
     	
 		importFlatFile : function(members)
 		{

@@ -78,9 +78,10 @@ export default Ember.ObjectController.extend({
 						potentialMembersToImport[i] = null;
 					}
 				}
-				potentialMembersToImport = $.grep(potentialMembersToImport,function(n){ return(n) });
 			}
 			
+			potentialMembersToImport = $.grep(potentialMembersToImport,function(n){ return(n) });
+
 			var uploadController = this.get('controllers.refsets/upload');
 			uploadController.overrideImportList(potentialMembersToImport);
 			
