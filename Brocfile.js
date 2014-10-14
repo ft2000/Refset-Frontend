@@ -28,8 +28,6 @@ app.import('vendor/bootstrap/dist/js/bootstrap.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-core.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-basic.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-alert.min.js');
-app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.min.js');
-app.import('vendor/ember-addons.bs_for_ember/dist/css/bs-growl-notifications.min.css');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-modal.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-button.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-breadcrumbs.min.js');
@@ -39,6 +37,9 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-list-group.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-nav.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-notifications.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
+app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.min.js');
+
+app.import('vendor/ember-addons.bs_for_ember/dist/css/bs-growl-notifications.min.css');
 
 //Bootstrap Modal
 app.import('vendor/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js');
