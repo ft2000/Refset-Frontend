@@ -58,9 +58,38 @@ export default Ember.ArrayController.extend({
 	
     actions :
     {
+    	importSingleMember : function(member)
+    	{
+    		Ember.Logger.log("controller.refstes.upload:actions:importSingleFile",member);
+    		
+    		member.moduleId = $('#newRefsetModuleId').val();
+    		member.active 	= true;
+    		
+    		member.meta = 	{};
+			member.meta.conceptActive 			= true;
+			member.meta.deleteConcept 			= false;
+			member.meta.found 					= true;
+			member.meta.disabled				= false;
+			
+			var membersToImportOriginal = this.get("model");
+			
+			var membersToImport = [];
+			
+			membersToImportOriginal.map(function(existingMember)
+			{
+				membersToImport.push(existingMember);
+			});
+			
+			membersToImport.push(member);
+			
+			this.model.setObjects(membersToImport);
+    	},
+    	
 		importFlatFile : function(members)
 		{
-			var _this = this;
+    		Ember.Logger.log("controller.refstes.upload:actions:importFlatFile",members);
+
+    		var _this = this;
 			
 			members = members.replace(/\r?\n|\r/g,"\n");
 			
@@ -80,78 +109,80 @@ export default Ember.ArrayController.extend({
 			var user = loginController.user;
 			
 			this.set("getConceptDataInProgress",true);
-
-			var defaultMemberModuleId = $('#newRefsetModuleId').val();
 			
-			var membersData = membersAdapter.findList(user,idArray).then(function(result)
-			{
-				var membersData2;
-				
-				if (typeof result.meta.errorInfo === "undefined")
-				{
-					var conceptData = result.content.concepts;
-					
-					var conceptsNotFound = []; 
-					
-					membersData2 = idArray.map(function(refCompId)
-					{
-						var member = {};
-						
-						member.referencedComponentId = refCompId;
-						member.moduleId = defaultMemberModuleId;
-						member.meta = {};
-						
-						if (conceptData[refCompId] !== null)
-						{
-							member.active 						= true;
-							member.meta.conceptActive 			= conceptData[refCompId].active;
-							member.meta.conceptEffectiveTime 	= conceptData[refCompId].effectiveTime;
-							member.meta.conceptModuleId 		= conceptData[refCompId].moduleId;
-							member.meta.description				= conceptData[refCompId].label;
-							member.meta.found 					= true;
-							member.meta.disabled				= !conceptData[refCompId].active;
+			var defaultMemberModuleId = $('#newRefsetModuleId').val();
 
-							return member;
-						}
-						else
+			var conceptsNotFound = []; 
+			
+	//		while(idArray.length)
+	//		idArray.splice(0,10)
+			{			
+				var membersData = membersAdapter.findList(user,idArray).then(function(result)
+				{
+					var membersData2;
+					
+					if (typeof result.meta.errorInfo === "undefined")
+					{
+						var conceptData = result.content.concepts;
+										
+						membersData2 = idArray.map(function(refCompId)
 						{
-							conceptsNotFound.push(refCompId);
+							var member = {};
 							
-							return null;
-						}					
-					});	
-					
-					membersData2 = $.grep(membersData2,function(n){ return(n) });
-					
-					if (conceptsNotFound.length)
-					{
-						BootstrapDialog.show({
-				            title: '<img src="assets/img/login.white.png"> Concept SCTIDs not found',
-				            type : BootstrapDialog.TYPE_WARNING,
-				            closable: false,
-				            message: '<br><br><div class="centre">We have failed to find the following concept SCTIDs in our database.<br>They cannot, therefore, be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
-				            buttons: [{
-				                label: 'OK',
-				                cssClass: 'btn-primary',
-				                action: function(dialogRef){
-				                    dialogRef.close();
-				                }
-				            }]
-				        });
+							member.referencedComponentId = refCompId;
+							member.moduleId = defaultMemberModuleId;
+							member.meta = {};
+							
+							if (conceptData[refCompId] !== null)
+							{
+								member.active 						= true;
+								member.description					= conceptData[refCompId].label;
+								member.meta.conceptActive 			= conceptData[refCompId].active;
+								member.meta.deleteConcept 			= !conceptData[refCompId].active;
+								member.meta.found 					= true;
+								member.meta.disabled				= !conceptData[refCompId].active;
+	
+								return member;
+							}
+							else
+							{
+								conceptsNotFound.push(refCompId);
+								
+								return null;
+							}
+						});
+						
+						membersData2 = $.grep(membersData2,function(n){ return(n) });
+						
+						if (conceptsNotFound.length)
+						{
+							BootstrapDialog.show({
+					            title: '<img src="assets/img/login.white.png"> Concept SCTIDs not found',
+					            type : BootstrapDialog.TYPE_WARNING,
+					            closable: false,
+					            message: '<br><br><div class="centre">We have failed to find the following concept SCTIDs in our database.<br>They cannot, therefore, be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
+					            buttons: [{
+					                label: 'OK',
+					                cssClass: 'btn-primary',
+					                action: function(dialogRef){
+					                    dialogRef.close();
+					                }
+					            }]
+					        });
+						}
+						
+						_this.set("importError",null);
+						_this.model.setObjects(membersData2);
 					}
-					
-					_this.set("importError",null);
-					_this.model.setObjects(membersData2);
-				}
-				else
-				{
-					Ember.Logger.log(result.error);
-					_this.set("importError",result.error);
-				}
-
-				_this.set("getConceptDataInProgress",false);
-				return membersData2;
-			});
+					else
+					{
+						Ember.Logger.log(result.error);
+						_this.set("importError",result.error);
+					}
+	
+					_this.set("getConceptDataInProgress",false);
+				});
+			}
 		},
 
     }

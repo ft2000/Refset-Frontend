@@ -1,4 +1,5 @@
 import ajax from 'ic-ajax';
+import { raw as icAjaxRaw } from 'ic-ajax';
 
 export default Ember.Object.extend({
 	
@@ -52,7 +53,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user),timeout: 5000}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(response)
 		{	
 			return response;
 		},
@@ -112,7 +113,6 @@ export default Ember.Object.extend({
 		var _this = this;
 
 		var member = {referencedComponentId : referencedComponentId, active:true};
-//		delete member["meta"];
 			
 		var jsonFormatMemberData = JSON.stringify(member);
 		
@@ -183,7 +183,7 @@ export default Ember.Object.extend({
 
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(response)
 		{
-		Ember.Logger.log("----------------------------------------",response);
+			//Ember.Logger.log("----------------------------------------",response,response.jqXHR.getResponseHeader('Content-Disposition'));
 			
 			return response;	
 		},
