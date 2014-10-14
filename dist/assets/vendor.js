@@ -62792,8 +62792,36 @@ self||"undefined"!==typeof window&&window||this.content);"undefined"!==typeof mo
 	} 
 	else 
 	{ 
-		alert("Failed to load file");
+		var dropData = evt.dataTransfer.getData("text/plain").split('|');
+		
+		if (dropData.length)
+		{
+			var concept 					= {};
+			concept.referencedComponentId 	= dropData[0];
+			concept.description 			= dropData[1];
+			
+			var controller = Refset.__container__.lookup("controller:refsets.upload");
+			controller.send('importSingleMember',concept);
+		}
+		else
+		{
+			alert("Failed to load file / import member");			
+		}
 	}
+}
+
+function readSingleConcept(evt)
+{
+	evt.stopPropagation();
+	evt.preventDefault();
+	
+	var dropData 					= evt.dataTransfer.getData("text/plain").split('|');
+	var concept 					= {};
+	concept.referencedComponentId 	= dropData[0];
+	concept.description 			= dropData[1];
+	
+	var controller = Refset.__container__.lookup("controller:refsets.upload");
+	controller.send('importSingleMember',concept);
 }
 
 function handleDragOver(evt) 

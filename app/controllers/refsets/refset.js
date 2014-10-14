@@ -44,6 +44,7 @@ export default Ember.ObjectController.extend({
 			document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
 			document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
 			document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
+		
 		});
 	},
 
@@ -53,7 +54,7 @@ export default Ember.ObjectController.extend({
 		
 		this.importListChangedInProgress = true;
 		
-		Ember.Logger.log("controllers.refsets.refset:importListChanged");
+		Ember.Logger.log("controllers.refsets.refset:importListChanged",this.get("potentialMembersToImport"));
 		
 		// Need  to check if we have any duplicates...
 		var duplicates = [];
@@ -108,7 +109,7 @@ export default Ember.ObjectController.extend({
 		        });	
 			}
 			
-			$("#importMembersForm").collapse('hide');
+			$("#importMemberList").collapse('show');
 		}
 
 		this.importListChangedInProgress = false;

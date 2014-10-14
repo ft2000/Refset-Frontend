@@ -496,65 +496,25 @@ export default Ember.ObjectController.extend({
 					_this.set("refset.members",[]);
 				}
 				
-				var idArray = _this.refset.members.map(function(member)
+				var MemberData = _this.refset.members.map(function(member)
 				{
-					if (typeof member.referencedComponentId !== "undefined")
-					{
-						return member.referencedComponentId;						
-					}
-					else
-					{
-						return null;
-					}
-				});		
+					member.meta = {};
 
-				// Strip nulls
-				idArray = $.grep(idArray,function(n){ return(n); });
+					member.meta.conceptActive 			= true;
+					member.meta.found 					= true;
+					member.meta.deleteConcept			= false;
+					
+					member.meta.originalActive			= member.active;
+					member.meta.originalModuleId		= member.moduleId;
+					
+					return member;
+				});
 				
-				if (idArray.length)
+				_this.refset.members.setObjects(MemberData);
+				
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
-					_this.getMembers(idArray).then(function(conceptData)
-					{
-						var MemberData = _this.refset.members.map(function(member)
-						{
-							member.meta = {};
-	
-							if (typeof conceptData[member.referencedComponentId] !== "undefined" && conceptData[member.referencedComponentId] !== null)
-							{
-								member.meta.description 			= conceptData[member.referencedComponentId].label;
-								member.meta.conceptActive 			= conceptData[member.referencedComponentId].active;
-								member.meta.conceptModuleId 		= conceptData[member.referencedComponentId].moduleId;
-								member.meta.conceptEffectiveTime 	= conceptData[member.referencedComponentId].effectiveTime;
-								member.meta.found 					= true;
-								member.meta.deleteConcept			= false;
-								
-								member.meta.originalActive			= member.active;
-								member.meta.originalModuleId		= member.moduleId;
-							}
-							else
-							{
-								member.meta.description 			= 'Concept not found in Snomed CT database';
-								member.meta.found 					= false;
-								member.meta.deleteConcept			= false;
-							}
-							
-							return member;
-						});
-						
-						_this.refset.members.setObjects(MemberData);
-						
-						if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
-						{
-							callingController.send(completeAction,{error:0});
-						}
-					});
-				}
-				else
-				{
-					if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
-					{
-						callingController.send(completeAction,{error:0});
-					}
+					callingController.send(completeAction,{error:0});
 				}
 			}
 			else
@@ -688,10 +648,9 @@ export default Ember.ObjectController.extend({
 				_this.handleRequestFailure(response,'Add members to refset','addMembers',[refsetId,members],callingController,completeAction,retryCounter);
 			}
 		});
-		
+
 		return result;
 	},
-	
 	
 	getMembers : function(members,callingController,completeAction,retry)
 	{
