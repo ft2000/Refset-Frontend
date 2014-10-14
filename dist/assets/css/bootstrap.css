@@ -6212,3 +6212,12 @@ button.close {
 .login-buttons {
   font-size: 18px;
 }
+.share .linkedin {
+  background: url('../img/share-linkedin.png') no-repeat 0px 0px;
+}
+.share .twitter {
+  background: url('../img/share-twitter.png') no-repeat 0px 0px;
+}
+.share .share .google {
+  background: url('../img/share-google.png') no-repeat 0px 0px;
+}
