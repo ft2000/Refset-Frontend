@@ -23,12 +23,12 @@ module.exports = function(environment) {
 //        authenticationUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/',
 //        appsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
 //        permissionsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
-        passwordResetURL: 'https://usermanagement.ihtsdotools.org/security-web/requestPwChange.jsp',
+//        passwordResetURL: 'https://usermanagement.ihtsdotools.org/security-web/requestPwChange.jsp',
         
         authenticationUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query',
         appsUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
         permissionsUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
-//        passwordResetURL: 'https://usermanagement3.ihtsdotools.org/security-web/requestPwChange.jsp',
+        passwordResetURL: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
     	
     	// Refsets API
         refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
