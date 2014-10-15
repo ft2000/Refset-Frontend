@@ -126,7 +126,7 @@ export default Ember.ArrayController.extend({
 	//		while(idArray.length)
 	//		idArray.splice(0,10)
 			{			
-				var membersData = membersAdapter.findList(user,idArray).then(function(result)
+				membersAdapter.findList(user,idArray).then(function(result)
 				{
 					var membersData2;
 					
@@ -161,7 +161,7 @@ export default Ember.ArrayController.extend({
 							}
 						});
 						
-						membersData2 = $.grep(membersData2,function(n){ return(n) });
+						membersData2 = $.grep(membersData2,function(n){ return(n); });
 						
 						if (conceptsNotFound.length)
 						{

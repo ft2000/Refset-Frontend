@@ -181,10 +181,8 @@ export default Ember.Object.extend({
 	{
 		var _this = this;
 
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(response)
+		var result = icAjaxRaw(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/export', {headers:this.getHeaders(user)}).then(function(response)
 		{
-			//Ember.Logger.log("----------------------------------------",response,response.jqXHR.getResponseHeader('Content-Disposition'));
-			
 			return response;	
 		},
 		function (response)
