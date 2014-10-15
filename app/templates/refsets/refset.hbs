@@ -221,11 +221,13 @@
 				{{/if}}
 			{{/unless}}
 
-			{{#unless published}}
-			<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
-			{{/unless}}
-			<button {{action 'exportRefset' id}} class="btn btn-default">Export</button>
-			<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
+			{{#if meta}}
+				{{#unless published}}
+				<button {{action 'deleteRefset' id}} class="btn btn-default">Delete</button>
+				{{/unless}}
+				<button {{action 'exportRefset' id}} class="btn btn-default">Export</button>
+				<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
+			{{/if}}
 		
 	</div>
 {{/if}}
