@@ -42,20 +42,6 @@ function readSingleFile(evt)
 	}
 }
 
-function readSingleConcept(evt)
-{
-	evt.stopPropagation();
-	evt.preventDefault();
-	
-	var dropData 					= evt.dataTransfer.getData("text/plain").split('|');
-	var concept 					= {};
-	concept.referencedComponentId 	= dropData[0];
-	concept.description 			= dropData[1];
-	
-	var controller = Refset.__container__.lookup("controller:refsets.upload");
-	controller.send('importSingleMember',concept);
-}
-
 function handleDragOver(evt) 
 {
 	evt.stopPropagation();

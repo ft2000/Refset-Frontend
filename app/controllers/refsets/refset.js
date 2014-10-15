@@ -78,9 +78,10 @@ export default Ember.ObjectController.extend({
 						potentialMembersToImport[i] = null;
 					}
 				}
-				potentialMembersToImport = $.grep(potentialMembersToImport,function(n){ return(n) });
 			}
 			
+			potentialMembersToImport = $.grep(potentialMembersToImport,function(n){ return(n); });
+
 			var uploadController = this.get('controllers.refsets/upload');
 			uploadController.overrideImportList(potentialMembersToImport);
 			
@@ -371,11 +372,55 @@ export default Ember.ObjectController.extend({
 			
 			var loginController = this.get('controllers.login');
 			var user = loginController.user;
+			var _this = this;
 			
-			refsetsAdapter.getRefsetExport(user, id).then(function(exportFile)
+			this.dialogInstance = BootstrapDialog.show({
+	            title: '<img src="assets/img/login.white.png"> Export refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">We are preparing your refset export file. Please wait...</div><br><br><div class="centre"><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            type: 'BootstrapDialog.',
+	            buttons: [{
+	                label: 'Give up',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef)
+	                {
+	                    dialogRef.close();
+	                }
+	            },{
+	                label: 'Retry',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef)
+	                {
+	                	_this.send("exportRefset");
+	                    dialogRef.close();
+	                }
+		         }]
+	        });
+
+			this.dialogInstance.getModalFooter().hide();
+
+			refsetsAdapter.getRefsetExport(user, id).then(function(response)
 			{
-				var blob = new Blob([exportFile], {type: "text/plain;charset=utf-8"});
-				saveAs(blob, id + ".rf2");
+				try
+				{
+					var exportFile = response.response;
+					var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');
+					
+					
+					var filename = contentDisposition.split('"')[1];
+
+					var RF2 = new Blob([exportFile], {type: "text/plain;charset=utf-8"});
+
+					_this.dialogInstance.close();
+
+					saveAs(RF2, filename);
+				}
+				catch(e)
+				{
+	    			_this.dialogInstance.setMessage('<br><br><div class="centre">We have been unable to retrieve your refset export file. Would you like to retry.</div></br></br>');
+	    			_this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+	    			_this.dialogInstance.getModalFooter().show();
+				}
 			});	
 		},	
 		
