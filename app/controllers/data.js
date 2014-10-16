@@ -33,7 +33,8 @@ export default Ember.ObjectController.extend({
 	refsetTypesArray		: [],
 	componentTypesArray		: [],
 	moduleTypesArray		: [],
-	languagesArray			: [{id:'en_US',label:'International English'}],
+	languagesArray			: [{id:'en_US',label:'US English'}],
+	languageTypes			: {'en_US' : 'US English'},
 	initialised				: false,
 
 	init : function()

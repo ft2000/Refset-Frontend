@@ -49,11 +49,9 @@
 
 // Actual modal
 .modal-content {
+  border-radius: 10px 5px 5px;
+    background : @modal-content-bg;
   position: relative;
-  background-color: @modal-content-bg;
-  border: 1px solid @modal-content-fallback-border-color; //old browsers fallback (ie8 etc)
-  border: 1px solid @modal-content-border-color;
-  border-radius: @border-radius-large;
   .box-shadow(0 3px 9px rgba(0,0,0,.5));
   background-clip: padding-box;
   // Remove focus outline from opened modal
@@ -77,10 +75,15 @@
 // Modal header
 // Top section of the modal w/ title and dismiss
 .modal-header {
-  padding: @modal-title-padding;
+  border-radius: 10px 5px 0 0;
+  padding: @modal-title-padding + 20px;
+  padding-left : @modal-title-padding + 80px;
   border-bottom: 1px solid @modal-header-border-color;
   min-height: (@modal-title-padding + @modal-title-line-height);
+  background					:  url("../img/login.white.png") no-repeat scroll 20px 20px @modal-header-bgcolor;
+  color : @modal-header-color;
 }
+
 // Close icon
 .modal-header .close {
   margin-top: -2px;

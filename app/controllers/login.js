@@ -49,7 +49,7 @@ export default Ember.ObjectController.extend({
 			var loginFormHTML = loginFormTemplate(context);
 			
 			var loginDialog = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Authentication Required',
+	            title: 'Authentication Required',
 	            closable: false,
 	            message: loginFormHTML,
 	            buttons: 
@@ -178,7 +178,7 @@ export default Ember.ObjectController.extend({
 	// Show the registration modal dialog
 	showRegistrationForm: function() 
 	{
-		Bootstrap.ModalManager.open('registrationModal', '<img src="assets/img/login.png"> Snomed CT', 'registration', this.registerButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
+		Bootstrap.ModalManager.open('registrationModal', 'Snomed CT', 'registration', this.registerButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)
 	},
 	
    	init : function()

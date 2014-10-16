@@ -55,27 +55,27 @@
   background-image: none;
 }
 .btn-primary {
-  background-image: -webkit-linear-gradient(top, #00a7e1 0%, #007aa4 100%);
-  background-image: -o-linear-gradient(top, #00a7e1 0%, #007aa4 100%);
-  background-image: linear-gradient(to bottom, #00a7e1 0%, #007aa4 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff00a7e1', endColorstr='#ff007aa4', GradientType=0);
+  background-image: -webkit-linear-gradient(top, #ffffff 0%, #e0e0e0 100%);
+  background-image: -o-linear-gradient(top, #ffffff 0%, #e0e0e0 100%);
+  background-image: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe0e0e0', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   background-repeat: repeat-x;
-  border-color: #00729a;
+  border-color: #dbdbdb;
 }
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: #007aa4;
+  background-color: #e0e0e0;
   background-position: 0 -15px;
 }
 .btn-primary:active,
 .btn-primary.active {
-  background-color: #007aa4;
-  border-color: #00729a;
+  background-color: #e0e0e0;
+  border-color: #dbdbdb;
 }
 .btn-primary:disabled,
 .btn-primary[disabled] {
-  background-color: #007aa4;
+  background-color: #e0e0e0;
   background-image: none;
 }
 .btn-success {

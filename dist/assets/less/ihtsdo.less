@@ -1,3 +1,4 @@
+@import url(//fonts.googleapis.com/css?family=Roboto:500italic,700italic,300,700);
 @panel-color : #fff;
 
 .ihtsdo-panel
@@ -5,12 +6,20 @@
 	background-color 			: @panel-color;
 }
 
+body, 
+html
+{
+	min-width					: 800px;
+	width						: auto !important;
+	font-weight 				: @font-weight-base;
+}
+
 #header
 {
 	.ihtsdo-panel;
 
 	border-radius 				: @border-radius-large;
-	margin 						: 20px; /* top right bottom left */ /* top left/right bottom */ /* top/bottom left/right */
+	margin 						: 5px; /* top right bottom left */ /* top left/right bottom */ /* top/bottom left/right */
 	padding						: 10px 150px 0 20px;
 	
 	background					: url("../img/borderHeader.png") no-repeat scroll right top @panel-color;
@@ -37,13 +46,15 @@
 #body
 {
 	.ihtsdo-panel;
-	margin 						: 0 20px;
+	margin 						: 10px 5px;
+	padding						: 5px;
 }
 
 #footer
 {
 	.ihtsdo-panel;
-	margin						: 0 20px;
+	margin						: 0 5px;
+	padding-top					: 40px;
 	
 	.share
 	{
@@ -89,7 +100,7 @@
 	{
 	 	li 
 	 	{ 
-		    border-right:1px solid #00a7e1;
+		    border-right:1px solid @ihtsdo-text-color;
 		    display:inline-block;
 		    padding:0 5px;
 		}
@@ -102,12 +113,40 @@
 		
 		a 
 		{ 
-		    color:#5e5f61;
+		    color:@ihtsdo-text-color;
 		    display:block;
 		    line-height:12px;
 		}
 	}
 }
+
+#loginForm
+{
+	
+	input
+	{
+		width 			: 45%;
+		display : inline;
+	}
+	
+	.loading,
+	.error
+	{
+		margin-top		: 20px;
+		margin-bottom	: 20px;
+	}
+	
+	.forgetPasswordLink
+	{
+		margin-top		: 20px;
+	}
+	
+	.autoLogoutInfo
+	{
+		color 			: @brand-info;
+	}
+}
+
 
 .waitAnim
 {
@@ -127,3 +166,113 @@
     margin						: 0 0 0 40px;
     height						: 51px;
 }
+
+.bootstrap-dialog-title
+{
+  font-size : @font-size-h3;
+  font-weight : @font-weight-h3;
+}
+
+.left
+{
+	float : left;
+}
+
+.right
+{
+	float : right;
+}
+
+.clearAfter:after
+{
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.tooltiplink
+{
+	color 			: @brand-primary;
+}
+
+.pointer
+{
+	cursor					: pointer;
+	.tooltiplink;
+}
+
+.refset-list
+{
+	.language
+	{
+		width : 50px;
+	}
+
+	.module-id
+	{
+		width : 150px;
+	}
+	
+	.type-id
+	{
+		width : 150px;
+	}
+	
+	.component-type-id
+	{
+		width : 150px;
+	}
+	
+	.list-header
+	{
+		font-size 		: 10px;
+		font-weight 	: 300;
+		color 			: lighten(@ihtsdo-text-color,20%) !important;
+		pointer			: none;
+		
+		span
+		{
+			display		: inline-block;
+		}
+	}
+
+	.refset-list-item
+	{
+		padding					: 3px 10px;
+	
+		.id-desc
+		{
+			font-weight 		: bold;
+			display 			: block;
+		}
+			
+		.language,
+		.module-id,
+		.type-id,
+		.component-type-id
+		{
+			.pointer;
+		}
+
+		span
+		{
+			display		: inline-block;
+
+			.label
+			{
+				font-size 		: 10px;
+				font-weight 	: 300;
+				color 			: lighten(@ihtsdo-text-color,20%);
+				margin-left 	: 5px;
+				padding			: 0;
+			}		
+		}
+		
+			
+		&:last-child
+		{
+			margin-right 		: 0;
+		}
+	}
+}
+

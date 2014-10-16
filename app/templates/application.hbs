@@ -16,13 +16,14 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Refsets <span class="caret"></span></a>
 				<ul class="dropdown-menu" role="menu">
-					<li>{{#link-to 'refsets'}}Browse Refsets{{/link-to}}</li>
+					<li>{{#link-to 'refsets' (query-params showUnpublished="0")}}Browse Published Refsets{{/link-to}}</li>
+					<li>{{#link-to 'refsets' (query-params showUnpublished="1")}}Browse Unpublished Refsets{{/link-to}}</li>
 					{{#if user.token}}<li>{{#link-to 'refsets.new'}}New Refset{{/link-to}}</li>{{/if}}
 				</ul>
 			</li>
-			
+		
             <li>{{#link-to 'news'}}News{{/link-to}}</li>
-            <li class="snomed-person-icon"><div class="text-primary">Welcome</div> {{#if user.token}}{{user.givenName}} {{user.surname}}{{else}}Guest{{/if}}</li>
+            <li class="snomed-person-icon"><div class="text-primary">Welcome</div> {{#if user.token}}{{user.givenName}}{{else}}Guest{{/if}}</li>
         </ul>
     </nav>
 
@@ -42,8 +43,6 @@
 
 <div id="footer" class="container-fluid">	
 	
-	<hr>
-
 	<nav class="navbar">
 
         <ul class="nav navbar-nav navbar-right links">

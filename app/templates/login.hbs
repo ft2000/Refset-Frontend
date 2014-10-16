@@ -9,8 +9,8 @@
 		You may continue as a guest to view only public refsets.
 	</p>
 	
-	{{input value=username type="text" placeholder="Username"}}
-	{{input value=password type="password" 	id="loginPassword" placeholder="Password"}}
+	{{input value=username type="text" placeholder="Username" class="form-control"}}
+	{{input value=password type="password" 	id="loginPassword" placeholder="Password" class="form-control"}}
 	
 	{{#if loginInProgress}}
 		<div class="loading">Logging you in, please wait...</div>
@@ -23,5 +23,5 @@
 	
 	<button type="submit" style="display:none">Submit</button>
 	
-	<p class="forgetPasswordLink"><a {{bind-attr href="RefsetENV.APP.passwordResetURL"}} target="_blank">I've forgotten my password</a></p>
+	<p class="forgetPasswordLink"><a {{bind-attr href="RefsetENV.APP.passwordResetURL"}} target="_blank">I've forgotten my password or I would like to change my password</a></p>
 </form>

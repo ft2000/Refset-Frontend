@@ -13,6 +13,7 @@
 @gray-light:             lighten(#000, 46.7%); // #777
 @gray-lighter:           lighten(#000, 93.5%); // #eee
 @ihtsdo-bg-gray:		#b9b9b9;
+@ihtsdo-text-color:		#5e5f61;
 
 
 @brand-primary:         #00A7E1;
@@ -29,7 +30,7 @@
 //** Background color for `<body>`.
 @body-bg:               @ihtsdo-bg-gray;
 //** Global text color on `<body>`.
-@text-color:            @gray-dark;
+@text-color:            @ihtsdo-text-color;
 
 //** Global textual link color.
 @link-color:            @brand-primary;
@@ -43,7 +44,7 @@
 
 @import url(http://fonts.googleapis.com/css?family=Oxygen:400,700,300);
 
-@font-family-sans-serif:  Oxygen, "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif:  Roboto, Oxygen, "Helvetica Neue", Helvetica, Arial, sans-serif;
 @font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 @font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -54,12 +55,22 @@
 @font-size-extra-large:   ceil((@font-size-base * 1.5)); // ~18px
 @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
-@font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
-@font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
-@font-size-h3:            ceil((@font-size-base * 1.7)); // ~24px
-@font-size-h4:            ceil((@font-size-base * 1.25)); // ~18px
+@font-weight-base:		  500;
+
+@font-size-h1:            floor((@font-size-base * 2.25)); // ~36px
+@font-size-h2:            floor((@font-size-base * 2.0)); // ~30px
+@font-size-h3:            ceil((@font-size-base * 1.37)); // ~24px
+@font-size-h4:            ceil((@font-size-base * 1.12)); // ~18px
 @font-size-h5:            @font-size-base;
 @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+
+@font-weight-h1:          400;
+@font-weight-h2:          400;
+@font-weight-h3:          400;
+@font-weight-h4:          700;
+@font-weight-h5:          700;
+@font-weight-h6:          700;
+
 
 //** Unit-less `line-height` for use in components like buttons.
 @line-height-base:        1.428571429; // 20/14
@@ -146,13 +157,13 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              #333;
+@btn-default-color:              @ihtsdo-text-color;
 @btn-default-bg:                 #fff;
 @btn-default-border:             #ccc;
 
-@btn-primary-color:              #fff;
-@btn-primary-bg:                 @brand-primary;
-@btn-primary-border:             darken(@btn-primary-bg, 5%);
+@btn-primary-color:              @brand-primary;
+@btn-primary-bg:                 #fff;
+@btn-primary-border:             @brand-primary;
 
 @btn-success-color:              #fff;
 @btn-success-bg:                 @brand-success;
@@ -183,13 +194,13 @@
 @input-bg-disabled:              @gray-lighter;
 
 //** Text color for `<input>`s
-@input-color:                    @gray;
+@input-color:                    @ihtsdo-text-color;
 //** `<input>` border color
-@input-border:                   #ccc;
+@input-border:                   @ihtsdo-text-color;
 //** `<input>` border radius
 @input-border-radius:            @border-radius-base;
 //** Border color for inputs on focus
-@input-border-focus:             #66afe9;
+@input-border-focus:             @brand-primary;
 
 //** Placeholder text color
 @input-color-placeholder:        @gray-light;
@@ -599,6 +610,8 @@
 @modal-md:                    600px;
 @modal-sm:                    300px;
 
+@modal-header-bgcolor 		: @brand-primary;
+@modal-header-color			: #fff;
 
 //== Alerts
 //

@@ -1,10 +1,8 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{refsets-list refsets=published title="Published Refsets"}}
-	</div>
-
-	<div class="colMed inner">
-		{{refsets-list refsets=unpublished title="Unpublished Refsets"}}
-	</div>
-</div>
-<button {{action 'refresh'}} class="btn btn-default">Refresh</button>
+{{#if showUnpublished}}
+	<h1>Unpublished Refsets</h1>
+	{{refsets-list refsets=unpublished moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Unpublished Refsets"}}
+{{else}}
+	<h1>Published Refsets</h1>
+	{{refsets-list refsets=published moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Published Refsets"}}
+{{/if}}
+<button {{action 'refresh'}} class="btn btn-default right">Refresh Refsets</button>

@@ -1,9 +1,11 @@
 <div id="registrationForm" class="RefsetPanel">
-	{{input value=regname 			type="text" 	placeholder="Your Name"}}
-	{{input value=regphone 			type="text" 	placeholder="Your phone number"}}
-	
-	{{input value=reguser 			type="text" 	placeholder="Already registered with IHTSDO? Enter your login ID here..."}}
-	{{input value=regnationality 	type="text" 	placeholder="Otherwise, please tell us your nationality"}}
-	
-	{{textarea value=regnotes placeholder="Please tell us why you would like access to Snomed CT"}}
+	<form>		
+		{{input value=regname 			type="text" 	placeholder="Your Name" class="form-control"}}
+		{{input value=regphone 			type="text" 	placeholder="Your phone number" class="form-control"}}
+		
+		{{input value=reguser 			type="text" 	placeholder="Already registered with IHTSDO? Enter your login ID here..." class="form-control"}}
+		{{input value=regnationality 	type="text" 	placeholder="Otherwise, please tell us your nationality" class="form-control"}}
+		
+		{{textarea value=regnotes placeholder="Please tell us why you would like access to Snomed CT" class="form-control"}}
+	</form>
 </div>
