@@ -9,13 +9,17 @@ export default Ember.ObjectController.extend({
 	refsetTypes 		: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 		: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
-	
+	languageTypes 		: Ember.computed.alias("controllers.data.languageTypes"),
+
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 
 	membersToDelete 	: [],
 	membersToAdd		: [],
+	
+	editMode			: false,
+	showMetaData		: false,
 	
 	importListChangedInProgress	: false,
 
@@ -37,15 +41,6 @@ export default Ember.ObjectController.extend({
 		
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();
-
-		Ember.run.scheduleOnce('afterRender', this, function(){
-			document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
-			document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
-			document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
-			document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
-			document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);
-		
-		});
 	},
 
 	importListChanged: function()
@@ -119,6 +114,50 @@ export default Ember.ObjectController.extend({
 	
 	actions :
 	{
+		toggleEditMode : function()
+		{
+			this.set("editMode",!this.editMode);
+			
+			if (this.editMode)
+			{
+				Ember.run.scheduleOnce('afterRender', this, function(){
+					document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
+					document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
+					document.getElementById('fileUploadDropZone').addEventListener('dragenter', handleDragEnter, false);
+					document.getElementById('fileUploadDropZone').addEventListener('dragleave', handleDragLeave, false);
+					document.getElementById('fileUploadDropZone').addEventListener('drop', readSingleFile, false);				
+				});
+			}
+		},
+
+		toggleMetaData : function()
+		{
+			this.set("showMetaData",!this.showMetaData);
+		},
+		
+		cancelEdits : function()
+		{
+			this.set("editMode",false);
+			var refset = this.get("model");		
+			var dataController = this.get('controllers.data');
+			dataController.getRefset(refset.id,this,'getRefsetComplete');	
+		},
+		
+		toggleMemberMetaData : function(memberId)
+		{
+			var refset = $.extend(true, {}, this.get("model"));
+			
+			for (var m=0;m<refset.members.length;m++)
+			{
+				if (refset.members[m].id === memberId)
+				{
+					refset.members[m].meta.viewMeta = !refset.members[m].meta.viewMeta;
+					this.set("model",refset);
+					break;
+				}
+			}
+		},
+		
 		getRefsetComplete : function (response)
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetComplete",response);

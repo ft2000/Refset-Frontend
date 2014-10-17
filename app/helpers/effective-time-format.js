@@ -6,8 +6,4 @@ export default Ember.Handlebars.makeBoundHelper(function(date)
 	{
 		return $.formatDateTime('yymmdd', theDate);		
 	}
-	else
-	{
-		return 'undefined';
-	}
 });

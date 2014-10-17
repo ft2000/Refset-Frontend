@@ -219,7 +219,7 @@ export default Ember.ObjectController.extend({
 					Bootstrap.GNM.push('Not Authorised','You do not have permission to access the ' + resourceType + ' you have requested.', 'warning');
 					
 			        BootstrapDialog.show({
-			            title: '<img src="assets/img/login.white.png"> Not Authorised',
+			            title: 'Not Authorised',
 			            closable: false,
 			            message: 'You do not have permission to access the ' + resourceType + ' you have requested.',
 			            buttons: [{
@@ -265,7 +265,7 @@ export default Ember.ObjectController.extend({
 				_this.hideWaitAnim();
 				
 				BootstrapDialog.show({
-		            title: '<img src="assets/img/login.white.png"> Bad Request : ' + resourceType,
+		            title: 'Bad Request : ' + resourceType,
 		            closable: false,
 		            message: '<p>There has been a problem communicating with the server.</p><p>' + response.meta.errorInfo.message + '</p>',
 		            buttons: 
@@ -329,7 +329,7 @@ export default Ember.ObjectController.extend({
 						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to ' + resourceType + ' have failed.', 'danger');
 
 						BootstrapDialog.show({
-				            title: '<img src="assets/img/login.white.png"> Communication Failure : ' + resourceType,
+				            title: 'Communication Failure : ' + resourceType,
 				            closable: false,
 				            message: '<p>There has been a problem communicating with the server.</p><p>We have tried ' + (numAutoServerRetries +1) + ' times already to ' + resourceType + '.</p><p>Would you like to keep trying or give up?</p>',
 				            buttons: 
@@ -504,6 +504,7 @@ export default Ember.ObjectController.extend({
 					member.meta.conceptActive 			= true;
 					member.meta.found 					= true;
 					member.meta.deleteConcept			= false;
+					member.meta.viewMeta				= false;
 					
 					member.meta.originalActive			= member.active;
 					member.meta.originalModuleId		= member.moduleId;

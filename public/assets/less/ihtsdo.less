@@ -1,5 +1,7 @@
-@import url(//fonts.googleapis.com/css?family=Roboto:500italic,700italic,300,700);
+@import url(//fonts.googleapis.com/css?family=Roboto:500,500italic,700italic,300,700);
 @panel-color : #fff;
+@inactiveConceptBGColour : #FBEEEE;
+
 
 .ihtsdo-panel
 {
@@ -201,7 +203,25 @@ html
 	.tooltiplink;
 }
 
-.refset-list
+label,
+.label
+{
+	font-size 		: 10px;
+	font-weight 	: 300;
+	color 			: lighten(@ihtsdo-text-color,20%);
+	margin 			: 0 5px 0 0;
+	padding 		: 0;
+	border			: none;
+}
+
+td.label
+{
+	margin 			: 0 5px 0 5px;
+}
+
+
+.refset-list,
+.refset-header
 {
 	.language
 	{
@@ -236,10 +256,14 @@ html
 		}
 	}
 
-	.refset-list-item
+	.refset-list-item,
 	{
-		padding					: 3px 10px;
-	
+		padding					: 3px 10px;	
+	}
+
+	.refset-list-item,
+	.refset-header
+	{
 		.id-desc
 		{
 			font-weight 		: bold;
@@ -260,11 +284,7 @@ html
 
 			.label
 			{
-				font-size 		: 10px;
-				font-weight 	: 300;
-				color 			: lighten(@ihtsdo-text-color,20%);
 				margin-left 	: 5px;
-				padding			: 0;
 			}		
 		}
 		
@@ -274,5 +294,325 @@ html
 			margin-right 		: 0;
 		}
 	}
+}
+
+
+.member-list
+{
+	span
+	{
+		display : inline-block;
+	}
+	
+	.member-list-item,
+	.member-list-header
+	{
+		padding : 3px;
+	
+		.description
+		{
+			font-weight : 500;
+		}
+		
+		.active
+		{
+			width : 70px;
+		}
+		
+		.effective-time
+		{
+			width : 100px;
+		}
+		
+		.module-id
+		{
+			width : 150px;
+		}
+		
+		.inactiveMemberText
+		{
+			color : red;
+		}
+		
+		hr
+		{
+			height : 5px;
+			padding : 0;
+			margin : 0;	
+		}
+		
+		.icon
+		{
+			margin-top : 4px;
+		}
+
+	}
+
+	.member-list-header
+	{
+			font-size 		: 10px;
+			font-weight 	: 300;
+			color 			: lighten(@ihtsdo-text-color,20%) !important;
+			pointer			: none;
+			
+			span
+			{
+				display		: inline-block;
+			}
+	}
+
+	.member-list-item
+	{
+		.module-id
+		{
+			.pointer;
+		}
+	}
+}
+
+.growl-notifications
+{
+	.icon { 
+	    background:url('../img/sprite-icons.white.png') no-repeat 0px 0px;
+	    display:block;
+	    height:35px;
+	    text-indent:-9999px;
+	    width:35px;
+	}
+}
+
+/* Upload Refsets */
+
+.fileUploadDropZone
+{
+	border: 2px dashed #bbb;
+    border-radius: 5px;
+    color: #bbb;
+    padding: 25px;
+    text-align: center;
+}
+
+.fileUploadDropZone.over
+{
+	border: 2px dashed red;
+	color : red;
+}
+
+#refsetUploadFileInput
+{
+	border : none;
+	height : inherit;
+	width : 100%;
+	margin-bottom : 20px;
+}
+
+.panel-heading.accordion-toggle:after {
+    /* essential for enabling glyphicon */
+    font-family:'Glyphicons Halflings';
+    /* symbol for "opening" panels */
+    content:"\e114";
+    float: right;
+    position: relative;
+    font-size: 15pt;
+    color: @brand-primary;
+}
+
+.panel-heading.accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content:"\e080";
+}
+
+.panel-heading:hover {
+    cursor: pointer;
+}
+
+.panel-heading:hover h4 {
+    text-decoration: underline;
+}
+
+.panel-title 
+{
+	display : inline;
+	font-weight : 500;
+	font-size : 16px;
+	color : @brand-primary;
+}
+
+select.form-control
+{
+  	padding : 0 8px;
+}
+
+.panelNoPadding .panel-body
+{
+	padding : 0;	
+}
+
+tr.hr,
+tr.hr td,
+tr.hr td hr
+{
+	height : 5px;
+	padding : 0;
+	margin : 0;	
+}
+
+td.text-right
+{
+	text-align : right;
+}
+
+td.title
+{
+	font-weight : 500;
+}
+
+.inactiveConcept,
+.deleteConcept
+{
+	background-color : @inactiveConceptBGColour;
+}
+  	
+  	
+
+
+
+.toggle-switch label
+{
+	font-size: 75%;
+	display: inline; 
+	padding-top: inherit;
+	line-height: inherit;
+}
+
+.toggle-switch.muted label {
+  color: @brand-primary; 
+}
+
+.toggle-switch input[type="checkbox"] {
+  /* :root here acting as a filter for older browsers */
+  position: absolute;
+  opacity: 0; 
+}
+
+.toggle-switch input[type="checkbox"] + div {
+  display: inline-block;
+  vertical-align: middle;
+  width: 3em;
+  height: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 999px;
+  margin: 0 .5em;
+  background: white;
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.1), transparent), -webkit-linear-gradient(0deg, #3d99f5 50%, transparent 50%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  background-origin: border-box;
+  background-clip: border-box;
+  overflow: hidden;
+  -webkit-transition-duration: .4s;
+  -webkit-transition-property: padding, width, background-position, text-indent;
+  box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.2) inset, 0 0.45em 0 0.1em rgba(0, 0, 0, 0.05) inset;
+  font-size: 220%;
+  /* change this and see how they adjust! */ 
+}
+
+.toggle-switch input[type="checkbox"]:checked + div {
+  padding-left: 2em;
+
+  background-position: 0 0; 
+}
+
+.toggle-switch input[type="checkbox"] + div:before {
+  content: 'Yes';
+  text-align: left;
+  float: left;
+  width: 1.65em;
+  height: 1.65em;
+  margin: -.1em;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: inherit;
+  background: white;
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.2), transparent);
+  box-shadow: 0 0.1em 0.1em 0.1em rgba(255, 255, 255, 0.8) inset, 0 0 0.5em rgba(0, 0, 0, 0.3);
+  color: @brand-primary;
+  text-indent: -2.5em; 
+}
+
+
+
+.toggle-switch input[type="checkbox"]:active + div:before {
+  background-color: #eee; 
+}
+
+.toggle-switch input[type="checkbox"]:focus + div {
+  -webkit-box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.2) inset, 0 0.45em 0 0.1em rgba(0, 0, 0, 0.05) inset, 0 0 0.4em 1px rgba(255, 0, 0, 0.5); 
+}
+
+.toggle-switch input[type="checkbox"] + div:before,
+.toggle-switch input[type="checkbox"] + div:after {
+  font: bold 60%/1.9 sans-serif;
+  text-transform: uppercase; 
+}
+
+div.toggle-switch
+{
+	display : inline;
+}
+
+.toggle-switch input[type="checkbox"] + div:after {
+  content: 'No';
+  text-align: left;
+  float: left;
+  text-indent: .5em;
+  color: #868585;
+  text-shadow: none; 
+}
+
+.toggle-switch.inverted input[type="checkbox"] + div:before {
+  content: 'No';
+  color: #868585;
+}
+.toggle-switch.inverted input[type="checkbox"] + div:after {
+  content: 'Yes';
+  color: @brand-primary;
+}
+
+.icon { 
+    background:url('../img/sprite-icons.png') no-repeat 0px 0px;
+    display:block;
+    height:35px;
+    text-indent:-9999px;
+    width:35px;
+}
+.add { 
+    background-position:0px -40px;
+}
+.minus { 
+    background-position:0px -80px;
+}
+.search { 
+    background-position:0px -120px;
+}
+.close { 
+    background-position:0px -160px;
+}
+.expand { 
+    background-position:0px -200px;
+}
+.link { 
+    background-position:0px -240px;
+}
+.tick { 
+    background-position:0px -280px;
+}
+.delete { 
+    background-position:0px -320px;
+}
+.collapse { 
+    background-position:0px -360px;
+}
+span.icon {
+    display:inline-block;
 }
 

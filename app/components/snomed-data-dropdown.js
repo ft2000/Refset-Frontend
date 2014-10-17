@@ -7,5 +7,6 @@ export default Ember.Select.extend({
 	}),
 
 	optionLabelPath : "content.label",
-	optionValuePath : "content.id",		
+	optionValuePath : "content.id",
+	classNames 		: "form-control"
 });
