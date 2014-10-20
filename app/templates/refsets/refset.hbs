@@ -94,7 +94,7 @@
 										{{/if}}
 									{{/if}}
 								</td>
-								<td align=right rowspan="2"><a {{action 'toggleMetaData'}} {{bind-attr class=':pointer :icon showMetaData:collapse:expand'}}></a></td>
+								<td align=right rowspan="2"><a {{action 'toggleMetaData'}} {{bind-attr class=':pointer :icon showMetaData:hideinfo:info'}}></a></td>
 							</tr>
 							
 							<tr>
@@ -131,6 +131,37 @@
 				</div>
 			</div>
 
+			{{#unless importError}}
+				{{#if potentialMembersToImport}}
+				    <div class="panel panel-info ember-view fade in panelNoPadding">
+				        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
+				             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
+				        </div>
+				        <div class="panel-collapse collapse in">
+				            <div id="importMemberList" class="panel-body">
+								<ul class="list-group checkboxList member-list">
+									{{#each member in potentialMembersToImport}}
+										<li {{bind-attr class=':list-group-item :member-list-item member.meta.conceptActive::inactiveConcept member.meta.deleteConcept:deleteConcept'}}>
+	
+											<span class="right"><a {{action 'toggleImportMember' member.referencedComponentId}} {{bind-attr class=':pointer :icon member.meta.deleteConcept:undelete:delete'}}"></a></span>
+	
+											<span class="sctid">{{member.referencedComponentId}}</span> | <span class="description">{{member.description}}</span> |<br>								
+	
+											<span class="left"><a {{action 'toggleImportMemberActive' member.referencedComponentId}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
+
+											<label>Module: <span>{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}</span></label>
+												
+											{{#unless member.meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
+	
+										</li>
+									{{/each}}
+								</ul>
+							</div>
+						</div>
+					</div>
+				{{/if}}
+			{{/unless}}
+			
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseMembers">
 		             <h4 class="panel-title">Members ({{members.length}})</h4>
@@ -139,66 +170,66 @@
 		            <div id="collapseMembers" class="panel-body collapse">
 						<ul class="list-group checkboxList member-list">
 							{{#if members}}
-								{{#with view as outerView}}
-								
-									<li class="list-group-item member-list-header">
-										<span class="active">Status</span>
-										<span class="effective-time">Effective Time</span>
-										<span class="module-id">Module ID</span>
-										<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
-									</li>
-								
-									{{#each members}}
-										<li {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:inactiveConcept'}}>
-		
-											{{#if editMode}}
+								<li class="list-group-item member-list-header">
+									<span class="active">Status</span>
+									<span class="effective-time">Effective Time</span>
+									<span class="module-id">Module ID</span>
+									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
+								</li>
+							
+								{{#each member in members}}
+									<li {{bind-attr class=':list-group-item :member-list-item member.meta.conceptActive::inactiveConcept member.meta.deleteConcept:inactiveConcept'}}>
+
+										<span class="right"><a {{action 'toggleMemberMetaData' member.id}} {{bind-attr class=':pointer :icon member.meta.viewMeta:hideinfo:info'}}"></a></span>
+
+										{{#if editMode}}
+											{{#unless member.published}}
+												<span class="right"><a {{action 'toggleDeleteMember' member.id}} {{bind-attr class=':pointer :icon member.meta.deleteConcept:undelete:delete'}}"></a></span>
+											{{/unless}}
+										{{/if}}
+
+										<span class="sctid">{{member.referencedComponentId}}</span> | <span class="description">{{member.description}}</span> |<br>
+
+										{{#if editMode}}
+													
+											{{#if member.meta.found}}
 												
-												<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
-												<p class="description">{{description}} {{#unless meta.conceptActive}}<label class="warning">This concept is INACTIVE</label>{{/unless}}</p>							
-		
-												{{#if meta.found}}
-													<label>Member is active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
-													<label>Last modified: <span>{{date-time-format modifiedDate}}</span></label>
-													<label>Last modified by: <span>{{modifiedBy}}</span></label>
-													{{#if published}}
-														<label>Published: <span>{{date-time-format effectiveTime}}</span></label>
-													{{/if}}
-													<br>
-													<label>Module:
-														<span>
-															{{#if published}}
-																{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
-															{{else}}
-																{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
-															 {{/if}}
-											 			</span>
-													</label>
-													<label>Effective time: <span>{{date-time-format effectiveTime}}</span></label>
+												<span class="left"><a {{action 'toggleMemberActive' member.id}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
+
+												{{#if member.published}}
+													<label>Published: <span>{{date-time-format member.effectiveTime}}</span></label>
 												{{/if}}
-		
-												{{#unless published}}<label class="right clearRight">Delete this member {{view 'toggle-switch' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
-											
-											{{else}}
-												<span class="right"><a {{action 'toggleMemberMetaData' id}} {{bind-attr class=':pointer :icon meta.viewMeta:collapse:expand'}}"></a></span>
-												<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
-												<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
-												<span class="effective-time">{{effective-time-format effective-time}}</span>
-												<span class="module-id">{{refset-list-item-span 'module-id' moduleId outerView.controller.moduleTypes}}</span>
+												<label>Module:
+													<span>
+														{{#if member.published}}
+															{{snomed-id-to-label member.moduleId moduleTypes}}
+														{{else}}
+															{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}
+														 {{/if}}
+										 			</span>
+												</label>
+												<label>Effective time: <span>{{date-time-format member.effectiveTime}}</span></label>
 											{{/if}}
+	
+										
+										{{else}}
+											<span {{bind-attr class=':active member.active::inactiveMemberText'}}>{{#if member.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
+											<span class="effective-time">{{effective-time-format member.effective-time}}</span>
+											<span class="module-id">{{refset-list-item-span 'module-id' member.moduleId moduleTypes}}</span>
+										{{/if}}
+										
+					
+										{{#if member.meta.viewMeta}}
+										
+											<hr>
 											
-						
-											{{#if meta.viewMeta}}
-											
-												<hr>
-												
-												<span class="label">Create</span><span class="created-date">{{date-time-format created}}</span>
-												<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
-												<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
-											{{/if}}
-						
-										</li>
-									{{/each}}
-								{{/with}}
+											<span class="label">Create</span><span class="created-date">{{date-time-format member.created}}</span>
+											<span class="label">Last Updated</span><span class="last-modified">{{date-time-format member.modifiedDate}}</span>
+											<span class="label">Last Updated By</span><span class="last-modified-by">{{member.modifiedBy}}</span>
+										{{/if}}
+					
+									</li>
+								{{/each}}
 							{{else}}
 								<li class='list-group-item'>
 									{{#if meta}}
@@ -212,63 +243,19 @@
 					</div>
 				</div>
 			</div>
-
-			{{#unless importError}}
-				{{#if potentialMembersToImport}}
-				    <div class="panel panel-info ember-view fade in panelNoPadding">
-				        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
-				             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
-				        </div>
-				        <div class="panel-collapse collapse in">
-				            <div id="importMemberList" class="panel-body">
-								<ul class="list-group checkboxList">
-									{{#each potentialMembersToImport}}
-										<li {{bind-attr class=':list-group-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-	
-											<label class="right">SCTID <span>{{referencedComponentId}}</span></label>
-											<p class="description">{{description}}</p>									
-	
-											{{#if meta.found}}
-												<label>Import as active{{view 'toggle-switch' checkedBinding="active" value="id"}}</label>
-	
-												<label>Module:
-													<span>
-														{{#if published}}
-															{{snomed-id-to-label moduleId outerView.controller.moduleTypes}}
-														{{else}}
-															{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray"}}
-														 {{/if}}
-										 			</span>
-												</label>
-													
-												{{#unless meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
-											{{/if}}
-	
-											{{#unless published}}<label class="right clearRight">Import this concept {{view 'toggle-switch-inverted' checkedBinding="meta.deleteConcept" value="id"}}</label>{{/unless}}
-										</li>
-									{{/each}}
-								</ul>
-							</div>
-						</div>
-					</div>
-				{{/if}}
-			{{/unless}}
 		</div>
 		
 		<div class="col-md-3">
 			
 			{{#if meta}}
-				{{#if editMode}}
-					<button {{action 'cancelEdits'}} class="btn btn-default">Discard Changes</button>
-					<button {{action 'updateRefset'}} class="btn btn-primary right">Save changes</button>
-				
-					<input type="file" id="refsetUploadFileInput" />
-				
+				{{#if editMode}}				
 					<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
-					<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drop files here</span></div>
+					<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
+					<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drag a file of concepts or an individual concept from the Snomed CT browser here.<br><br>Alternatively use the file requestor below to choose a file.</span></div>
+					<br><input type="file" id="refsetUploadFileInput" />
 					
 					{{#if potentialMembersToImport}}
-						<button {{action 'clearImportList' id}} class="btn btn-default">Clear import list</button>
+						<button {{action 'clearImportList' id}} class="btn btn-default btn-side-menu">Clear import list</button>
 					{{/if}}
 					
 					{{#if getConceptDataInProgress}}		
@@ -280,17 +267,22 @@
 							<h2>Importing failed</h2>
 							<p><b{{importError}}</b></p>
 						{{/if}}
+
+
+						<button {{action 'cancelEdits'}} class="btn btn-danger left">Discard Changes</button>
+						<button {{action 'updateRefset'}} class="btn btn-success right">Save changes</button>
+
 					{{/if}}
 					
 				{{else}}
-					<button {{action 'toggleEditMode' id}} class="btn btn-default">Edit Refset</button>
+					<button {{action 'toggleEditMode' id}} class="btn btn-primary btn-side-menu">Edit Refset</button>
+					<button {{action 'exportRefset' id}} class="btn btn-default btn-side-menu">Export Refset</button>
 					{{#unless published}}
-						<button {{action 'deleteRefset' id}} class="btn btn-default">Delete Refset</button>
+						<button {{action 'deleteRefset' id}} class="btn btn-danger btn-side-menu">Delete Refset</button>
 					{{/unless}}
 				
 				{{/if}}
 
-				<button {{action 'exportRefset' id}} class="btn btn-default">Export Refset</button>
 			{{/if}}
 
 <!---	

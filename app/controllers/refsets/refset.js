@@ -49,7 +49,7 @@ export default Ember.ObjectController.extend({
 		
 		this.importListChangedInProgress = true;
 		
-		Ember.Logger.log("controllers.refsets.refset:importListChanged",this.get("potentialMembersToImport"));
+		Ember.Logger.log("controllers.refsets.refset:importListChanged");
 		
 		// Need  to check if we have any duplicates...
 		var duplicates = [];
@@ -153,6 +153,82 @@ export default Ember.ObjectController.extend({
 				{
 					refset.members[m].meta.viewMeta = !refset.members[m].meta.viewMeta;
 					this.set("model",refset);
+					break;
+				}
+			}
+		},
+		
+		toggleDeleteMember : function(memberId)
+		{
+			var refset = $.extend(true, {}, this.get("model"));
+			
+			for (var m=0;m<refset.members.length;m++)
+			{
+				if (refset.members[m].id === memberId)
+				{
+					refset.members[m].meta.deleteConcept = !refset.members[m].meta.deleteConcept;
+					this.set("model",refset);
+					break;
+				}
+			}
+		},
+
+		showImportHelp : function()
+		{
+	        BootstrapDialog.show({
+	            title: 'Member import help',
+	            closable: false,
+	            message: '...............',
+	            buttons: [{
+	                label: 'OK',
+	                action: function(dialog)
+	                {
+	                    dialog.close();
+	                }
+	            }]
+	        });		
+		},
+		
+		toggleMemberActive : function(memberId)
+		{
+			var refset = $.extend(true, {}, this.get("model"));
+			
+			for (var m=0;m<refset.members.length;m++)
+			{
+				if (refset.members[m].id === memberId)
+				{
+					refset.members[m].active = !refset.members[m].active;
+					this.set("model",refset);
+					break;
+				}
+			}
+		},
+		
+		toggleImportMember : function(referencedComponentId)
+		{
+			var members = $.extend(true, [], this.get("potentialMembersToImport"));
+			
+			for (var m=0;m<members.length;m++)
+			{
+				if (members[m].referencedComponentId === referencedComponentId)
+				{
+					members[m].meta.deleteConcept = !members[m].meta.deleteConcept;
+					this.set("potentialMembersToImport",members);
+					break;
+				}
+			}
+		},
+
+		toggleImportMemberActive : function(referencedComponentId)
+		{
+			var members = $.extend(true, [], this.get("potentialMembersToImport"));
+			
+			for (var m=0;m<members.length;m++)
+			{
+				if (members[m].referencedComponentId === referencedComponentId)
+				{
+					members[m].active = !members[m].active;
+					this.set("potentialMembersToImport",members);
 					break;
 				}
 			}

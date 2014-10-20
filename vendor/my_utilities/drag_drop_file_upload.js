@@ -40,6 +40,8 @@ function readSingleFile(evt)
 			alert("Failed to load file / import member");			
 		}
 	}
+
+	this.classList.remove('over');
 }
 
 function handleDragOver(evt) 

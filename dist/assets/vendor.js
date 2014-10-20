@@ -62808,6 +62808,8 @@ self||"undefined"!==typeof window&&window||this.content);"undefined"!==typeof mo
 			alert("Failed to load file / import member");			
 		}
 	}
+
+	this.classList.remove('over');
 }
 
 function handleDragOver(evt) 

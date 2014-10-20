@@ -385,9 +385,10 @@ td.label
 
 .fileUploadDropZone
 {
-	border: 2px dashed #bbb;
+	background : url(../img/bg04.png);
+	border: 2px dashed #333;
     border-radius: 5px;
-    color: #bbb;
+    color: #333;
     padding: 25px;
     text-align: center;
 }
@@ -441,6 +442,7 @@ td.label
 select.form-control
 {
   	padding : 0 8px;
+  	background-color : inherit;
 }
 
 .panelNoPadding .panel-body
@@ -471,111 +473,6 @@ td.title
 .deleteConcept
 {
 	background-color : @inactiveConceptBGColour;
-}
-  	
-  	
-
-
-
-.toggle-switch label
-{
-	font-size: 75%;
-	display: inline; 
-	padding-top: inherit;
-	line-height: inherit;
-}
-
-.toggle-switch.muted label {
-  color: @brand-primary; 
-}
-
-.toggle-switch input[type="checkbox"] {
-  /* :root here acting as a filter for older browsers */
-  position: absolute;
-  opacity: 0; 
-}
-
-.toggle-switch input[type="checkbox"] + div {
-  display: inline-block;
-  vertical-align: middle;
-  width: 3em;
-  height: 1em;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 999px;
-  margin: 0 .5em;
-  background: white;
-  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.1), transparent), -webkit-linear-gradient(0deg, #3d99f5 50%, transparent 50%);
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  background-origin: border-box;
-  background-clip: border-box;
-  overflow: hidden;
-  -webkit-transition-duration: .4s;
-  -webkit-transition-property: padding, width, background-position, text-indent;
-  box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.2) inset, 0 0.45em 0 0.1em rgba(0, 0, 0, 0.05) inset;
-  font-size: 220%;
-  /* change this and see how they adjust! */ 
-}
-
-.toggle-switch input[type="checkbox"]:checked + div {
-  padding-left: 2em;
-
-  background-position: 0 0; 
-}
-
-.toggle-switch input[type="checkbox"] + div:before {
-  content: 'Yes';
-  text-align: left;
-  float: left;
-  width: 1.65em;
-  height: 1.65em;
-  margin: -.1em;
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  border-radius: inherit;
-  background: white;
-  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.2), transparent);
-  box-shadow: 0 0.1em 0.1em 0.1em rgba(255, 255, 255, 0.8) inset, 0 0 0.5em rgba(0, 0, 0, 0.3);
-  color: @brand-primary;
-  text-indent: -2.5em; 
-}
-
-
-
-.toggle-switch input[type="checkbox"]:active + div:before {
-  background-color: #eee; 
-}
-
-.toggle-switch input[type="checkbox"]:focus + div {
-  -webkit-box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.2) inset, 0 0.45em 0 0.1em rgba(0, 0, 0, 0.05) inset, 0 0 0.4em 1px rgba(255, 0, 0, 0.5); 
-}
-
-.toggle-switch input[type="checkbox"] + div:before,
-.toggle-switch input[type="checkbox"] + div:after {
-  font: bold 60%/1.9 sans-serif;
-  text-transform: uppercase; 
-}
-
-div.toggle-switch
-{
-	display : inline;
-}
-
-.toggle-switch input[type="checkbox"] + div:after {
-  content: 'No';
-  text-align: left;
-  float: left;
-  text-indent: .5em;
-  color: #868585;
-  text-shadow: none; 
-}
-
-.toggle-switch.inverted input[type="checkbox"] + div:before {
-  content: 'No';
-  color: #868585;
-}
-.toggle-switch.inverted input[type="checkbox"] + div:after {
-  content: 'Yes';
-  color: @brand-primary;
 }
 
 .icon { 
@@ -612,7 +509,21 @@ div.toggle-switch
 .collapse { 
     background-position:0px -360px;
 }
+.hideinfo { 
+    background-position:0px -400px;
+}
+.undelete { 
+    background-position:0px -440px;
+}
+.cross { 
+    background-position:0px -480px;
+}
 span.icon {
     display:inline-block;
 }
 
+.btn-side-menu
+{
+	width : 100%;
+	margin-bottom : 5px;
+}
