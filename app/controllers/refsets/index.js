@@ -2,10 +2,19 @@ export default Ember.ObjectController.extend({
 		
 	needs 			: ["data","login"],
 
+	refsetTypes 	: Ember.computed.alias("controllers.data.refsetTypes"),
+	componentTypes 	: Ember.computed.alias("controllers.data.componentTypes"),
+	moduleTypes 	: Ember.computed.alias("controllers.data.moduleTypes"),
+	languageTypes 	: Ember.computed.alias("controllers.data.languageTypes"),
+	
 	published 		: Ember.computed.alias("controllers.data.publishedRefsets"),
 	unpublished 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
 	user 			: Ember.computed.alias("controllers.login.user"),
 	
+	queryParams		: ['showUnpublished'],
+	 
+	showUnpublished : 0,
+
 	initModel : function()
 	{
 		Ember.Logger.log("controllers.refsets.index:initModel");

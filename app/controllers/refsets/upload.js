@@ -11,7 +11,7 @@ export default Ember.ArrayController.extend({
 	{
 		var concepts = this.get('model');
 		
-		Ember.Logger.log("importRequiredFilteredModel concepts",concepts);
+		Ember.Logger.log("importRequiredFilteredModel concepts");
 
 		return concepts.filter(function(concept)
 		{
@@ -79,7 +79,7 @@ export default Ember.ArrayController.extend({
     {
     	importSingleMember : function(member)
     	{
-    		Ember.Logger.log("controller.refstes.upload:actions:importSingleFile",member);
+    		Ember.Logger.log("controller.refstes.upload:actions:importSingleFile");
     		
     		member.moduleId = $('#newRefsetModuleId').val();
     		member.active 	= true;
@@ -96,7 +96,7 @@ export default Ember.ArrayController.extend({
     	
 		importFlatFile : function(members)
 		{
-    		Ember.Logger.log("controller.refstes.upload:actions:importFlatFile",members);
+    		Ember.Logger.log("controller.refstes.upload:actions:importFlatFile");
 
     		var _this = this;
 			

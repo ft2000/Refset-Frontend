@@ -1,17 +1,36 @@
-{{#bs-panel heading=title type="info" class="panelNoPadding"}}
+<ul class="list-group refset-list">
+	
+	<li class="list-group-item list-header">
+		<span class="language">language</span>
+		<span class="type-id">Refset Type ID</span>
+		<span class="module-id">Module Type ID</span>
+		<span class="component-type-id">Component Type ID</span>
+		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
+	</li>	
+	{{#if refsets}}
+		{{#with view as outerView}}
+			{{#each refsets}}
+				<li class="list-group-item refset-list-item">
+					{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
+					<span class="id-desc">{{#if published}}{{id}} | {{/if}}{{description}}</span>
+	
+					{{refset-list-item-span 'language' languageCode outerView.controller.languageTypes}}
+					{{refset-list-item-span 'type-id' typeId outerView.controller.refsetTypes}}
+					{{refset-list-item-span 'module-id' moduleId outerView.controller.moduleTypes}}
+					{{refset-list-item-span 'component-type-id' componentTypeId outerView.controller.componentTypes}}
 
-	<ul class="list-group">
-		{{#each refsets}}
-			<li class="list-group-item">
-				{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
-				<h4>{{description}}</h4>
-				<em>created on:</em> {{date-format created}}<br>
-				<em>by:</em> {{createdBy}}<br>
-				{{#if published}}
-					<em>published on:</em> {{date-format publishedDate}}<br>
-				{{/if}}
-			</li>
-		{{/each}}
-	</ul>
-
-{{/bs-panel}}
+					<span class="created-date-by"><span class="label">created:</span> {{date-format created}}
+		
+					{{#if published}}
+						<span class="published-date"><span class="label">effective time:</span> {{effective-time-format effectiveTime}}</span>
+					{{else}}
+						<span class="label">last update:</span> {{date-format modifiedDate}} <span class="label">by:</span> {{modifiedBy}}</span>
+					{{/if}}				
+	
+				</li>
+			{{/each}}
+		{{/with}}
+	{{else}}
+		<p>There are currently no matching refsets available.</p>
+	{{/if}}
+</ul>

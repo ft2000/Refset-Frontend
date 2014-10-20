@@ -1,0 +1,529 @@
+@import url(//fonts.googleapis.com/css?family=Roboto:500,500italic,700italic,300,700);
+@panel-color : #fff;
+@inactiveConceptBGColour : #FBEEEE;
+
+
+.ihtsdo-panel
+{
+	background-color 			: @panel-color;
+}
+
+body, 
+html
+{
+	min-width					: 800px;
+	width						: auto !important;
+	font-weight 				: @font-weight-base;
+}
+
+#header
+{
+	.ihtsdo-panel;
+
+	border-radius 				: @border-radius-large;
+	margin 						: 5px; /* top right bottom left */ /* top left/right bottom */ /* top/bottom left/right */
+	padding						: 10px 150px 0 20px;
+	
+	background					: url("../img/borderHeader.png") no-repeat scroll right top @panel-color;
+	
+	.navbar-brand
+	{
+		margin						: -30px 0 45px;
+		font-size					: @font-size-extra-large;
+		color						: @gray;
+		
+		a
+		{
+			color					: @gray;
+		}
+	}
+	
+	.login-buttons
+	{
+		font-size					: @font-size-large;
+	}
+}
+
+
+#body
+{
+	.ihtsdo-panel;
+	margin 						: 10px 5px;
+	padding						: 5px;
+}
+
+#footer
+{
+	.ihtsdo-panel;
+	margin						: 0 5px;
+	padding-top					: 40px;
+	
+	.share
+	{
+		margin-right : 30px;
+	
+		li 
+		{
+		    display:inline-block;
+		    margin-right:3px;
+		    
+			a
+			{
+			    display:block;
+			    height:30px;
+			    text-indent:-9999px;
+			    width:30px;
+			}
+		}
+		
+		.title
+		{
+			text-indent : 0;
+			font-size	: 10px;
+		}
+	
+		.linkedin 
+		{
+		    background: url('../img/share-linkedin.png') no-repeat 0px 0px;
+		}
+	
+		.twitter 
+		{
+	    	background: url('../img/share-twitter.png') no-repeat 0px 0px;
+		}
+	
+		.google 
+		{
+	    	background: url('../img/share-google.png') no-repeat 0px 0px;
+		}
+	}
+	
+	.links
+	{
+	 	li 
+	 	{ 
+		    border-right:1px solid @ihtsdo-text-color;
+		    display:inline-block;
+		    padding:0 5px;
+		}
+		
+		li:last-child
+		{
+		    border-right:none;
+		    padding-right:0px;
+		}
+		
+		a 
+		{ 
+		    color:@ihtsdo-text-color;
+		    display:block;
+		    line-height:12px;
+		}
+	}
+}
+
+#loginForm
+{
+	
+	input
+	{
+		width 			: 45%;
+		display : inline;
+	}
+	
+	.loading,
+	.error
+	{
+		margin-top		: 20px;
+		margin-bottom	: 20px;
+	}
+	
+	.forgetPasswordLink
+	{
+		margin-top		: 20px;
+	}
+	
+	.autoLogoutInfo
+	{
+		color 			: @brand-info;
+	}
+}
+
+
+.waitAnim
+{
+	position					: fixed;
+	top							: 300px;
+	left						: 50%;
+	transform					: translate(-50%, -50%);
+	display 					: none;
+	opacity						: 0.4;
+	filter						: alpha(opacity=40); /* For IE8 and earlier */
+}
+
+.snomed-person-icon
+{
+    background					: url("../img/login.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    padding						: 5px 0 0 64px;
+    margin						: 0 0 0 40px;
+    height						: 51px;
+}
+
+.bootstrap-dialog-title
+{
+  font-size : @font-size-h3;
+  font-weight : @font-weight-h3;
+}
+
+.left
+{
+	float : left;
+}
+
+.right
+{
+	float : right;
+}
+
+.clearAfter:after
+{
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.tooltiplink
+{
+	color 			: @brand-primary;
+}
+
+.pointer
+{
+	cursor					: pointer;
+	.tooltiplink;
+}
+
+label,
+.label
+{
+	font-size 		: 10px;
+	font-weight 	: 300;
+	color 			: lighten(@ihtsdo-text-color,20%);
+	margin 			: 0 5px 0 0;
+	padding 		: 0;
+	border			: none;
+}
+
+td.label
+{
+	margin 			: 0 5px 0 5px;
+}
+
+
+.refset-list,
+.refset-header
+{
+	.language
+	{
+		width : 50px;
+	}
+
+	.module-id
+	{
+		width : 150px;
+	}
+	
+	.type-id
+	{
+		width : 150px;
+	}
+	
+	.component-type-id
+	{
+		width : 150px;
+	}
+	
+	.list-header
+	{
+		font-size 		: 10px;
+		font-weight 	: 300;
+		color 			: lighten(@ihtsdo-text-color,20%) !important;
+		pointer			: none;
+		
+		span
+		{
+			display		: inline-block;
+		}
+	}
+
+	.refset-list-item,
+	{
+		padding					: 3px 10px;	
+	}
+
+	.refset-list-item,
+	.refset-header
+	{
+		.id-desc
+		{
+			font-weight 		: bold;
+			display 			: block;
+		}
+			
+		.language,
+		.module-id,
+		.type-id,
+		.component-type-id
+		{
+			.pointer;
+		}
+
+		span
+		{
+			display		: inline-block;
+
+			.label
+			{
+				margin-left 	: 5px;
+			}		
+		}
+		
+			
+		&:last-child
+		{
+			margin-right 		: 0;
+		}
+	}
+}
+
+
+.member-list
+{
+	span
+	{
+		display : inline-block;
+	}
+	
+	.member-list-item,
+	.member-list-header
+	{
+		padding : 3px;
+	
+		.description
+		{
+			font-weight : 500;
+		}
+		
+		.active
+		{
+			width : 70px;
+		}
+		
+		.effective-time
+		{
+			width : 100px;
+		}
+		
+		.module-id
+		{
+			width : 150px;
+		}
+		
+		.inactiveMemberText
+		{
+			color : red;
+		}
+		
+		hr
+		{
+			height : 5px;
+			padding : 0;
+			margin : 0;	
+		}
+		
+		.icon
+		{
+			margin-top : 4px;
+		}
+
+	}
+
+	.member-list-header
+	{
+			font-size 		: 10px;
+			font-weight 	: 300;
+			color 			: lighten(@ihtsdo-text-color,20%) !important;
+			pointer			: none;
+			
+			span
+			{
+				display		: inline-block;
+			}
+	}
+
+	.member-list-item
+	{
+		.module-id
+		{
+			.pointer;
+		}
+	}
+}
+
+.growl-notifications
+{
+	.icon { 
+	    background:url('../img/sprite-icons.white.png') no-repeat 0px 0px;
+	    display:block;
+	    height:35px;
+	    text-indent:-9999px;
+	    width:35px;
+	}
+}
+
+/* Upload Refsets */
+
+.fileUploadDropZone
+{
+	background : url(../img/bg04.png);
+	border: 2px dashed #333;
+    border-radius: 5px;
+    color: #333;
+    padding: 25px;
+    text-align: center;
+}
+
+.fileUploadDropZone.over
+{
+	border: 2px dashed red;
+	color : red;
+}
+
+#refsetUploadFileInput
+{
+	border : none;
+	height : inherit;
+	width : 100%;
+	margin-bottom : 20px;
+}
+
+.panel-heading.accordion-toggle:after {
+    /* essential for enabling glyphicon */
+    font-family:'Glyphicons Halflings';
+    /* symbol for "opening" panels */
+    content:"\e114";
+    float: right;
+    position: relative;
+    font-size: 15pt;
+    color: @brand-primary;
+}
+
+.panel-heading.accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content:"\e080";
+}
+
+.panel-heading:hover {
+    cursor: pointer;
+}
+
+.panel-heading:hover h4 {
+    text-decoration: underline;
+}
+
+.panel-title 
+{
+	display : inline;
+	font-weight : 500;
+	font-size : 16px;
+	color : @brand-primary;
+}
+
+select.form-control
+{
+  	padding : 0 8px;
+  	background-color : inherit;
+}
+
+.panelNoPadding .panel-body
+{
+	padding : 0;	
+}
+
+tr.hr,
+tr.hr td,
+tr.hr td hr
+{
+	height : 5px;
+	padding : 0;
+	margin : 0;	
+}
+
+td.text-right
+{
+	text-align : right;
+}
+
+td.title
+{
+	font-weight : 500;
+}
+
+.inactiveConcept,
+.deleteConcept
+{
+	background-color : @inactiveConceptBGColour;
+}
+
+.icon { 
+    background:url('../img/sprite-icons.png') no-repeat 0px 0px;
+    display:block;
+    height:35px;
+    text-indent:-9999px;
+    width:35px;
+}
+.add { 
+    background-position:0px -40px;
+}
+.minus { 
+    background-position:0px -80px;
+}
+.search { 
+    background-position:0px -120px;
+}
+.close { 
+    background-position:0px -160px;
+}
+.expand { 
+    background-position:0px -200px;
+}
+.link { 
+    background-position:0px -240px;
+}
+.tick { 
+    background-position:0px -280px;
+}
+.delete { 
+    background-position:0px -320px;
+}
+.collapse { 
+    background-position:0px -360px;
+}
+.hideinfo { 
+    background-position:0px -400px;
+}
+.undelete { 
+    background-position:0px -440px;
+}
+.cross { 
+    background-position:0px -480px;
+}
+span.icon {
+    display:inline-block;
+}
+
+.btn-side-menu
+{
+	width : 100%;
+	margin-bottom : 5px;
+}
