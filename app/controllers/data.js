@@ -97,7 +97,6 @@ export default Ember.ObjectController.extend({
 					queue.splice(q,1);
 					
 					this[queueItem.callbackFn].apply(this,queueItem.params);
-					Bootstrap.GNM.push('retryCounter communication','retryCounter to request ' + queueItem.resourceType + ' from the server.', 'info');
 				}
 			}
 			
@@ -145,6 +144,8 @@ export default Ember.ObjectController.extend({
 	
 	authenticationStatusChanged : function()
 	{
+		Ember.Logger.log("controllers.data:authenticationStatusChanged");
+		
 		// Abandon any previous queued messages since we'll retry now
 		this.applicationPathChanged();
 		

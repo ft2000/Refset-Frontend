@@ -90,7 +90,7 @@ export default Ember.ObjectController.extend({
 				}
 				
 				this.dialogInstance = BootstrapDialog.show({
-		            title: '<img src="assets/img/login.white.png"> Import members',
+		            title: 'Import members',
 		            closable: false,
 		            type : BootstrapDialog.TYPE_WARNING,
 		            message: message,
@@ -175,18 +175,8 @@ export default Ember.ObjectController.extend({
 
 		showImportHelp : function()
 		{
-	        BootstrapDialog.show({
-	            title: 'Member import help',
-	            closable: false,
-	            message: '...............',
-	            buttons: [{
-	                label: 'OK',
-	                action: function(dialog)
-	                {
-	                    dialog.close();
-	                }
-	            }]
-	        });		
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.showImportHelp();	
 		},
 		
 		toggleMemberActive : function(memberId)
@@ -206,32 +196,14 @@ export default Ember.ObjectController.extend({
 		
 		toggleImportMember : function(referencedComponentId)
 		{
-			var members = $.extend(true, [], this.get("potentialMembersToImport"));
-			
-			for (var m=0;m<members.length;m++)
-			{
-				if (members[m].referencedComponentId === referencedComponentId)
-				{
-					members[m].meta.deleteConcept = !members[m].meta.deleteConcept;
-					this.set("potentialMembersToImport",members);
-					break;
-				}
-			}
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.toggleImportMember(referencedComponentId);	
 		},
 
 		toggleImportMemberActive : function(referencedComponentId)
 		{
-			var members = $.extend(true, [], this.get("potentialMembersToImport"));
-			
-			for (var m=0;m<members.length;m++)
-			{
-				if (members[m].referencedComponentId === referencedComponentId)
-				{
-					members[m].active = !members[m].active;
-					this.set("potentialMembersToImport",members);
-					break;
-				}
-			}
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.toggleImportMemberActive(referencedComponentId);	
 		},
 		
 		getRefsetComplete : function (response)
@@ -335,7 +307,7 @@ export default Ember.ObjectController.extend({
 			}
 			
 			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Update refset',
+	            title: 'Update refset',
 	            closable: false,
 	            message: message,
 	            buttons: [{
@@ -369,7 +341,7 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("controllers.refsets.refset:actions:doUpdateRefset (Refset,membersToUpdate)",Refset,membersToUpdate);
 						
 			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Updating your refset',
+	            title: 'Updating your refset',
 	            closable: false,
 	            message: '<br><br><div class="centre">Updating. Please wait...<br><br><!-----><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            buttons: [{
@@ -490,7 +462,7 @@ export default Ember.ObjectController.extend({
 			var _this = this;
 			
 			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Export refset',
+	            title: 'Export refset',
 	            closable: false,
 	            message: '<br><br><div class="centre">We are preparing your refset export file. Please wait...</div><br><br><div class="centre"><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            type: 'BootstrapDialog.',
@@ -547,7 +519,7 @@ export default Ember.ObjectController.extend({
 			var refset = this.get("model");
 			
 			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Delete refset',
+	            title: 'Delete refset',
 	            closable: false,
 	            message: '<br><br><div class="centre">Are you sure you wish to delete this refset?</div><br><br><div class="centre">' + refset.description + '<br><br>',
 	            buttons: [{
@@ -573,7 +545,7 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
 						
 			this.dialogInstance = BootstrapDialog.show({
-	            title: '<img src="assets/img/login.white.png"> Deleting your refset',
+	            title: 'Deleting your refset',
 	            closable: false,
 	            message: '<br><br><div class="centre">Deleting. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            buttons: [{

@@ -158,7 +158,6 @@ export default Ember.ObjectController.extend({
 		this.saveUserToLocalStore(user);
 
 		// Since we changed authentication state, we need to refresh our list of refsets.
-		// This will be moved to a common data refresh handler at a later date
 		var dataController = this.get('controllers.data');
 		dataController.authenticationStatusChanged();
 		

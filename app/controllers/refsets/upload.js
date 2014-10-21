@@ -75,6 +75,52 @@ export default Ember.ArrayController.extend({
 		this.model.setObjects(membersToImport);
 	},
 
+	showImportHelp : function()
+	{
+        BootstrapDialog.show({
+            title: 'Member import help',
+            closable: false,
+            message: '...............',
+            buttons: [{
+                label: 'OK',
+                action: function(dialog)
+                {
+                    dialog.close();
+                }
+            }]
+        });		
+	},
+	
+	toggleImportMember : function(referencedComponentId)
+	{
+		var members = $.extend(true, [], this.get("model"));
+		
+		for (var m=0;m<members.length;m++)
+		{
+			if (members[m].referencedComponentId === referencedComponentId)
+			{
+				members[m].meta.deleteConcept = !members[m].meta.deleteConcept;
+				this.set("model",members);
+				break;
+			}
+		}
+	},
+
+	toggleImportMemberActive : function(referencedComponentId)
+	{
+		var members = $.extend(true, [], this.get("model"));
+		
+		for (var m=0;m<members.length;m++)
+		{
+			if (members[m].referencedComponentId === referencedComponentId)
+			{
+				members[m].active = !members[m].active;
+				this.set("model",members);
+				break;
+			}
+		}
+	},
+	
     actions :
     {
     	importSingleMember : function(member)
@@ -166,10 +212,10 @@ export default Ember.ArrayController.extend({
 						if (conceptsNotFound.length)
 						{
 							BootstrapDialog.show({
-					            title: '<img src="assets/img/login.white.png"> Concept SCTIDs not found',
+					            title: 'Concept SCTIDs not found',
 					            type : BootstrapDialog.TYPE_WARNING,
 					            closable: false,
-					            message: '<br><br><div class="centre">We have failed to find the following concept SCTIDs in our database.<br>They cannot, therefore, be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
+					            message: '<br><br><div class="centre">The identifiers listed below are not in SNOMED CT and cannot be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
 					            buttons: [{
 					                label: 'OK',
 					                cssClass: 'btn-primary',

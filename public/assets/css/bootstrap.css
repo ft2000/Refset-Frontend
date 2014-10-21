@@ -6319,6 +6319,11 @@ html {
 .right {
   float: right;
 }
+.centre {
+  margin: auto;
+  text-align: center;
+  width: inherit;
+}
 .clearAfter:after {
   content: "";
   display: table;
@@ -6520,7 +6525,8 @@ td.label {
   font-size: 16px;
   color: #00a7e1;
 }
-select.form-control {
+select.form-control,
+input.form-control {
   padding: 0 8px;
   background-color: inherit;
 }

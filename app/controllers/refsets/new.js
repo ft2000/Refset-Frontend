@@ -6,7 +6,7 @@ export default Ember.ObjectController.extend({
 
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 
-	disablePublishedFormFields : true,
+	disablePublishedFormFields	: true,
 	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
@@ -59,7 +59,7 @@ export default Ember.ObjectController.extend({
 		// Need to validate the form at this point and abort if required fields are not completed
 				
 		this.dialogInstance = BootstrapDialog.show({
-            title: '<img src="assets/img/login.white.png"> Creating your refset',
+            title: 'Creating your refset',
             closable: false,
             message: '<br><br><div class="centre">We are creating your refset. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
             buttons: [{
@@ -200,7 +200,25 @@ export default Ember.ObjectController.extend({
 		{
 			var uploadController = this.get('controllers.refsets/upload');		
 			uploadController.clearMemberList();	
-		}
+		},
+		
+		showImportHelp : function()
+		{
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.showImportHelp();		
+		},
 
+		toggleImportMember : function(referencedComponentId)
+		{
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.toggleImportMember(referencedComponentId);	
+		},
+
+		toggleImportMemberActive : function(referencedComponentId)
+		{
+			var uploadController = this.get('controllers.refsets/upload');	
+			uploadController.toggleImportMemberActive(referencedComponentId);	
+		},
+		
     }
 });

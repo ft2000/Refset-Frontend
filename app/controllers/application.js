@@ -1,6 +1,6 @@
 Ember.TextField.reopen(
 {
-	  attributeBindings: ['data-provide','data-date-format','data-date-clear-btn','data-date-autoclose']
+	  attributeBindings: ['data-provide','data-date-format','data-date-clear-btn','data-date-autoclose','class']
 });
 
 export default Ember.ObjectController.extend({
