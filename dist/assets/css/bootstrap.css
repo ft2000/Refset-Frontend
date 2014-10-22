@@ -6352,17 +6352,19 @@ td.label {
 .refset-header .language {
   width: 50px;
 }
-.refset-list .module-id,
-.refset-header .module-id {
+.refset-list .snomed-id,
+.refset-header .snomed-id {
   width: 150px;
 }
-.refset-list .type-id,
-.refset-header .type-id {
-  width: 150px;
+.refset-list .num-members,
+.refset-header .num-members {
+  width: 50px;
+  text-align: right;
+  margin-right: 5px;
 }
-.refset-list .component-type-id,
-.refset-header .component-type-id {
-  width: 150px;
+.refset-list .date-field,
+.refset-header .date-field {
+  width: 85px;
 }
 .refset-list .list-header,
 .refset-header .list-header {
@@ -6390,18 +6392,10 @@ td.label {
 .refset-header .refset-list-item .language,
 .refset-list .refset-header .language,
 .refset-header .refset-header .language,
-.refset-list .refset-list-item .module-id,
-.refset-header .refset-list-item .module-id,
-.refset-list .refset-header .module-id,
-.refset-header .refset-header .module-id,
-.refset-list .refset-list-item .type-id,
-.refset-header .refset-list-item .type-id,
-.refset-list .refset-header .type-id,
-.refset-header .refset-header .type-id,
-.refset-list .refset-list-item .component-type-id,
-.refset-header .refset-list-item .component-type-id,
-.refset-list .refset-header .component-type-id,
-.refset-header .refset-header .component-type-id {
+.refset-list .refset-list-item .snomed-id,
+.refset-header .refset-list-item .snomed-id,
+.refset-list .refset-header .snomed-id,
+.refset-header .refset-header .snomed-id {
   cursor: pointer;
   color: #00a7e1;
 }
@@ -6525,10 +6519,12 @@ td.label {
   font-size: 16px;
   color: #00a7e1;
 }
+textarea.form-control,
 select.form-control,
 input.form-control {
   padding: 0 8px;
   background-color: inherit;
+  border-width: 1px;
 }
 .panelNoPadding .panel-body {
   padding: 0;
