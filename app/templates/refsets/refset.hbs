@@ -196,26 +196,22 @@
 
 										{{#if editMode}}
 													
-											{{#if member.meta.found}}
-												
-												<span class="left"><a {{action 'toggleMemberActive' member.id}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
+											<span class="left"><a {{action 'toggleMemberActive' member.id}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
 
-												{{#if member.published}}
-													<label>Published: <span>{{date-time-format member.effectiveTime}}</span></label>
-												{{/if}}
-												<label>Module:
-													<span>
-														{{#if member.published}}
-															{{snomed-id-to-label member.moduleId moduleTypes}}
-														{{else}}
-															{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}
-														 {{/if}}
-										 			</span>
-												</label>
-												<label>Effective time: <span>{{date-time-format member.effectiveTime}}</span></label>
+											{{#if member.published}}
+												<label>Published: <span>{{date-time-format member.effectiveTime}}</span></label>
 											{{/if}}
-	
-										
+											<label>Module:
+												<span>
+													{{#if member.published}}
+														{{snomed-id-to-label member.moduleId moduleTypes}}
+													{{else}}
+														{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}
+													 {{/if}}
+									 			</span>
+											</label>
+											<label>Effective time: <span>{{date-time-format member.effectiveTime}}</span></label>
+											
 										{{else}}
 											<span {{bind-attr class=':active member.active::inactiveMemberText'}}>{{#if member.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 											<span class="effective-time">{{effective-time-format member.effective-time}}</span>

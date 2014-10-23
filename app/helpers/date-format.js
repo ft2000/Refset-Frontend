@@ -4,6 +4,6 @@ export default Ember.Handlebars.makeBoundHelper(function(date)
 	
 	if (theDate instanceof Date && !isNaN(theDate.valueOf()))
 	{
-		return $.formatDateTime('MM dd, yy', theDate);		
+		return $.formatDateTime('M dd, yy', theDate);		
 	}
 });

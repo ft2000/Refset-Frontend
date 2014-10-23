@@ -10,6 +10,9 @@ export default Ember.ObjectController.extend({
 	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
+
+	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
+
 	
 	dialogInstance : null,
 
@@ -219,6 +222,14 @@ export default Ember.ObjectController.extend({
 			var uploadController = this.get('controllers.refsets/upload');	
 			uploadController.toggleImportMemberActive(referencedComponentId);	
 		},
+		
+		saveMemberModuleId : function(memberWrapper)
+		{
+			var member = memberWrapper.content;
+			var newModuleId = $('#member-module-id-' + member.referencedComponentId).val();
+			Ember.Logger.log("-------------------------------",newModuleId,member.referencedComponentId,member);
+			member.moduleId = newModuleId;
+		}
 		
     }
 });

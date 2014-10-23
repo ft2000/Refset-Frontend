@@ -7,6 +7,10 @@ export default Ember.ArrayController.extend({
 	
 	model : [],
 	
+	conceptsQueue : [],
+	
+	processGetConceptsQueueTempData : {},
+	
 	importRequiredFilteredModel : function()
 	{
 		var concepts = this.get('model');
@@ -41,6 +45,7 @@ export default Ember.ArrayController.extend({
 	getMembersMarkedForImport : function()
 	{
 		var concepts = this.get('model');
+		
 		
 		var conceptsToImport =  concepts.map(function(concept)
 		{
@@ -121,6 +126,111 @@ export default Ember.ArrayController.extend({
 		}
 	},
 	
+
+	
+	processGetConceptsQueue : function(user,defaultMemberModuleId)
+	{
+		Ember.Logger.log("get concepts started", this.conceptsQueue.length);
+		
+		var _this = this;
+				
+		if (this.conceptsQueue.length)
+		{
+			var conceptsToProcess = this.conceptsQueue.shift();
+			
+			var promise = this.getConceptsForImportFile(user,conceptsToProcess,defaultMemberModuleId).then(function(response)
+			{
+				if (response.error) {_this.processGetConceptsQueueTempData.error = response.error;}
+
+				_this.processGetConceptsQueueTempData.conceptsNotFound 	= _this.processGetConceptsQueueTempData.conceptsNotFound.concat(response.conceptsNotFound);
+				_this.processGetConceptsQueueTempData.membersData 		= _this.processGetConceptsQueueTempData.membersData.concat(response.membersData);
+
+				_this.model.setObjects(_this.processGetConceptsQueueTempData.membersData);
+			});
+		}
+		
+		Ember.RSVP.all([promise]).then(function(response)
+		{
+			Ember.Logger.log("get concepts finished",_this.conceptsQueue.length);
+			
+			if (_this.conceptsQueue.length)
+			{
+				_this.processGetConceptsQueue(user,defaultMemberModuleId)
+			}
+			else
+			{
+				if (_this.processGetConceptsQueueTempData.conceptsNotFound.length)
+				{
+					BootstrapDialog.show({
+			            title: 'Concept SCTIDs not found',
+			            type : BootstrapDialog.TYPE_WARNING,
+			            closable: false,
+			            message: '<br><br><div class="centre">The identifiers listed below are not in SNOMED CT and cannot be imported.</div><br><br><div class="centre">' + _this.processGetConceptsQueueTempData.conceptsNotFound.toString() + '</div><br><br>',
+			            buttons: [{
+			                label: 'OK',
+			                cssClass: 'btn-primary',
+			                action: function(dialogRef){
+			                    dialogRef.close();
+			                }
+			            }]
+			        });
+				}
+					
+				_this.set("getConceptDataInProgress",false);
+				_this.set("importError",_this.processGetConceptsQueueTempData.error)}
+		});
+	},
+	
+	getConceptsForImportFile : function(user,ids,defaultMemberModuleId)
+	{
+		return membersAdapter.findList(user,ids).then(function(result)
+		{
+			var membersData 		= [];
+			var conceptsNotFound 	= [];
+			var error;
+			
+			if (typeof result.meta.errorInfo === "undefined")
+			{
+				var conceptData = result.content.concepts;
+								
+				membersData = ids.map(function(refCompId)
+				{
+					var member = {};
+					
+					member.referencedComponentId = refCompId;
+					member.moduleId = defaultMemberModuleId;
+					member.meta = {};
+					
+					if (conceptData[refCompId] !== null)
+					{
+						member.active 						= true;
+						member.description					= conceptData[refCompId].label;
+						member.meta.conceptActive 			= conceptData[refCompId].active;
+						member.meta.deleteConcept 			= !conceptData[refCompId].active;
+						member.meta.disabled				= !conceptData[refCompId].active;
+
+						return member;
+					}
+					else
+					{
+						conceptsNotFound.push(refCompId);	
+						return null;
+					}
+				});
+										
+				membersData = $.grep(membersData,function(n){ return(n); });				
+			}
+			else
+			{
+				Ember.Logger.log(result.error);
+				error = result.error;
+			}
+			
+			return {error:error,membersData:membersData,conceptsNotFound:conceptsNotFound};
+			
+		});
+	},
+	
     actions :
     {
     	importSingleMember : function(member)
@@ -144,6 +254,8 @@ export default Ember.ArrayController.extend({
 		{
     		Ember.Logger.log("controller.refstes.upload:actions:importFlatFile");
 
+    		this.model.setObjects([]);
+    		
     		var _this = this;
 			
 			members = members.replace(/\r?\n|\r/g,"\n");
@@ -167,78 +279,25 @@ export default Ember.ArrayController.extend({
 			
 			var defaultMemberModuleId = $('#newRefsetModuleId').val();
 
-			var conceptsNotFound = []; 
+			var conceptsNotFound 	= [];
+			var membersData 		= [];
+			var error;
+			var promises 			= [];
+			var idArraySlices		= [];
+			var idArrayIndex		= 0;
 			
-	//		while(idArray.length)
-	//		idArray.splice(0,10)
-			{			
-				membersAdapter.findList(user,idArray).then(function(result)
-				{
-					var membersData2;
-					
-					if (typeof result.meta.errorInfo === "undefined")
-					{
-						var conceptData = result.content.concepts;
-										
-						membersData2 = idArray.map(function(refCompId)
-						{
-							var member = {};
-							
-							member.referencedComponentId = refCompId;
-							member.moduleId = defaultMemberModuleId;
-							member.meta = {};
-							
-							if (conceptData[refCompId] !== null)
-							{
-								member.active 						= true;
-								member.description					= conceptData[refCompId].label;
-								member.meta.conceptActive 			= conceptData[refCompId].active;
-								member.meta.deleteConcept 			= !conceptData[refCompId].active;
-								member.meta.found 					= true;
-								member.meta.disabled				= !conceptData[refCompId].active;
-	
-								return member;
-							}
-							else
-							{
-								conceptsNotFound.push(refCompId);
-								
-								return null;
-							}
-						});
-						
-						membersData2 = $.grep(membersData2,function(n){ return(n); });
-						
-						if (conceptsNotFound.length)
-						{
-							BootstrapDialog.show({
-					            title: 'Concept SCTIDs not found',
-					            type : BootstrapDialog.TYPE_WARNING,
-					            closable: false,
-					            message: '<br><br><div class="centre">The identifiers listed below are not in SNOMED CT and cannot be imported.</div><br><br><div class="centre">' + conceptsNotFound.toString() + '</div><br><br>',
-					            buttons: [{
-					                label: 'OK',
-					                cssClass: 'btn-primary',
-					                action: function(dialogRef){
-					                    dialogRef.close();
-					                }
-					            }]
-					        });
-						}
-						
-						_this.set("importError",null);
-						_this.model.setObjects(membersData2);
-					}
-					else
-					{
-						Ember.Logger.log(result.error);
-						_this.set("importError",result.error);
-					}
-	
-					_this.set("getConceptDataInProgress",false);
-				});
+			while(idArray.length)
+			{
+				idArraySlices.push(idArray.splice(0,100));
 			}
+			
+			this.conceptsQueue.setObjects(idArraySlices);
+		
+			this.processGetConceptsQueueTempData.conceptsNotFound = [];
+			this.processGetConceptsQueueTempData.membersData = [];
+			this.processGetConceptsQueueTempData.error;
+			
+			this.processGetConceptsQueue(user,defaultMemberModuleId);
 		},
-
     }
 });

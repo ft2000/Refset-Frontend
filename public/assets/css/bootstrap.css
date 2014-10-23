@@ -6417,16 +6417,35 @@ td.label {
 .refset-header .refset-header:last-child {
   margin-right: 0;
 }
+.ember-list-item-view {
+  width: 100%;
+}
 .member-list span {
   display: inline-block;
 }
 .member-list .member-list-item,
 .member-list .member-list-header {
-  padding: 3px;
+  width: 100%;
+  padding: 2px 5px;
+}
+.member-list .member-list-item .listViewRow,
+.member-list .member-list-header .listViewRow {
+  overflow: hidden;
+  height: 24px;
 }
 .member-list .member-list-item .description,
 .member-list .member-list-header .description {
   font-weight: 500;
+}
+.member-list .member-list-item .tickIcon,
+.member-list .member-list-header .tickIcon {
+  margin-top: -3px;
+  float: left;
+}
+.member-list .member-list-item .trashIcon,
+.member-list .member-list-header .trashIcon {
+  margin-top: 4px;
+  float: right;
 }
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
@@ -6449,10 +6468,6 @@ td.label {
   height: 5px;
   padding: 0;
   margin: 0;
-}
-.member-list .member-list-item .icon,
-.member-list .member-list-header .icon {
-  margin-top: 4px;
 }
 .member-list .member-list-header {
   font-size: 10px;
@@ -6595,4 +6610,11 @@ span.icon {
 .btn-side-menu {
   width: 100%;
   margin-bottom: 5px;
+}
+.ember-list-view {
+  overflow: auto;
+  position: relative;
+}
+.ember-list-item-view {
+  position: absolute;
 }

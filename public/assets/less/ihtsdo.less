@@ -309,6 +309,11 @@ td.label
 	}
 }
 
+.ember-list-item-view
+{
+		width : 100%;
+}
+
 
 .member-list
 {
@@ -320,13 +325,33 @@ td.label
 	.member-list-item,
 	.member-list-header
 	{
-		padding : 3px;
+		width : 100%;
+		
+		padding : 2px 5px;
 	
+		.listViewRow
+		{
+			overflow : hidden;
+			height : 24px;
+		}
+
 		.description
 		{
 			font-weight : 500;
 		}
 		
+		.tickIcon
+		{
+			margin-top : -3px;
+			float : left;
+		}
+		
+		.trashIcon
+		{
+			margin-top : 4px;
+			float : right;
+		}
+			
 		.active
 		{
 			width : 70px;
@@ -346,18 +371,14 @@ td.label
 		{
 			color : red;
 		}
-		
+				
 		hr
 		{
 			height : 5px;
 			padding : 0;
 			margin : 0;	
 		}
-		
-		.icon
-		{
-			margin-top : 4px;
-		}
+
 
 	}
 
@@ -543,4 +564,13 @@ span.icon {
 {
 	width : 100%;
 	margin-bottom : 5px;
+}
+
+
+.ember-list-view {
+  overflow: auto;
+  position: relative;
+}
+.ember-list-item-view {
+  position: absolute;
 }

@@ -2,9 +2,14 @@
 	
 	<li class="list-group-item list-header">
 		<span class="language">language</span>
-		<span class="type-id">Refset Type ID</span>
-		<span class="module-id">Module Type ID</span>
-		<span class="component-type-id">Component Type ID</span>
+		<span class="snomed-id">Refset Type ID</span>
+		<span class="snomed-id">Module Type ID</span>
+		<span class="snomed-id">Component Type ID</span>
+		<span class="num-members">Members</span>
+		<span class="date-field">Effective Time</span>
+		<span class="date-field">Created</span>
+		<span class="date-field">Last Update</span>
+		<span class="last_update-by">Updater</span>
 		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
 	</li>	
 	{{#if refsets}}
@@ -15,17 +20,15 @@
 					<span class="id-desc">{{#if published}}{{id}} | {{/if}}{{description}}</span>
 	
 					{{refset-list-item-span 'language' languageCode outerView.controller.languageTypes}}
-					{{refset-list-item-span 'type-id' typeId outerView.controller.refsetTypes}}
-					{{refset-list-item-span 'module-id' moduleId outerView.controller.moduleTypes}}
-					{{refset-list-item-span 'component-type-id' componentTypeId outerView.controller.componentTypes}}
+					{{refset-list-item-span 'snomed-id' typeId outerView.controller.refsetTypes}}
+					{{refset-list-item-span 'snomed-id' moduleId outerView.controller.moduleTypes}}
+					{{refset-list-item-span 'snomed-id' componentTypeId outerView.controller.componentTypes}}
 
-					<span class="created-date-by"><span class="label">created:</span> {{date-format created}}
-		
-					{{#if published}}
-						<span class="published-date"><span class="label">effective time:</span> {{effective-time-format effectiveTime}}</span>
-					{{else}}
-						<span class="label">last update:</span> {{date-format modifiedDate}} <span class="label">by:</span> {{modifiedBy}}</span>
-					{{/if}}				
+					<span class="num-members">{{totalNoOfMembers}}</span>
+					<span class="date-field">{{effective-time-format effectiveTime}}</span>
+					<span class="date-field">{{date-format created}}</span>
+					<span class="date-field">{{date-format modifiedDate}}</span>
+					<span class="last_update-by">{{modifiedBy}}</span>
 	
 				</li>
 			{{/each}}

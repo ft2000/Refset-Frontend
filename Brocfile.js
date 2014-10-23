@@ -68,6 +68,10 @@ app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
 app.import('vendor/bootstrap-datepicker-release/js/bootstrap-datepicker.js');
 app.import('vendor/bootstrap-datepicker-release/css/datepicker3.css');
 
+// Infinite scroller
+app.import('vendor/list-view/list-view-2014-08-03.min.js');
+
+
 // Bootstrap fonts
 var fontOpenSans = pickFiles('vendor/bootstrap/dist', {
 	   srcDir: '/',
