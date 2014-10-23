@@ -412,6 +412,7 @@ export default Ember.ObjectController.extend({
     				else
     				{
     					// Nothing do do...
+    					this.set("editMode",false);
     	    			this.dialogInstance.close();
     				}
     			}
@@ -440,6 +441,7 @@ export default Ember.ObjectController.extend({
 			else
 			{
 				// Nothing do do...
+				this.set("editMode",false);
     			this.dialogInstance.close();
 			}
 		},
@@ -450,6 +452,7 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteMembersComplete",response);
 
 			// Nothing do do...
+			this.set("editMode",false);
 			this.dialogInstance.close();
 		},
 
