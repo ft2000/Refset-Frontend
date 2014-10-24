@@ -12,6 +12,8 @@ export default Ember.ObjectController.extend({
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	
 	dialogInstance : null,
+	
+	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
 
 	createEmptyRefset : function()
 	{

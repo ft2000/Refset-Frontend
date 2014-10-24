@@ -126,7 +126,7 @@
 		
 		{{#if getConceptDataInProgress}}		
 			<h2>Importing member file</h2>
-			<img src="assets/img/googleballs-animated.gif">
+			{{bs-progress progressBinding="importProgress" type="info" stripped="true"}}
 			<p><b>Please wait...</b></p>
 		{{else}}
 			{{#if importError}}

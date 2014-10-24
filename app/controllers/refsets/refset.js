@@ -21,6 +21,8 @@ export default Ember.ObjectController.extend({
 	editMode			: false,
 	showMetaData		: false,
 	
+	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
+	
 	importListChangedInProgress	: false,
 
 	dialogInstance	: null,
