@@ -97,13 +97,7 @@
 	
 										<span class="tickIcon"><a {{action 'toggleImportMemberActive' referencedComponentId}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 	
-										<label><span>
-											<select {{bind-attr id="referencedComponentId"}} class="form-control" {{action 'saveMemberModuleId' this on='change'}}>
-												{{#each opt in moduleTypesArray}}
-													<option {{bind-attr value="opt.id"}} {{unbound is-selected moduleId opt.id}}>{{opt.label}}</option>
-												{{/each}}
-											</select>
-										</span></label>
+										<label><span>{{view Em.Select valueBinding="member.moduleId" content=moduleTypesArray optionValuePath="content.id" optionLabelPath="content.label" class="form-control"}}</span></label>
 											
 										{{#unless meta.conceptActive}}<label class="inactiveMemberText">Note: This concept is INACTIVE</label>{{/unless}}
 									</div>
