@@ -1,9 +1,13 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{refsets-list refsets=refsets title="Latest Public Refsets"}}
-	</div>
-	
-	<div class="colMed inner">
-		{{latest-news news=news}}
-	</div>
-</div>
+<h1>Latest Published Refsets</h1>
+{{refsets-list refsets=refsets title="Latest Public Refsets"}}
+
+<h1>Latest Refset Tool News</h1>
+<ul class="list-group refset-list">
+	{{#each news}}
+		<li class="list-group-item">
+			<span class="right">{{date-format published}}</span>
+			<h4>{{title}}</h4>
+			<p>{{description}}</p>
+		</li>
+	{{/each}}
+</ul>

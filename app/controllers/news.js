@@ -26,7 +26,7 @@ export default Ember.ArrayController.extend({
 	getLatestNews : function()
 	{
 		var allNews = Ember.copy(this.model);
-		this.latestNews.setObjects(allNews.splice(0,1));
+		this.latestNews.setObjects(allNews.splice(0,2));
 	},
 
 });

@@ -1,8 +1,10 @@
-<div class="dashboard">
-	<div class="colMed inner">
-		{{latest-news news=model}}
-	</div>
-	<div class="colMed inner">
-		Selected news article will show here...
-	</div>
-</div>
+<h1>Refset Tool News</h1>
+<ul class="list-group refset-list">
+	{{#each}}
+		<li class="list-group-item">
+			<span class="right">{{date-format published}}</span>
+			<h4>{{title}}</h4>
+			<p>{{description}}</p>
+		</li>
+	{{/each}}
+</ul>
