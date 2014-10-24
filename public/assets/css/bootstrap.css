@@ -6606,3 +6606,6 @@ span.icon {
   width: 100%;
   margin-bottom: 5px;
 }
+.list-group {
+  margin-bottom: 0;
+}
