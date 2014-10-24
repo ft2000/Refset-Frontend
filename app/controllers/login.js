@@ -127,8 +127,6 @@ export default Ember.ObjectController.extend({
 						
 						var dataController = _this.get('controllers.data');
 						dataController.authenticationStatusChanged();
-
-						Bootstrap.GNM.push('Authenticated','You have sucessfully logged in', 'info');
 					}
 					else
 					{
