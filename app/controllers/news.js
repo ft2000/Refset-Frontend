@@ -12,7 +12,7 @@ export default Ember.ArrayController.extend({
 	    	"id": "authentication",
 	    	"title": "Infinite Scroller - Lists with Turbo Power!",
 	    	"published": "2014-10-23T09:00:00",
-	    	"description": "We have identified a brilliant infinite scroller widget to put in place of the member lists. Performance is improved significantly for any refset with more than 50 members.The more members, the better the performance improvement. However, we do have a small issue with it which mean sit has not been included in this release. Look out for it in the next release of the Refset Tool."
+	    	"description": "We have identified a brilliant infinite scroller widget to put in place of the member lists. Performance is improved significantly for any refset with more than 50 members.The more members, the better the performance improvement. However, we do have a small issue with it which means it has not been included in this release. Look out for it in the next release of the Refset Tool."
 	    },
 		{
 	    	"id": "export",
