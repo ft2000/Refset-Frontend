@@ -9,21 +9,6 @@ export default Ember.ArrayController.extend({
 	    	"description": "The new Refset Tool will be publicly demonstrated for the first time at IHTSDO Business Meeting - Amsterdam"
 	    },
 		{
-	    	"id": "developers",
-	    	"title": "Refset Tools Developers",
-	    	"published": "2014-10-24T09:00:00",
-	    	"description": "This new Refset Tool, comissioned by JHTSDO is being built by an experienced and capable development team : <ul>" +
-	    			"<li>Robert Turnbull : IHTSDO</li>" +
-	    			"<li>Adam Flinton : IHTSDO</li>" +
-	    			"<li>Rory Davidson : IHTSDO</li>" +
-	    			"<li>Ian Bale : <a href='http://www.hazardousfrog.com' target='_blank'>Hazardous Frog</a></li>" +
-	    			"<li>Prashant Nema : Episteme Partners Ltd</li>" +
-	    			"</ul>." +
-	    			"<p>These experienced developers are taking an agile approach to the development of the Refset Tool. " +
-	    			"Daily stand-ups and short sprints mean we will have regular updates as we add new features." +
-	    			"Many improvement and new features are already being developed but are not quite ready to show you yet.</p>"
-	    },
-		{
 	    	"id": "authentication",
 	    	"title": "Infinite Scroller - Lists with Turbo Power!",
 	    	"published": "2014-10-23T09:00:00",
