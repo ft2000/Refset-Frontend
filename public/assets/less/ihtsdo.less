@@ -6,12 +6,16 @@
 .ihtsdo-panel
 {
 	background-color 			: @panel-color;
+	border-color				: #e7e7e7;
+	margin 						: 0 20px;
+	border						: 1px solid transparent;
+	padding						: 5px;
 }
 
 body, 
 html
 {
-	min-width					: 800px;
+	min-width					: 830px;
 	width						: auto !important;
 	font-weight 				: @font-weight-base;
 }
@@ -19,44 +23,39 @@ html
 #header
 {
 	.ihtsdo-panel;
-
-	border-radius 				: @border-radius-large;
-	margin 						: 5px; /* top right bottom left */ /* top left/right bottom */ /* top/bottom left/right */
-	padding						: 10px 150px 0 20px;
 	
-	background					: url("../img/borderHeader.png") no-repeat scroll right top @panel-color;
-	
-	.navbar-brand
-	{
-		margin						: -30px 0 45px;
-		font-size					: @font-size-extra-large;
-		color						: @gray;
+	margin-bottom				: 20px;
+	padding						: 0 0 10px;
 		
-		a
-		{
-			color					: @gray;
-		}
-	}
-	
 	.login-buttons
 	{
 		font-size					: @font-size-large;
 	}
-}
 
+	.navbar 
+	{
+	    margin-bottom: 20px;
+	    min-height: 50px;
+	    position: relative;
+	}
+}
 
 #body
 {
 	.ihtsdo-panel;
-	margin 						: 10px 5px;
-	padding						: 5px;
 }
 
 #footer
 {
 	.ihtsdo-panel;
-	margin						: 0 5px;
-	padding-top					: 40px;
+	
+	hr
+	{
+	    height: 2px;
+    	margin: 10px 0;
+    	background-color: #e8eded;
+    	border: medium none;
+	}
 	
 	.share
 	{
@@ -566,6 +565,7 @@ span.icon {
 	margin-bottom : 5px;
 }
 
+<<<<<<< HEAD
 
 .ember-list-view {
   overflow: auto;
@@ -573,4 +573,9 @@ span.icon {
 }
 .ember-list-item-view {
   position: absolute;
+=======
+.list-group
+{
+    margin-bottom: 0;
+>>>>>>> master
 }
