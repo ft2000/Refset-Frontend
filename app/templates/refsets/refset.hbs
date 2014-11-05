@@ -138,24 +138,22 @@
 				             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
 				        </div>
 				        <div class="panel-collapse collapse in">
-				            <div id="importMemberList" class="panel-body">
-								<ul class="list-group checkboxList member-list">
-									{{#each member in potentialMembersToImport}}
-										<li {{bind-attr class=':list-group-item :member-list-item member.meta.conceptActive::inactiveConcept member.meta.deleteConcept:deleteConcept'}}>
-	
-											<span class="right"><a {{action 'toggleImportMember' member.referencedComponentId}} {{bind-attr class=':pointer :icon member.meta.deleteConcept:undelete:delete'}}"></a></span>
-	
-											<span class="sctid">{{member.referencedComponentId}}</span> | <span class="description">{{member.description}}</span> |<br>								
-	
-											<span class="left"><a {{action 'toggleImportMemberActive' member.referencedComponentId}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
-
-											<label>Module: <span>{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}</span></label>
-												
-											{{#unless member.meta.conceptActive}}<label class="warning">Note: This concept is INACTIVE</label>{{/unless}}
-	
-										</li>
-									{{/each}}
-								</ul>
+				            <div id="importMemberList" class="panel-body member-list">
+				            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+									 {{#collection Ember.ListView contentBinding="potentialMembersToImport" height=400 rowHeight=59 width="100%"}}
+										<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+											<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponentId}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+		
+											<div class="listViewRow"><span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |</div>						
+		
+											<span class="tickIcon"><a {{action 'toggleImportMemberActive' referencedComponentId}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+		
+											<label><span>{{view Em.Select value=content.moduleId content=moduleTypesArray optionValuePath="content.id" optionLabelPath="content.label" class="form-control"}}</span></label>
+					
+											{{#unless meta.conceptActive}}<label class="inactiveMemberText">Note: This concept is INACTIVE</label>{{/unless}}
+										</div>
+									  {{/collection}}
+								  {{/with}}
 							</div>
 						</div>
 					</div>
@@ -180,56 +178,64 @@
 									<span class="effective-time">Effective Time</span>
 									<span class="module-id">Module ID</span>
 								</li>
-							
-								{{#each member in members}}
-									<li {{bind-attr class=':list-group-item :member-list-item member.meta.conceptActive::inactiveConcept member.meta.deleteConcept:inactiveConcept'}}>
+		
+								{{#if editMode}}
+					            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+										 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=59 width="100%"}}
+											<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+												<span class="right"><a {{action 'toggleMemberMetaData' id}} {{bind-attr class=':pointer :icon meta.viewMeta:hideinfo:info'}}"></a></span>
+												<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 
-										<span class="right"><a {{action 'toggleMemberMetaData' member.id}} {{bind-attr class=':pointer :icon member.meta.viewMeta:hideinfo:info'}}"></a></span>
-
-										{{#if editMode}}
-											{{#unless member.published}}
-												<span class="right"><a {{action 'toggleDeleteMember' member.id}} {{bind-attr class=':pointer :icon member.meta.deleteConcept:undelete:delete'}}"></a></span>
-											{{/unless}}
-										{{/if}}
-
-										<span class="sctid">{{member.referencedComponentId}}</span> | <span class="description">{{member.description}}</span> |<br>
-
-										{{#if editMode}}
-													
-											<span class="left"><a {{action 'toggleMemberActive' member.id}} {{bind-attr class=':pointer :icon member.active:tick:cross'}}"></a></span>
-
-											{{#if member.published}}
-												<label>Published: <span>{{date-time-format member.effectiveTime}}</span></label>
-											{{/if}}
-											<label>Module:
+												<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
+		
+												<span class="left active"><a {{action 'toggleMemberActive' id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+	
+												<span class="effective-time">{{date-time-format effectiveTime}}</span>
 												<span>
-													{{#if member.published}}
-														{{snomed-id-to-label member.moduleId moduleTypes}}
+													{{#if published}}
+														{{snomed-id-to-label moduleId moduleTypes}}
 													{{else}}
-														{{snomed-data-dropdown valueBinding="member.moduleId" dataType="moduleTypesArray"}}
-													 {{/if}}
+														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
+													{{/if}}
 									 			</span>
-											</label>
-											<label>Effective time: <span>{{date-time-format member.effectiveTime}}</span></label>
-											
-										{{else}}
-											<span {{bind-attr class=':active member.active::inactiveMemberText'}}>{{#if member.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
-											<span class="effective-time">{{effective-time-format member.effective-time}}</span>
-											<span class="module-id">{{refset-list-item-span 'module-id' member.moduleId moduleTypes}}</span>
-										{{/if}}
-										
-					
-										{{#if member.meta.viewMeta}}
-										
-											<hr>
-											
-											<span class="label">Create</span><span class="created-date">{{date-time-format member.created}}</span>
-											<span class="label">Last Updated</span><span class="last-modified">{{date-time-format member.modifiedDate}}</span>
-											<span class="label">Last Updated By</span><span class="last-modified-by">{{member.modifiedBy}}</span>
-										{{/if}}
-					
-									</li>
-								{{/each}}
+
+												{{#if meta.viewMeta}}
+												
+													<hr>
+													
+													<span class="label">Created</span><span class="created-date">{{date-time-format created}}</span>
+													<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
+													<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
+												{{/if}}
+											</div>
+										  {{/collection}}
+									  {{/with}}
+									  
+									{{else}}
+									
+						            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+											 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=59 width="100%"}}
+												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+													<span class="right"><a {{action 'toggleMemberMetaData' id}} {{bind-attr class=':pointer :icon meta.viewMeta:hideinfo:info'}}"></a></span>
+						
+													<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
+			
+													<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
+													<span class="effective-time">{{effective-time-format effective-time}}</span>
+													<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+																					
+													{{#if meta.viewMeta}}												
+														<hr>
+														
+														<span class="label">Created</span><span class="created-date">{{date-time-format created}}</span>
+														<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
+														<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
+													{{/if}}
+												</div>
+											  {{/collection}}
+										  {{/with}}									
+									{{/if}}
+
 							{{else}}
 								<li class='list-group-item'>
 									{{#if meta}}

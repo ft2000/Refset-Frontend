@@ -11,6 +11,16 @@ export default Ember.ArrayController.extend({
 	
 	processGetConceptsQueueTempData : {},
 	
+	importTotalChunks : 0,
+	importCurrentChunk : 0,
+	importProgress  : function()
+	{
+		var percentDone = this.importCurrentChunk / this.importTotalChunks * 100;
+		
+		return percentDone;
+	}.property("importCurrentChunk"),
+	
+	
 	importRequiredFilteredModel : function()
 	{
 		var concepts = this.get('model');
@@ -126,7 +136,22 @@ export default Ember.ArrayController.extend({
 		}
 	},
 	
+	sortMembers : function(a,b)
+	{
+		if (a.meta.conceptActive && !b.meta.conceptActive)
+			return 1;
 
+		if (!a.meta.conceptActive && b.meta.conceptActive)
+			return -1;
+
+		if (a.description < b.description)
+			return -1;
+		
+		if (a.description > b.description)
+			return 1;
+		
+		return 0;		
+	},
 	
 	processGetConceptsQueue : function(user,defaultMemberModuleId)
 	{
@@ -144,6 +169,9 @@ export default Ember.ArrayController.extend({
 
 				_this.processGetConceptsQueueTempData.conceptsNotFound 	= _this.processGetConceptsQueueTempData.conceptsNotFound.concat(response.conceptsNotFound);
 				_this.processGetConceptsQueueTempData.membersData 		= _this.processGetConceptsQueueTempData.membersData.concat(response.membersData);
+
+				// Now sort member data to pull any inactive concepts to the top
+				_this.processGetConceptsQueueTempData.membersData.sort(_this.sortMembers);
 
 				_this.model.setObjects(_this.processGetConceptsQueueTempData.membersData);
 			});
@@ -183,11 +211,15 @@ export default Ember.ArrayController.extend({
 	
 	getConceptsForImportFile : function(user,ids,defaultMemberModuleId)
 	{
+		var _this = this;
+		
 		return membersAdapter.findList(user,ids).then(function(result)
 		{
 			var membersData 		= [];
 			var conceptsNotFound 	= [];
 			var error;
+			
+			_this.set("importCurrentChunk",_this.get("importCurrentChunk") + 1);
 			
 			if (typeof result.meta.errorInfo === "undefined")
 			{
@@ -218,7 +250,9 @@ export default Ember.ArrayController.extend({
 					}
 				});
 										
-				membersData = $.grep(membersData,function(n){ return(n); });				
+				membersData = $.grep(membersData,function(n){ return(n); });
+				
+				
 			}
 			else
 			{
@@ -288,10 +322,13 @@ export default Ember.ArrayController.extend({
 			
 			while(idArray.length)
 			{
-				idArraySlices.push(idArray.splice(0,100));
+				idArraySlices.push(idArray.splice(0,25));
 			}
 			
 			this.conceptsQueue.setObjects(idArraySlices);
+			
+			this.set("importTotalChunks",idArraySlices.length +1);
+			this.set("importCurrentChunk",1);
 		
 			this.processGetConceptsQueueTempData.conceptsNotFound = [];
 			this.processGetConceptsQueueTempData.membersData = [];

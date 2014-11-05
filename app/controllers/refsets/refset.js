@@ -11,6 +11,8 @@ export default Ember.ObjectController.extend({
 	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
 	languageTypes 		: Ember.computed.alias("controllers.data.languageTypes"),
 
+	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
+	
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
