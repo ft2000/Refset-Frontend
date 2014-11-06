@@ -22,19 +22,20 @@ export default Ember.ObjectController.extend({
 	{
 		if (this.editMode)
 		{
-			return this.showMetaData ? 81 : 56;			
+			return this.showMemberMetaData ? 81 : 56;			
 		}
 		else
 		{
-			return this.showMetaData ? 70 : 45;
+			return this.showMemberMetaData ? 70 : 45;
 		}
-	}.property("showMetaData","editMode"),
+	}.property("showMemberMetaData","editMode"),
 
 	membersToDelete 			: [],
 	membersToAdd				: [],
 	
 	editMode					: false,
-	showMetaData				: false,
+	showHeaderMetaData			: false,
+	showMemberMetaData			: false,
 		
 	importListChangedInProgress	: false,
 
@@ -145,15 +146,20 @@ export default Ember.ObjectController.extend({
 			}
 		},
 
-		toggleMetaData : function()
+		toggleHeaderMetaData : function()
 		{
-			this.set("showMetaData",!this.showMetaData);
+			this.set("showHeaderMetaData",!this.showHeaderMetaData);
+		},
+		
+		toggleMemberMetaData : function()
+		{
+			this.set("showMemberMetaData",!this.showMemberMetaData);
 
 			var refset = $.extend(true, {}, this.get("model"));
 
 			for (var m=0;m<refset.members.length;m++)
 			{
-				refset.members[m].meta.viewMeta = this.showMetaData;
+				refset.members[m].meta.viewMeta = this.showMemberMetaData;
 			}
 
 			this.set("model",refset);
