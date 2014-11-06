@@ -17,6 +17,8 @@ export default Ember.ObjectController.extend({
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
+	
+	editModel					: {},
 
 	memberRowHeight  			: function()
 	{
@@ -54,7 +56,7 @@ export default Ember.ObjectController.extend({
 		{
 			dataController.getRefset(id,_this,'getRefsetComplete');			
 		});
-		
+	
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();
 	},
@@ -136,6 +138,8 @@ export default Ember.ObjectController.extend({
 			
 			if (this.editMode)
 			{
+				this.set("editModel",$.extend(true, {}, this.get("model")));
+				
 				Ember.run.scheduleOnce('afterRender', this, function(){
 					document.getElementById('refsetUploadFileInput').addEventListener('change', readSingleFile, false);
 					document.getElementById('fileUploadDropZone').addEventListener('dragover', handleDragOver, false);
@@ -168,9 +172,7 @@ export default Ember.ObjectController.extend({
 		cancelEdits : function()
 		{
 			this.set("editMode",false);
-			var refset = this.get("model");		
-			var dataController = this.get('controllers.data');
-			dataController.getRefset(refset.id,this,'getRefsetComplete');	
+			this.set("model",$.extend(true, {}, this.get("editModel")));	
 		},
 		
 		toggleDeleteMember : function(memberId)

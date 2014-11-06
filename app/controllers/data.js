@@ -36,6 +36,8 @@ export default Ember.ObjectController.extend({
 	languagesArray			: [{id:'en_US',label:'US English'}],
 	languageTypes			: {'en_US' : 'US English'},
 	initialised				: false,
+	refsetMemberRequestQueue : [],
+	
 
 	init : function()
 	{
@@ -467,7 +469,7 @@ export default Ember.ObjectController.extend({
 
 		this.set("currentRefset",{id:id,callingController:callingController,completeAction:completeAction});
 		
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 		
 		var loginController = this.get('controllers.login');
@@ -480,7 +482,7 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		refsetsAdapter.find(user,id).then(function(response)
+		refsetsAdapter.findHeader(user,id).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
@@ -488,43 +490,101 @@ export default Ember.ObjectController.extend({
 			{
 				_this.hideWaitAnim();
 
-				response.content.refset.meta = {};
+				response.content.refset.meta 	= {};
+				response.content.refset.members	= [];
+				
 				_this.set("refset",response.content.refset);
 				
 				// Now get member data...
 				
-				if (typeof _this.refset.members === "undefined")
+				var start = 0, end = 0;
+				var idArraySlices = [];
+				
+				while (start < response.content.refset.totalNoOfMembers)
 				{
-					_this.set("refset.members",[]);
+					end = Math.min(start + 99,response.content.refset.totalNoOfMembers);
+					
+					if (start === 0) {end = 24;}
+					
+					idArraySlices.push({from:start,to:end});
+					
+					start = end + 1;
 				}
 				
-				var MemberData = _this.refset.members.map(function(member)
-				{
-					member.meta = {};
-
-					member.meta.conceptActive 			= true;
-					member.meta.found 					= true;
-					member.meta.deleteConcept			= false;
-					member.meta.viewMeta				= false;
-					
-					member.meta.originalActive			= member.active;
-					member.meta.originalModuleId		= member.moduleId;
-					
-					return member;
-				});
+				_this.refsetMemberRequestQueue.setObjects(idArraySlices);
 				
-				_this.refset.members.setObjects(MemberData);
-				
+				_this.processRefsetMemberRequestQueue(user,id);
+								
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
 					callingController.send(completeAction,{error:0});
 				}
+
 			}
 			else
 			{
 				_this.handleRequestFailure(response,'Refset','getRefset',[id],callingController,completeAction,retryCounter);
 			}
 		});
+	},
+	
+	processRefsetMemberRequestQueue : function(user,id)
+	{
+		var _this = this;
+		
+		if (this.refsetMemberRequestQueue.length)
+		{
+			var membersToProcess = this.refsetMemberRequestQueue.shift();
+	
+			Ember.Logger.log("getting member data");
+			
+			var promise = this.getRefsetMembers(user,id,membersToProcess.from,membersToProcess.to).then(function(response)
+			{
+				if (response.error)
+				{
+					Ember.Logger.log("processRefsetMemberRequestQueue error",response);
+				}
+			});
+		}
+		
+		Ember.RSVP.all([promise]).then(function(response)
+		{
+			if (_this.refsetMemberRequestQueue.length)
+			{
+				_this.processRefsetMemberRequestQueue(user,id)
+			}
+		});
+	},
+	
+	getRefsetMembers : function(user,id,from,to)
+	{	
+		var _this = this;
+		
+		return refsetsAdapter.findMembers(user,id,from,to).then(function(response)
+		{
+			var members = _this.refset.members.concat(response.content.members);
+			
+			var MemberData = members.map(function(member)
+			{
+				member.meta = {};
+
+				member.meta.conceptActive 			= true;
+				member.meta.found 					= true;
+				member.meta.deleteConcept			= false;
+				
+				member.meta.originalActive			= member.active;
+				member.meta.originalModuleId		= member.moduleId;
+				
+				return member;
+			});
+			
+			_this.refset.members.setObjects(MemberData);
+			
+			Ember.Logger.log("got member data");
+			
+			return {error:false};
+		});
+	
 	},
 	
 	createRefset : function(refset,callingController,completeAction,retry)

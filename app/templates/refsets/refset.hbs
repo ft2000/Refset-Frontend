@@ -161,7 +161,7 @@
 			
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseMembers">
-		             <h4 class="panel-title">Members ({{members.length}})</h4>
+		             <h4 class="panel-title">{{totalNoOfMembers}} Members (Loaded {{members.length}} of {{totalNoOfMembers}})</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
 		            <div id="collapseMembers" class="panel-body collapse">
@@ -185,7 +185,7 @@
 												<span class="right"><a class="pointer icon info"></a></span>
 												<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 
-												<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
+												<div class="memberRowWrapperEdit"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 		
 												<span class="left active"><a {{action 'toggleMemberActive' id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 	
@@ -218,11 +218,13 @@
 						
 													<span class="right">{{member-meta-data-icon content}}</span>
 
-													<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
+													<div class="memberRowWrapper"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 			
-													<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
-													<span class="effective-time">{{effective-time-format effective-time}}</span>
-													<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+													<div class="memberRowWrapper">
+														<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
+														<span class="effective-time">{{effective-time-format effective-time}}</span>
+														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+													</div>
 																					
 													{{#if meta.viewMeta}}												
 														<hr>
@@ -238,10 +240,10 @@
 
 							{{else}}
 								<li class='list-group-item'>
-									{{#if meta}}
-										Your refset does not have any members yet...
-									{{else}}
+									{{#if totalNoOfMembers}}
 										Loading members. Please wait...
+									{{else}}
+										Your refset does not have any members yet...
 									{{/if}}
 								</li>
 							{{/if}}
@@ -255,7 +257,7 @@
 			
 			{{#if meta}}
 				{{#if editMode}}				
-					<button class="btn btn-primary btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle Member Meta Data</button>
+					<button class="btn btn-primary btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
 
 					<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 					<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
@@ -281,11 +283,10 @@
 
 					{{/if}}
 					
-
 				{{else}}
 					<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
 
-					<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle Member Meta Data</button>
+					<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
 
 					<button class="btn btn-default btn-side-menu" {{action 'exportRefset'}}>Export Refset</button>
 

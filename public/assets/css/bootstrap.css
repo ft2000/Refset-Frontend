@@ -6459,7 +6459,7 @@ td.label {
 }
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
-  width: 70px;
+  width: 80px;
 }
 .member-list .member-list-item .effective-time,
 .member-list .member-list-header .effective-time {
@@ -6472,6 +6472,18 @@ td.label {
 .member-list .member-list-item .inactiveMemberText,
 .member-list .member-list-header .inactiveMemberText {
   color: red;
+}
+.member-list .member-list-item .memberRowWrapper,
+.member-list .member-list-header .memberRowWrapper {
+  white-space: nowrap;
+  margin-right: 50px;
+  overflow: hidden;
+}
+.member-list .member-list-item .memberRowWrapperEdit,
+.member-list .member-list-header .memberRowWrapperEdit {
+  white-space: nowrap;
+  margin-right: 85px;
+  overflow: hidden;
 }
 .member-list .member-list-item hr,
 .member-list .member-list-header hr {

@@ -65,6 +65,41 @@ export default Ember.Object.extend({
 		return result;
 	},
 
+	findHeader : function (user,id)
+	{
+		Ember.Logger.log("adapters.refsets:findHeader (user,id)",user,id);
+		
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/header', {headers:this.getHeaders(user)}).then(function(response)
+		{	
+			return response;
+		},
+		function (response) 
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
+	
+	findMembers : function (user,id,from,to)
+	{
+		Ember.Logger.log("adapters.refsets:findMembers (user,id)",user,id);
+		
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/members?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
+		{	
+			return response;
+		},
+		function (response) 
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
 	
 	create : function (user,refset)
 	{
