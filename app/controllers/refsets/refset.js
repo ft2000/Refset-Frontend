@@ -5,26 +5,37 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","data","application","refsets/upload"],
 	
-	model 				: Ember.computed.alias("controllers.data.refset"),
-	refsetTypes 		: Ember.computed.alias("controllers.data.refsetTypes"),
-	componentTypes 		: Ember.computed.alias("controllers.data.componentTypes"),
-	moduleTypes 		: Ember.computed.alias("controllers.data.moduleTypes"),
-	languageTypes 		: Ember.computed.alias("controllers.data.languageTypes"),
+	model 						: Ember.computed.alias("controllers.data.refset"),
+	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
+	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
+	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
+	languageTypes 				: Ember.computed.alias("controllers.data.languageTypes"),
 
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
 	
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
-
-	membersToDelete 	: [],
-	membersToAdd		: [],
-	
-	editMode			: false,
-	showMetaData		: false,
-	
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
+
+	memberRowHeight  			: function()
+	{
+		if (this.editMode)
+		{
+			return this.showMetaData ? 81 : 56;			
+		}
+		else
+		{
+			return this.showMetaData ? 70 : 45;
+		}
+	}.property("showMetaData","editMode"),
+
+	membersToDelete 			: [],
+	membersToAdd				: [],
 	
+	editMode					: false,
+	showMetaData				: false,
+		
 	importListChangedInProgress	: false,
 
 	dialogInstance	: null,
@@ -137,6 +148,15 @@ export default Ember.ObjectController.extend({
 		toggleMetaData : function()
 		{
 			this.set("showMetaData",!this.showMetaData);
+
+			var refset = $.extend(true, {}, this.get("model"));
+
+			for (var m=0;m<refset.members.length;m++)
+			{
+				refset.members[m].meta.viewMeta = this.showMetaData;
+			}
+
+			this.set("model",refset);
 		},
 		
 		cancelEdits : function()
@@ -145,21 +165,6 @@ export default Ember.ObjectController.extend({
 			var refset = this.get("model");		
 			var dataController = this.get('controllers.data');
 			dataController.getRefset(refset.id,this,'getRefsetComplete');	
-		},
-		
-		toggleMemberMetaData : function(memberId)
-		{
-			var refset = $.extend(true, {}, this.get("model"));
-			
-			for (var m=0;m<refset.members.length;m++)
-			{
-				if (refset.members[m].id === memberId)
-				{
-					refset.members[m].meta.viewMeta = !refset.members[m].meta.viewMeta;
-					this.set("model",refset);
-					break;
-				}
-			}
 		},
 		
 		toggleDeleteMember : function(memberId)

@@ -5,18 +5,13 @@ export default Ember.ObjectController.extend({
 	needs : ["login","utilities","refsets/upload","data"],
 
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
-
-	disablePublishedFormFields	: true,
-	
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
-
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
-
-	
-	dialogInstance : null,
-	
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
+
+	dialogInstance : null,
+	disablePublishedFormFields	: true,
 
 	createEmptyRefset : function()
 	{

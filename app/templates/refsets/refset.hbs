@@ -94,7 +94,6 @@
 										{{/if}}
 									{{/if}}
 								</td>
-								<td align=right rowspan="2"><a {{action 'toggleMetaData'}} {{bind-attr class=':pointer :icon showMetaData:hideinfo:info'}}></a></td>
 							</tr>
 							
 							<tr>
@@ -181,9 +180,8 @@
 		
 								{{#if editMode}}
 					            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-										 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=59 width="100%"}}
+										 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=memberRowHeight width="100%"}}
 											<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-												<span class="right"><a {{action 'toggleMemberMetaData' id}} {{bind-attr class=':pointer :icon meta.viewMeta:hideinfo:info'}}"></a></span>
 												<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 
 												<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
@@ -214,9 +212,8 @@
 									{{else}}
 									
 						            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-											 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=59 width="100%"}}
+											 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-													<span class="right"><a {{action 'toggleMemberMetaData' id}} {{bind-attr class=':pointer :icon meta.viewMeta:hideinfo:info'}}"></a></span>
 						
 													<span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |<br>
 			
@@ -255,6 +252,8 @@
 			
 			{{#if meta}}
 				{{#if editMode}}				
+					<button class="btn btn-primary btn-side-menu" {{action 'toggleMetaData'}}>Toggle meta Data</button>
+
 					<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 					<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
 					<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drag a file of concepts or an individual concept from the Snomed CT browser here.<br><br>Alternatively use the file requestor below to choose a file.</span></div>
@@ -274,19 +273,23 @@
 							<p><b{{importError}}</b></p>
 						{{/if}}
 
-
 						<button {{action 'cancelEdits'}} class="btn btn-danger left">Discard Changes</button>
 						<button {{action 'updateRefset'}} class="btn btn-success right">Save changes</button>
 
 					{{/if}}
 					
+
 				{{else}}
-					<button {{action 'toggleEditMode' id}} class="btn btn-primary btn-side-menu">Edit Refset</button>
-					<button {{action 'exportRefset' id}} class="btn btn-default btn-side-menu">Export Refset</button>
+					<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
+
+					<button class="btn btn-default btn-side-menu" {{action 'toggleMetaData'}}>Toggle meta Data</button>
+
+					<button class="btn btn-default btn-side-menu" {{action 'exportRefset'}}>Export Refset</button>
+
 					{{#unless published}}
-						<button {{action 'deleteRefset' id}} class="btn btn-danger btn-side-menu">Delete Refset</button>
+						<button class="btn btn-danger btn-side-menu" {{action 'deleteRefset'}}>Delete Refset</button>
 					{{/unless}}
-				
+					
 				{{/if}}
 
 			{{/if}}
