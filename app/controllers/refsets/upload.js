@@ -5,9 +5,14 @@ export default Ember.ArrayController.extend({
 	
 	needs : ["login"],
 	
-	model : [],
+	model : [], // flat file import
+	
+	isRF2Import	: false,
 	
 	conceptsQueue : [],
+	
+	moreThanOneRefsetInRF2 	: false,
+	rf2FileToImport 		: '',
 	
 	processGetConceptsQueueTempData : {},
 	
@@ -138,17 +143,10 @@ export default Ember.ArrayController.extend({
 	
 	sortMembers : function(a,b)
 	{
-		if (a.meta.conceptActive && !b.meta.conceptActive)
-			return 1;
-
-		if (!a.meta.conceptActive && b.meta.conceptActive)
-			return -1;
-
-		if (a.description < b.description)
-			return -1;
-		
-		if (a.description > b.description)
-			return 1;
+		if (a.meta.conceptActive && !b.meta.conceptActive) {return 1;}
+		if (!a.meta.conceptActive && b.meta.conceptActive) {return -1;}
+		if (a.description < b.description) {return -1;}		
+		if (a.description > b.description) {return 1;}
 		
 		return 0;		
 	},
@@ -157,13 +155,14 @@ export default Ember.ArrayController.extend({
 	{
 		Ember.Logger.log("get concepts started", this.conceptsQueue.length);
 		
+		var promise;
 		var _this = this;
 				
 		if (this.conceptsQueue.length)
 		{
 			var conceptsToProcess = this.conceptsQueue.shift();
 			
-			var promise = this.getConceptsForImportFile(user,conceptsToProcess,defaultMemberModuleId).then(function(response)
+			promise = this.getConceptsForImportFile(user,conceptsToProcess,defaultMemberModuleId).then(function(response)
 			{
 				if (response.error) {_this.processGetConceptsQueueTempData.error = response.error;}
 
@@ -177,13 +176,13 @@ export default Ember.ArrayController.extend({
 			});
 		}
 		
-		Ember.RSVP.all([promise]).then(function(response)
+		Ember.RSVP.all([promise]).then(function()
 		{
 			Ember.Logger.log("get concepts finished",_this.conceptsQueue.length);
 			
 			if (_this.conceptsQueue.length)
 			{
-				_this.processGetConceptsQueue(user,defaultMemberModuleId)
+				_this.processGetConceptsQueue(user,defaultMemberModuleId);
 			}
 			else
 			{
@@ -205,7 +204,7 @@ export default Ember.ArrayController.extend({
 				}
 					
 				_this.set("getConceptDataInProgress",false);
-				_this.set("importError",_this.processGetConceptsQueueTempData.error)}
+				_this.set("importError",_this.processGetConceptsQueueTempData.error);}
 		});
 	},
 	
@@ -269,7 +268,7 @@ export default Ember.ArrayController.extend({
     {
     	importSingleMember : function(member)
     	{
-    		Ember.Logger.log("controller.refstes.upload:actions:importSingleFile");
+    		Ember.Logger.log("controller.refsets.upload:actions:importSingleFile");
     		
     		member.moduleId = $('#newRefsetModuleId').val();
     		member.active 	= true;
@@ -284,57 +283,129 @@ export default Ember.ArrayController.extend({
     	},
     	
     	
+		importRF2File : function(members)
+		{
+    		Ember.Logger.log("controller.refsets.upload:actions:importRF2File");
+    		    		
+    		this.model.setObjects([]);
+    		this.set("isRF2Import",true);
+    		var _this = this;
+    		
+    		Ember.run.next(this, function()
+    	    {	
+	    		// Process file to remove any blank lines or trailing CR/LF 
+	    		var rawArray = members.split('\n');
+	    		
+	    		rawArray.shift(); // Remove the header row at the top
+	    		
+	    		var refsetsInRF2File = {};
+	    		
+				var rowsToImportArray = rawArray.map(function(member)
+				{
+					if (typeof member !== "undefined" && member !== "")
+					{
+						var memberRow 	= member.split(/\t/);
+						var refsetId 	= memberRow[4];
+						var conceptId 	= memberRow[5];
+						
+						// We may have more than one refset in an RF2 file, so lets deal with them separately.
+						if (!(refsetId in refsetsInRF2File))
+						{
+							refsetsInRF2File[refsetId] = {id:refsetId,concepts:{}};
+						}
+						
+						refsetsInRF2File[refsetId].concepts[conceptId] = 1;
+						
+						return member;
+					}
+				});
+				
+				rowsToImportArray = $.grep(rowsToImportArray,function(n){ return(n); });
+				
+				// count how many rows are in the RF2 file - a member might well be in the file more than one in different states, so num rows != num members...
+				var numRowsToImport 	= rowsToImportArray.length;
+				
+				var refsetsArray		= Object.keys(refsetsInRF2File);
+				
+				var refsets 			= [];
+				
+				for (var r=0;r<refsetsArray.length;r++)
+				{
+					refsets[r] = refsetsInRF2File[refsetsArray[r]];
+					
+					var conceptsArray		= Object.keys(refsets[r].concepts);
+					
+					var concepts 			= [];
+					
+					for (var c=0;c<conceptsArray.length;c++)
+					{
+						concepts[c] = refsets[r].concepts[conceptsArray[c]];
+					}
+					
+					refsets[r].concepts = concepts;
+				}
+				
+				_this.set("moreThanOneRefsetInRF2",refsets.length>1);
+				
+				if (refsets.length > 0)
+				{
+					_this.set("rf2FileToImport",refsets[0].id);
+				}
+				else
+				{
+					_this.set("rf2FileToImport","");
+				}
+	
+				_this.model.setObjects(refsets);
+    	    });
+		},
+    	
 		importFlatFile : function(members)
 		{
-    		Ember.Logger.log("controller.refstes.upload:actions:importFlatFile");
-
-    		this.model.setObjects([]);
+    		Ember.Logger.log("controller.refsets.upload:actions:importFlatFile");
     		
+    		this.model.setObjects([]);
+    		this.set("isRF2Import",false);
     		var _this = this;
-			
-			members = members.replace(/\r?\n|\r/g,"\n");
-			
-			var membersArray = members.split('\n');
-			
-			var idArray = membersArray.map(function(refCompId)
-			{
-				if (refCompId !== "")
+    		
+    		Ember.run.next(this, function()
+    		{					
+				var membersArray = members.split('\n');
+				
+				var idArray = membersArray.map(function(refCompId)
 				{
-					return refCompId;
+					if (typeof refCompId !== "undefined" && refCompId !== "")
+					{
+						return refCompId;
+					}
+				});
+				
+				idArray = $.grep(idArray,function(n){ return(n); });
+	
+				var loginController = this.get('controllers.login');
+				var user = loginController.user;
+				
+				_this.set("getConceptDataInProgress",true);
+				
+				var defaultMemberModuleId = $('#newRefsetModuleId').val();
+	
+				var idArraySlices		= [];			
+				while(idArray.length)
+				{
+					idArraySlices.push(idArray.splice(0,25));
 				}
-			});
+				
+				_this.conceptsQueue.setObjects(idArraySlices);
+				
+				_this.set("importTotalChunks",idArraySlices.length +1);
+				_this.set("importCurrentChunk",1);
 			
-			idArray = $.grep(idArray,function(n){ return(n); });
-
-			var loginController = this.get('controllers.login');
-			var user = loginController.user;
-			
-			this.set("getConceptDataInProgress",true);
-			
-			var defaultMemberModuleId = $('#newRefsetModuleId').val();
-
-			var conceptsNotFound 	= [];
-			var membersData 		= [];
-			var error;
-			var promises 			= [];
-			var idArraySlices		= [];
-			var idArrayIndex		= 0;
-			
-			while(idArray.length)
-			{
-				idArraySlices.push(idArray.splice(0,25));
-			}
-			
-			this.conceptsQueue.setObjects(idArraySlices);
-			
-			this.set("importTotalChunks",idArraySlices.length +1);
-			this.set("importCurrentChunk",1);
-		
-			this.processGetConceptsQueueTempData.conceptsNotFound = [];
-			this.processGetConceptsQueueTempData.membersData = [];
-			this.processGetConceptsQueueTempData.error;
-			
-			this.processGetConceptsQueue(user,defaultMemberModuleId);
+				_this.processGetConceptsQueueTempData.conceptsNotFound	= [];
+				_this.processGetConceptsQueueTempData.membersData 		= [];
+				_this.processGetConceptsQueueTempData.error 			= 0;
+				
+				_this.processGetConceptsQueue(user,defaultMemberModuleId);
+    		});
 		},
     }
 });

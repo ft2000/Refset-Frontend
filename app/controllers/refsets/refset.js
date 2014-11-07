@@ -473,8 +473,11 @@ export default Ember.ObjectController.extend({
 			this.dialogInstance.close();
 		},
 
-		exportRefset : function(id)
+		exportRefset : function()
 		{
+			var refset = this.get("model");
+			var id = refset.id;
+			
 			Ember.Logger.log("controllers.refsets.refset:actions:exportRefset (id)",id);
 			
 			var loginController = this.get('controllers.login');

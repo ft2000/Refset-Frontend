@@ -9,10 +9,14 @@ export default Ember.ObjectController.extend({
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
+	isRF2Import					: Ember.computed.alias("controllers.refsets/upload.isRF2Import"),
 
-	dialogInstance : null,
+	dialogInstance 				: null,
 	disablePublishedFormFields	: true,
-
+	
+	rf2FileToImport				: Ember.computed.alias("controllers.refsets/upload.rf2FileToImport"),
+	moreThanOneRefsetInRF2		: Ember.computed.alias("controllers.refsets/upload.moreThanOneRefsetInRF2"),
+	
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());

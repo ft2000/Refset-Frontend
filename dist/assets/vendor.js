@@ -62761,9 +62761,20 @@ self||"undefined"!==typeof window&&window||this.content);"undefined"!==typeof mo
 		r.onload = function(e) 
 		{ 
 			var contents = e.target.result;
+			contents = contents.replace(/\r?\n|\r/g,"\n");	// deal with CFLF / CR regardless of type of computer file was created on
 
+			var isFlatFile = contents.match(/^[0-9\n]*$/) ? true : false;
+			
 			var controller = Refset.__container__.lookup("controller:refsets.upload");
-			controller.send('importFlatFile',contents);
+	
+			if (isFlatFile)
+			{
+				controller.send('importFlatFile',contents);				
+			}
+			else
+			{
+				controller.send('importRF2File',contents);				
+			}
 		}
 		
 		r.readAsText(f);

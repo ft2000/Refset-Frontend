@@ -212,7 +212,7 @@
 									  
 									{{else}}
 									
-						            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+						            	{{#with controller.moduleTypes as moduleTypes }}
 											 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 						
