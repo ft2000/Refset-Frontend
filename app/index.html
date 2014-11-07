@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Snomed CT Refset Manager</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {{BASE_TAG}}
+
+    <link rel="stylesheet" href="assets/vendor.css">
+    <link rel="stylesheet" href="assets/refset.css">
+  </head>
+  <body>
+    <script src="assets/vendor.js"></script>
+    <script src="assets/refset.js"></script>
+    <script>
+    	window.RefsetENV = require('refset/config/environment')['default'];
+    	window.EmberENV = window.RefsetENV.EmberENV;
+    	window.Refset = require('refset/app')['default'].create(RefsetENV.APP);
+    </script>
+	
+	<script type="text/x-handlebars-ignore-me" id="login-form">
+		<form id="loginForm" class="RefsetPanel">		
+			{{#if autoLoggedOut}}
+				<p class="autoLogoutInfo">You have been automatically logged out after {{timeout}} minutes of inactivity.</p>
+			{{/if}}
+			
+			<p>
+				For access to the full range to tools you will need to login.
+				You may continue as a guest to view only public refsets.
+			</p>
+			
+			<p class="clearAfter">	
+				<input value="{{username}}" id="loginFormUsername" type="text" placeholder="Username" class="form-control left">
+				<input type="password" 		id="loginFormPassword" placeholder="Password" class="form-control right">
+			</p>
+			
+			{{#if loginError}}
+				<div class="error">{{loginError}}</div>
+			{{/if}}
+			
+			<p class="forgetPasswordLink"><a href="{{forgotPasswordLink}}" target="_blank">I've forgotten my password or I would like to change my password</a></p>
+		</form>
+	</script>
+  </body>
+</html>

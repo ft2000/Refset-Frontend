@@ -1,0 +1,39 @@
+<ul class="list-group refset-list">
+	
+	<li class="list-group-item list-header">
+		<span class="language">language</span>
+		<span class="snomed-id">Refset Type ID</span>
+		<span class="snomed-id">Module Type ID</span>
+		<span class="snomed-id">Component Type ID</span>
+		<span class="num-members">Members</span>
+		<span class="date-field">Effective Time</span>
+		<span class="date-field">Created</span>
+		<span class="date-field">Last Update</span>
+		<span class="last_update-by">Updater</span>
+		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
+	</li>	
+	{{#if refsets}}
+		{{#with view as outerView}}
+			{{#each refsets}}
+				<li class="list-group-item refset-list-item">
+					{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
+					<span class="id-desc">{{#if published}}{{id}} | {{/if}}{{description}}</span>
+	
+					{{refset-list-item-span 'language' languageCode outerView.controller.languageTypes}}
+					{{refset-list-item-span 'snomed-id' typeId outerView.controller.refsetTypes}}
+					{{refset-list-item-span 'snomed-id' moduleId outerView.controller.moduleTypes}}
+					{{refset-list-item-span 'snomed-id' componentTypeId outerView.controller.componentTypes}}
+
+					<span class="num-members">{{totalNoOfMembers}}</span>
+					<span class="date-field">{{effective-time-format effectiveTime}}</span>
+					<span class="date-field">{{date-format created}}</span>
+					<span class="date-field">{{date-format modifiedDate}}</span>
+					<span class="last_update-by">{{modifiedBy}}</span>
+	
+				</li>
+			{{/each}}
+		{{/with}}
+	{{else}}
+		<p>There are currently no matching refsets available.</p>
+	{{/if}}
+</ul>

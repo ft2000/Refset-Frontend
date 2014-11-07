@@ -1,0 +1,27 @@
+<form id="loginForm" class="RefsetPanel" action="javascript:Refset.__container__.lookup('controller:login').send('loginUser')">
+	
+	{{#if autoLoggedOut}}
+		<p class="autoLogoutInfo">You have been automatically logged out after {{RefsetENV.APP.loginExpiry}} minutes of inactivity.</p>
+	{{/if}}
+	
+	<p>
+		For access to the full range to tools you will need to login.
+		You may continue as a guest to view only public refsets.
+	</p>
+	
+	{{input value=username type="text" placeholder="Username" class="form-control"}}
+	{{input value=password type="password" 	id="loginPassword" placeholder="Password" class="form-control"}}
+	
+	{{#if loginInProgress}}
+		<div class="loading">Logging you in, please wait...</div>
+		{{bs-progress progress=100 stripped=true animated=true}}
+	{{/if}}
+	
+	{{#if loginError}}
+		<div class="error">{{loginError}}</div>
+	{{/if}}
+	
+	<button type="submit" style="display:none">Submit</button>
+	
+	<p class="forgetPasswordLink"><a {{bind-attr href="RefsetENV.APP.passwordResetURL"}} target="_blank">I've forgotten my password or I would like to change my password</a></p>
+</form>

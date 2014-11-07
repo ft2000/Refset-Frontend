@@ -1,0 +1,10 @@
+<h1>Refset Tool News</h1>
+<ul class="list-group refset-list">
+	{{#each}}
+		<li class="list-group-item">
+			<span class="right">{{date-format published}}</span>
+			<h4>{{title}}</h4>
+			<p>{{{description}}}</p>
+		</li>
+	{{/each}}
+</ul>

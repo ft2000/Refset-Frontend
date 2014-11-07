@@ -1,0 +1,80 @@
+<nav id="header" role="navigation" class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <img alt="IHTSDO Refset Tool" style="height:50px" src="assets/img/box-logo.png">
+
+        </div>
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-left ">
+                <li><a href="#">IHTSDO Refset Tool</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right ">
+				<li>{{#link-to 'dashboard'}}Dashboard{{/link-to}}</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Refsets <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li>{{#link-to 'refsets' (query-params showUnpublished="0")}}Browse Published Refsets{{/link-to}}</li>
+						<li>{{#link-to 'refsets' (query-params showUnpublished="1")}}Browse Unpublished Refsets{{/link-to}}</li>
+						{{#if user.token}}<li>{{#link-to 'refsets.new'}}New Refset{{/link-to}}</li>{{/if}}
+					</ul>
+				</li>
+		
+		        <li>{{#link-to 'news'}}News{{/link-to}}</li>
+				
+				{{#if user.token}}
+					<li><a href="#" {{action 'logout'}}>Logout</a></li>
+					{{#if showLogoutTimer}}{{bs-progress progressBinding="logoutProgressDisplay" type="danger" stripped="true"}} <p class="warningText">Logging you out in {{logoutTimerDisplay}} seconds{{/if}}</p>
+				{{else}}
+					<li><a href="#" {{action 'showRegistrationForm'}}>Register</a></li>
+					<li><a href="#" {{action 'showLoginForm'}}>Login</a></li>
+				{{/if}}
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="body" class="container-fluid">		
+
+	{{bs-growl-notifications}}
+
+	{{outlet}} 
+
+	{{outlet modal}}
+
+</div>
+
+<div class="waitAnim"><img src="/assets/img/ajax-loader.gif"></div>
+
+
+<div id="footer" class="container-fluid">	
+	
+	<hr>
+
+	<nav class="navbar">
+
+        <ul class="nav navbar-nav navbar-right links">
+            <li><small>{{#link-to 'privacy-statement'}}Privacy{{/link-to}}</small></li>
+            <li><small>{{#link-to 'cookie-policy'}}Cookie policy{{/link-to}}</small></li>
+            <li><small>{{#link-to 'accessibility'}}Accessibility{{/link-to}}</small></li>
+            <li><small>{{#link-to 'terms-and-conditions'}}Terms and conditions{{/link-to}}</small></li>
+            <li><small>{{#link-to 'site-map'}}Site map{{/link-to}}</small></li>
+            <li><small><a href="http://www.ihtsdo.org/" target="_blank">&copy; Copyright IHTSDO 2014</a></small></li>
+        </ul>
+
+		<ul class="nav navbar-nav navbar-right share">
+			<li class="title">Share</li>
+			<li><a href="#" class="linkedin">linkedin</a></li>
+			<li><a href="#" class="twitter">twitter</a></li>
+			<li><a href="#" class="google">googleplus</a></li>
+		</ul>
+
+    </nav>
+
+</div>

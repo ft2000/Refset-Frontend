@@ -1,0 +1,141 @@
+<h1>Create New Refset</h1>
+
+<div class="row">
+	
+	<div class="col-md-9">
+			
+		<div class="panel panel-info ember-view fade in">
+		    <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#refsetHeader">
+		         <h4 class="panel-title">Refset Header</h4>
+		    </div>
+		    <div class="panel-collapse collapse in">
+		        <div id="refsetHeader" class="panel-body">
+		
+					<label>Are you importing a Published Refset?</label> {{radio-button value=false checked=disablePublishedFormFields}} Yes {{radio-button value=true checked=disablePublishedFormFields}} No
+		
+					<form class="refset-header">
+						
+						<table width="100%>
+						
+							<tr>
+								<td class="content" colspan="4">
+									<label class="control-label" for="description" class="form-control">Refset Description</label>
+									{{textarea value=description class="form-control"}}
+								</td>
+							</tr>
+		
+							<tr>
+								<td class="label">Language</td>
+								<td class="content">
+									{{snomed-data-dropdown valueBinding="languageCode" dataType="languagesArray" class="form-control"}}
+					  			</td>
+								<td class="label">Published Date</td><td class="content">				
+								{{view Em.TextField 
+									disabled=disablePublishedFormFields
+									placeholder="Not Applicable"
+								    valueBinding="meta.publishedDateInput"
+									data-provide="datepicker"
+									data-date-format="MM d, yyyy"
+									data-date-clear-btn="true"
+									data-date-autoclose="true"
+									class="form-control"}}									
+								</td>
+							</tr>
+		
+							<tr>
+								<td class="label">Refset Type</td>
+								<td class="content">
+									{{snomed-data-dropdown valueBinding="typeId" dataType="refsetTypesArray" class="form-control"}}
+								</td>
+								<td class="label">Refset Members Type</td>
+								<td class="content">
+									{{snomed-data-dropdown valueBinding="componentTypeId" dataType="componentTypesArray"}}
+					  			</td>
+							</tr>
+		
+							<tr>
+								<td class="label">Creation Date</td>
+								<td class="content">
+									{{view Em.TextField 
+										disabled=disablePublishedFormFields
+										placeholder="Auto generated"
+									    valueBinding="meta.createdDateInput"
+										data-provide="datepicker"
+										data-date-format="MM d, yyyy"
+										data-date-clear-btn="true"
+										data-date-autoclose="true"
+										class="form-control"}}
+								</td>
+								<td class="label">Module</td><td class="content">
+									{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray" id="newRefsetModuleId" class="form-control"}}
+					  			</td>
+							</tr>
+							<tr>
+								<td class="label">SCTID</td><td class="content" colspan=3>{{input type="text" value=id disabled=disablePublishedFormFields placeholder="Enter refset SCTID here" class="form-control"}}</td>
+							</tr>
+						
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		{{#unless importError}}
+			{{#if potentialMembersToImport}}
+			    <div class="panel panel-info ember-view fade in panelNoPadding">
+			        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
+			             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
+			        </div>
+			        <div class="panel-collapse collapse in">
+			            <div id="importMemberList" class="panel-body member-list">
+			            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+								 {{#collection Ember.ListView contentBinding="potentialMembersToImport" height=400 rowHeight=59 width="100%"}}
+									<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+										<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponentId}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+	
+										<div class="listViewRow"><span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |</div>						
+	
+										<span class="tickIcon"><a {{action 'toggleImportMemberActive' referencedComponentId}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+	
+										<label><span>{{view Em.Select value=content.moduleId content=moduleTypesArray optionValuePath="content.id" optionLabelPath="content.label" class="form-control"}}</span></label>
+				
+										{{#unless meta.conceptActive}}<label class="inactiveMemberText">Note: This concept is INACTIVE</label>{{/unless}}
+									</div>
+								  {{/collection}}
+							  {{/with}}
+						</div>
+					</div>
+				</div>
+			{{/if}}
+		{{/unless}}
+			
+	</div>
+							
+						
+	<div class="col-md-3">	
+
+		<!-- This requires vendor/my_utilities/drag_drop_file_upload.js --->
+		<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
+		<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drag a file of concepts or an individual concept from the Snomed CT browser here.<br><br>Alternatively use the file requestor below to choose a file.</span></div>
+		<br><input type="file" id="refsetUploadFileInput" />
+		
+		{{#if potentialMembersToImport}}
+			<button {{action 'clearImportList' id}} class="btn btn-default btn-side-menu">Clear import list</button>
+		{{/if}}
+		
+		{{#if getConceptDataInProgress}}		
+			<h2>Importing member file</h2>
+			{{bs-progress progressBinding="importProgress" type="info" stripped="true"}}
+			<p><b>Please wait...</b></p>
+		{{else}}
+			{{#if importError}}
+				<h2>Importing failed</h2>
+				<p><b{{importError}}</b></p>
+			{{/if}}
+
+			<button {{action "clearForm"}} class="btn btn-danger left">Clear Form</button>
+			<button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>
+
+		{{/if}}
+	</div>
+</div>
