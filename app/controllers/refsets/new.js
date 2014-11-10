@@ -60,6 +60,16 @@ export default Ember.ObjectController.extend({
 			Refset.created = this.get("model.created");
 		}
 		
+		
+		var isRF2Import = this.get("isRF2Import");
+		
+		Ember.Logger.log("isRF2Import",isRF2Import,this.get("model.id"))
+		if (isRF2Import)
+		{
+			Refset.id = this.get("rf2FileToImport");
+			this.set("model.id",Refset.id);			
+		}
+		
 		// Need to validate the form at this point and abort if required fields are not completed
 				
 		this.dialogInstance = BootstrapDialog.show({
@@ -107,20 +117,40 @@ export default Ember.ObjectController.extend({
     		else
     		{
     			var refsetId = response.id;
-    			
-    			this.transitionToRoute('refsets.refset',response.id);
 
-    			var uploadController = this.get('controllers.refsets/upload');		
-    			var conceptsToImport = uploadController.getMembersMarkedForImport();
+    			this.transitionToRoute('refsets.refset',response.id);
     			
+    			var conceptsToImport;
+    			var isRF2Import 		= this.get("isRF2Import");
+    			var dataController 		= this.get('controllers.data');	
+    			var uploadController 	= this.get('controllers.refsets/upload');	
+
+    			if (isRF2Import) // Importing an RF2 file
+    			{
+    				conceptsToImport = uploadController.get("rf2file");
+    			}
+    			else
+        		{
+        			var uploadController = this.get('controllers.refsets/upload');		
+    				conceptsToImport = uploadController.getMembersMarkedForImport();
+        		}	
+
     			if (conceptsToImport.length)
     			{
-        			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing concepts. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
-    		
-        			// Now initiate adding members to our new refset...
-        			
-        			var dataController = this.get('controllers.data');	
-        			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
+    				if (isRF2Import) // Importing an RF2 file
+    				{
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+    					
+            			// Now initiate sending RF2 file to the API.
+            			dataController.importRF2(refsetId,conceptsToImport,this,'importRF2Complete');	
+    				}
+    				else // Flat file of concepts IDs to import
+    				{
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing concepts. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+                		
+            			// Now initiate adding members to our new refset...
+            			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
+    				}
     			}
     			else
     			{
@@ -130,6 +160,12 @@ export default Ember.ObjectController.extend({
     		}
     	},
 
+    	importRF2Complete : function(response)
+    	{
+			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">RF2 file imported.<br><br>');
+			this.dialogInstance.getModalFooter().show();
+    	},
+    	
     	addMembersComplete : function(response)
     	{
     		Ember.Logger.log("controller.refsets.new:actions:addMembersComplete",response);

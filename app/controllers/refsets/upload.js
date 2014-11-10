@@ -8,6 +8,7 @@ export default Ember.ArrayController.extend({
 	model : [], // flat file import
 	
 	isRF2Import	: false,
+	rf2file : null,
 	
 	conceptsQueue : [],
 	
@@ -289,6 +290,7 @@ export default Ember.ArrayController.extend({
     		    		
     		this.model.setObjects([]);
     		this.set("isRF2Import",true);
+    		this.set("rf2file",members);
     		var _this = this;
     		
     		Ember.run.next(this, function()
