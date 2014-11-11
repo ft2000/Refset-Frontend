@@ -15,43 +15,38 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    	thisApplicationName : 'Refset',
-    	RegistrationEmail : 'register@ihtsdo.org',
+    	thisApplicationName 			: 'Refset',
+    	RegistrationEmail 				: 'register@ihtsdo.org',
 
     	//User authentication
-        authenticationActionSoapName: 'getUserByNameAuth',
-//        authenticationUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/',
-//        appsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
-//        permissionsUrl: 'https://usermanagement.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
-//        passwordResetURL: 'https://usermanagement.ihtsdotools.org/security-web/requestPwChange.jsp',
-        
-        authenticationUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query',
-        appsUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
-        permissionsUrl: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
-        passwordResetURL: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
+        authenticationActionSoapName	: 'getUserByNameAuth',
+        authenticationUrl				: 'https://usermanagement3.ihtsdotools.org/security-web/query',
+        appsUrl							: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
+        permissionsUrl					: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
+        passwordResetURL				: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
     	
     	// Refsets API
-        refsetApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
-        conceptsApiBaseUrl: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
-        snomedTypesApiBaseUrl : 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/',
+        refsetApiBaseUrl				: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
+        conceptsApiBaseUrl				: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
+        snomedTypesApiBaseUrl 			: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/',
         
-        numItemsPerPage : 10,
-        numItemsPerPageDashboard : 5,
+        numItemsPerPage 				: 10,
+        numItemsPerPageDashboard 		: 5,
         
         supportedSnomedTypes :
         {
-        	refsetTypes 	: ['446609009','900000000000496009'],
-        	componentTypes 	: ['900000000000461009','900000000000462002']
+        	refsetTypes 				: ['446609009','900000000000496009'],
+        	componentTypes 				: ['900000000000461009','900000000000462002']
         },
         
         defaultSnomedTypes :
         {
-        	refsetType 		: '446609009',
-        	componentType 	: '900000000000461009',
-        	moduleType 		: '900000000000207008',
+        	refsetType 					: '446609009',
+        	componentType 				: '900000000000461009',
+        	moduleType 					: '900000000000207008',
         },
         
-        loginExpiry : 20, // minutes before you are logged out
+        loginExpiry 					: 20, // minutes before you are logged out
         },
   };
 
@@ -65,10 +60,16 @@ module.exports = function(environment) {
 
   if (environment === 'test') {
     ENV.baseURL = '/'; // Testem prefers this...
+    
+    ENV.APP.refsetApiBaseUrl				= 'http://localhost:8080/refset/v1.0/refsets';
+    ENV.APP.conceptsApiBaseUrl				= 'http://localhost:8080/refset/v1.0/snomed/concepts';
+    ENV.APP.snomedTypesApiBaseUrl 			= 'http://localhost:8080/refset/v1.0/snomed/';
   }
 
   if (environment === 'production') {
-
+    ENV.APP.refsetApiBaseUrl				= 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets';
+    ENV.APP.conceptsApiBaseUrl				= 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
+    ENV.APP.snomedTypesApiBaseUrl 			= 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/';
   }
 
   return ENV;
