@@ -26,9 +26,9 @@ module.exports = function(environment) {
         passwordResetURL				: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
     	
     	// Refsets API
-        refsetApiBaseUrl				: 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets',
-        conceptsApiBaseUrl				: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
-        snomedTypesApiBaseUrl 			: 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/',
+        refsetApiBaseUrl				: 'http://refset.ihtsdotools.org:8080/refset/v1.0/refsets',
+        conceptsApiBaseUrl				: 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts',
+        snomedTypesApiBaseUrl 			: 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/',
         
         numItemsPerPage 				: 10,
         numItemsPerPageDashboard 		: 5,
@@ -61,15 +61,15 @@ module.exports = function(environment) {
   if (environment === 'test') {
     ENV.baseURL = '/'; // Testem prefers this...
     
-    ENV.APP.refsetApiBaseUrl				= 'http://localhost:8080/refset/v1.0/refsets';
-    ENV.APP.conceptsApiBaseUrl				= 'http://localhost:8080/refset/v1.0/snomed/concepts';
-    ENV.APP.snomedTypesApiBaseUrl 			= 'http://localhost:8080/refset/v1.0/snomed/';
+    ENV.APP.refsetApiBaseUrl				= 'http://refset.ihtsdotools.org:8080/refset/v1.0/refsets';
+    ENV.APP.conceptsApiBaseUrl				= 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
+    ENV.APP.snomedTypesApiBaseUrl 			= 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/';
   }
 
   if (environment === 'production') {
-    ENV.APP.refsetApiBaseUrl				= 'http://content.ihtsdotools.org:8080/refset/v1.0/refsets';
-    ENV.APP.conceptsApiBaseUrl				= 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
-    ENV.APP.snomedTypesApiBaseUrl 			= 'http://content.ihtsdotools.org:8080/refset/v1.0/snomed/';
+    ENV.APP.refsetApiBaseUrl				= 'http://refsetprod.ihtsdotools.org:8080/refset/v1.0/refsets';
+    ENV.APP.conceptsApiBaseUrl				= 'http://refsetprod.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
+    ENV.APP.snomedTypesApiBaseUrl 			= 'http://refsetprod.ihtsdotools.org:8080/refset/v1.0/snomed/';
   }
 
   return ENV;
