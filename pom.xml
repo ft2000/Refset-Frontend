@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.ihtsdo.otf</groupId>
 	<artifactId>refsetFrontend</artifactId>
-    <version>refsetFrontend</version>
-    <name>Snomed Refset Web Front End</name>
-    <description>Snomed Refset Web Front End</description>
-    <url>https://refset.ihtsdotools.org/</url>
-    
-    	<properties>
-		<packageName>${project.artifactId}</packageName>
-		</properties>
+	<version>refsetFrontend</version>
+	<name>Snomed Refset Web Front End</name>
+	<description>Snomed Refset Web Front End</description>
+	<url>https://refset.ihtsdotools.org/</url>
 
-    <build>
-        <plugins>
+	<properties>
+		<packageName>${project.artifactId}</packageName>
+	</properties>
+
+	<build>
+		<plugins>
 			<plugin>
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
@@ -42,9 +41,8 @@
 									<type>directory</type>
 									<excludes>pom.xml</excludes>
 									<excludes>${basedir}/deb</excludes>
-									<!--  <exclude>pom.xml</exclude>
-									<exclude>${basedir}/deb</exclude> -->
-									
+									<!-- <exclude>pom.xml</exclude> <exclude>${basedir}/deb</exclude> -->
+
 									<mapper>
 										<type>perm</type>
 										<prefix>/opt/${packageName}/lib/</prefix>
@@ -54,7 +52,20 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>       
-        </plugins>
-    </build>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>ihtsdo-public-nexus</id>
+			<name>IHTSDO Public Nexus Releases</name>
+			<url>https://maven.ihtsdotools.org/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ihtsdo-public-nexus</id>
+			<name>IHTSDO Public Nexus Snapshots</name>
+			<url>https://maven.ihtsdotools.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
