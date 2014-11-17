@@ -19,6 +19,18 @@
     	window.RefsetENV = require('refset/config/environment')['default'];
     	window.EmberENV = window.RefsetENV.EmberENV;
     	window.Refset = require('refset/app')['default'].create(RefsetENV.APP);
+		
+		switch (location.hostname)
+		{
+				case 'refset.local':
+				case 'uat-refset.ihtsdotools.org':
+				{
+				    window.RefsetENV.APP.refsetApiBaseUrl		= 'http://refset.ihtsdotools.org:8080/refset/v1.0/refsets';
+				    window.RefsetENV.APP.conceptsApiBaseUrl		= 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
+				    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= 'http://refset.ihtsdotools.org:8080/refset/v1.0/snomed/';  				
+				}
+		}
+
     </script>
 	
 	<script type="text/x-handlebars-ignore-me" id="login-form">

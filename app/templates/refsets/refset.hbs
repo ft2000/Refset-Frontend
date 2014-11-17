@@ -48,7 +48,7 @@
 							</tr>
 
 							<tr>
-								<td class="label">SCTID</td><td class="content">{{#if published}}{{id}}{{/if}}</td>
+								<td class="label">RefsetId</td><td class="content">{{#if published}}{{id}}{{/if}}</td>
 								<td class="label">UUID</td><td class="content" colspan=2>{{id}}</td>
 							</tr>
 		
@@ -98,7 +98,7 @@
 							</tr>
 							
 							<tr>
-								<td class="label">Module ID</td><td class="content">
+								<td class="label">ModuleId</td><td class="content">
 									{{#if published}}
 										{{refset-list-item-span 'module-id' moduleId moduleTypes}}
 									{{else}}
@@ -175,7 +175,7 @@
 								<li class="list-group-item member-list-header" style="border-top:none">
 									<span class="active">Status</span>
 									<span class="effective-time">Effective Time</span>
-									<span class="module-id">Module ID</span>
+									<span class="module-id">ModuleId</span>
 								</li>
 		
 								{{#if editMode}}

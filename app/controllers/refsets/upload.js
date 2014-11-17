@@ -306,9 +306,13 @@ export default Ember.ArrayController.extend({
 				{
 					if (typeof member !== "undefined" && member !== "")
 					{
-						var memberRow 	= member.split(/\t/);
-						var refsetId 	= memberRow[4];
-						var conceptId 	= memberRow[5];
+						var memberRow 		= member.split(/\t/);
+						var effectiveTime	= memberRow[1];
+						var refsetId 		= memberRow[4];
+						var conceptId 		= memberRow[5];
+
+						if (effectiveTime === "") // If no effective Time, then not published, so ignore it
+							return null;
 						
 						// We may have more than one refset in an RF2 file, so lets deal with them separately.
 						if (!(refsetId in refsetsInRF2File))
@@ -316,14 +320,14 @@ export default Ember.ArrayController.extend({
 							refsetsInRF2File[refsetId] = {id:refsetId,concepts:{}};
 						}
 						
-						refsetsInRF2File[refsetId].concepts[conceptId] = 1;
+						refsetsInRF2File[refsetId].concepts[conceptId] = 1;						
 						
 						return member;
 					}
 				});
 				
 				rowsToImportArray = $.grep(rowsToImportArray,function(n){ return(n); });
-				
+
 				// count how many rows are in the RF2 file - a member might well be in the file more than one in different states, so num rows != num members...
 				var numRowsToImport 	= rowsToImportArray.length;
 				

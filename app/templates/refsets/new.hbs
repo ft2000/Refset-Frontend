@@ -118,33 +118,39 @@
 		</div>
 
 		{{#if isRF2Import}}
-		
+			
 		    <div class="panel panel-info ember-view fade in">
 		        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importRF2File">
 		             <h4 class="panel-title">Import RF2 File</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
 		            <div id="importRF2File" class="panel-body member-list">
-		            	{{#if moreThanOneRefsetInRF2}}
+		            	
+						{{#if potentialMembersToImport}}
 						
-							Your RF2 file contains more than one Refset. Please choose which refset you wish to import:
-						
-							<p>
-							{{#each member in potentialMembersToImport}}					
-								<label class="notALabel">{{radio-button value=member.id name='refsetId' checked=rf2FileToImport}} {{member.id}} ({{member.concepts.length}} members)</label><br>
-							{{/each}}
-							</p>
-						
+			            	{{#if moreThanOneRefsetInRF2}}
+							
+								Your RF2 file contains more than one Refset. Please choose which refset you wish to import:
+							
+								<p>
+								{{#each member in potentialMembersToImport}}					
+									<label class="notALabel">{{radio-button value=member.id name='refsetId' checked=rf2FileToImport}} {{member.id}} ({{member.concepts.length}} members)</label><br>
+								{{/each}}
+								</p>
+							
+							{{else}}
+							
+								Your RF2 file contains a single Refset:
+							
+								<p>
+								{{#each member in potentialMembersToImport}}					
+									{{member.id}} ({{member.concepts.length}} members)<br>
+								{{/each}}
+								</p>
+							
+							{{/if}}
 						{{else}}
-						
-							Your RF2 file contains a single Refset:
-						
-							<p>
-							{{#each member in potentialMembersToImport}}					
-								{{member.id}} ({{member.concepts.length}} members)<br>
-							{{/each}}
-							</p>
-						
+							There are no published refsets in that file...
 						{{/if}}
 					</div>
 				</div>
