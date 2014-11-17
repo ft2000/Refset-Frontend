@@ -39,8 +39,8 @@
 								<data>
 									<src>${basedir}</src>
 									<type>directory</type>
-									<excludes>pom.xml</excludes>
-									<excludes>${basedir}/deb</excludes>
+									<excludes>**/pom.xml,**/deb</excludes>
+
 									<!-- <exclude>pom.xml</exclude> <exclude>${basedir}/deb</exclude> -->
 
 									<mapper>
