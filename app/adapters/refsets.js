@@ -35,7 +35,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl, {headers:this.getHeaders(user)}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/?size=100', {headers:this.getHeaders(user)}).then(function(response)
 		{
 			return response;
 		},

@@ -43,6 +43,14 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.refsets.new:create");
 		
+		var isRF2Import = this.get("isRF2Import");		
+		if (isRF2Import)
+		{
+			var rf2 = this.get("rf2FileToImport");
+			this.set("model.id",rf2.id);
+			this.set("model.description",rf2.label);
+		}
+
 		var Refset = {};
 		
 		Refset.typeId 			= this.get("model.typeId");
@@ -52,7 +60,7 @@ export default Ember.ObjectController.extend({
 		Refset.languageCode 	= this.get("model.languageCode");
 		Refset.description 		= this.get("model.description");
 
-		if (!this.disablePublishedFormFields)
+		if (!this.disablePublishedFormFields || this.isRF2Import)
 		{
 			Refset.id 				= this.get("model.id");
 			Refset.published 		= this.get("model.published");
@@ -60,13 +68,6 @@ export default Ember.ObjectController.extend({
 			Refset.created 			= this.get("model.created");
 		}
 		
-		var isRF2Import = this.get("isRF2Import");		
-		if (isRF2Import)
-		{
-			Refset = this.get("rf2FileToImport");
-			this.set("model.sctId",Refset.id);
-			this.set("model.description",Refset.label);
-		}
 		
 		// Need to validate the form at this point and abort if required fields are not completed
 				
@@ -84,6 +85,8 @@ export default Ember.ObjectController.extend({
         });
 		this.dialogInstance.getModalFooter().hide();
 
+Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);		
+		
 		var dataController = this.get('controllers.data');		
 		dataController.createRefset(Refset,this,'createRefsetComplete');
 	},
