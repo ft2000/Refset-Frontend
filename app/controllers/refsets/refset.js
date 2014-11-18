@@ -534,14 +534,15 @@ export default Ember.ObjectController.extend({
 			});	
 		},	
 		
-		deleteRefset : function(id)
+		deleteRefset : function()
 		{
-			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
 			
 			var _this 	= this;
 			var refset 	= this.get("model");			
 			var id 		= refset.id;
 			
+			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
+
 			this.dialogInstance = BootstrapDialog.show({
 	            title: 'Delete refset',
 	            closable: false,

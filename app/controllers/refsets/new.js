@@ -20,8 +20,7 @@ export default Ember.ObjectController.extend({
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
-		this.set("model.meta.createdDateInput",null);
-		this.set("model.meta.publishedDateInput",null);
+		this.set("model.meta.expectedReleaseDateInput",null);
 		this.set("disablePublishedFormFields",true);
 		
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -53,21 +52,21 @@ export default Ember.ObjectController.extend({
 
 		var Refset = {};
 		
-		Refset.typeId 			= this.get("model.typeId");
-		Refset.componentTypeId 	= this.get("model.componentTypeId");
-		Refset.moduleId 		= this.get("model.moduleId");
-		Refset.active 			= this.get("model.active");
-		Refset.languageCode 	= this.get("model.languageCode");
-		Refset.description 		= this.get("model.description");
+		Refset.typeId 				= this.get("model.typeId");
+		Refset.componentTypeId 		= this.get("model.componentTypeId");
+		Refset.moduleId 			= this.get("model.moduleId");
+		Refset.active 				= this.get("model.active");
+		Refset.languageCode 		= this.get("model.languageCode");
+		Refset.description 			= this.get("model.description");
+		
+		var releaseDate 			= this.get("model.expectedReleaseDate");
+		Refset.expectedReleaseDate 	= releaseDate;
 
-		if (!this.disablePublishedFormFields || this.isRF2Import)
+		if (!this.disablePublishedFormFields || isRF2Import)
 		{
 			Refset.id 				= this.get("model.id");
-			Refset.published 		= this.get("model.published");
-			Refset.publishedDate 	= this.get("model.publishedDate");
-			Refset.created 			= this.get("model.created");
+			Refset.published 		= true;
 		}
-		
 		
 		// Need to validate the form at this point and abort if required fields are not completed
 				

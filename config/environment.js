@@ -46,7 +46,7 @@ module.exports = function(environment) {
         	moduleType 					: '900000000000207008',
         },
 
-        loginExpiry 					: 12 * 60, // minutes before you are logged out
+        loginExpiry 					: 12 * 60, // minutes before you are logged out (12 hours)
         },
   };
     

@@ -19,8 +19,9 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Refsets <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-						<li>{{#link-to 'refsets' (query-params showUnpublished="0")}}Browse Published Refsets{{/link-to}}</li>
-						<li>{{#link-to 'refsets' (query-params showUnpublished="1")}}Browse Unpublished Refsets{{/link-to}}</li>
+						<li>{{#link-to 'refsets' (query-params showUnpublished="0" showInactive="0")}}Browse Published Refsets{{/link-to}}</li>
+						<li>{{#link-to 'refsets' (query-params showUnpublished="1" showInactive="0")}}Browse Unpublished Refsets{{/link-to}}</li>
+						<li>{{#link-to 'refsets' (query-params showUnpublished="0" showInactive="1")}}Browse Inactivated Refsets{{/link-to}}</li>
 						{{#if user.token}}<li>{{#link-to 'refsets.new'}}New Refset{{/link-to}}</li>{{/if}}
 					</ul>
 				</li>

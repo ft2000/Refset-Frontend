@@ -20,6 +20,7 @@ export default Ember.ObjectController.extend({
 	refsets 				: [],
 	unpublishedRefsets		: [],
 	publishedRefsets		: [],
+	inactiveRefsets			: [],
 	refset 					: {},
 	currentRefset			: null,
 	currentAllRefsets		: null,
@@ -422,18 +423,26 @@ export default Ember.ObjectController.extend({
 				
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
+				var inactiveArray 		= [];
 				
 				_this.refsets.setObjects(response);
 				
 				response.content.refsets.map(function(item)
 				{
-					if (item.published)
+					if (item.active)
 					{
-						publishedArray.push(item);
+						if (item.published)
+						{
+							publishedArray.push(item);
+						}
+						else
+						{
+							unpublishedArray.push(item);					
+						}
 					}
 					else
 					{
-						unpublishedArray.push(item);					
+						inactiveArray.push(item);
 					}
 				});
 								
@@ -451,6 +460,13 @@ export default Ember.ObjectController.extend({
 
 				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
 
+				var sortedInactiveArray = inactiveArray.sort(function(a,b)
+				{
+				    return new Date(b.publishedDate) - new Date (a.publishedDate);
+				});			
+
+				_this.inactiveRefsets.setObjects(sortedInactiveArray);
+						
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
 					callingController.send(completeAction,{error:0});
