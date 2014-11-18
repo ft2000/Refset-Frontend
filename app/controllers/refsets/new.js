@@ -45,29 +45,27 @@ export default Ember.ObjectController.extend({
 		
 		var Refset = {};
 		
-		Refset.typeId = this.get("model.typeId");
-		Refset.componentTypeId = this.get("model.componentTypeId");
-		Refset.moduleId = this.get("model.moduleId");
-		Refset.active = this.get("model.active");
-		Refset.languageCode = this.get("model.languageCode");
-		Refset.description = this.get("model.description");
+		Refset.typeId 			= this.get("model.typeId");
+		Refset.componentTypeId 	= this.get("model.componentTypeId");
+		Refset.moduleId 		= this.get("model.moduleId");
+		Refset.active 			= this.get("model.active");
+		Refset.languageCode 	= this.get("model.languageCode");
+		Refset.description 		= this.get("model.description");
 
 		if (!this.disablePublishedFormFields)
 		{
-			Refset.id = this.get("model.id");
-			Refset.published = this.get("model.published");
-			Refset.publishedDate = this.get("model.publishedDate");
-			Refset.created = this.get("model.created");
+			Refset.id 				= this.get("model.id");
+			Refset.published 		= this.get("model.published");
+			Refset.publishedDate 	= this.get("model.publishedDate");
+			Refset.created 			= this.get("model.created");
 		}
 		
-		
-		var isRF2Import = this.get("isRF2Import");
-		
-		Ember.Logger.log("isRF2Import",isRF2Import,this.get("model.id"))
+		var isRF2Import = this.get("isRF2Import");		
 		if (isRF2Import)
 		{
-			Refset.id = this.get("rf2FileToImport");
-			this.set("model.id",Refset.id);			
+			Refset = this.get("rf2FileToImport");
+			this.set("model.sctId",Refset.id);
+			this.set("model.description",Refset.label);
 		}
 		
 		// Need to validate the form at this point and abort if required fields are not completed
@@ -131,7 +129,6 @@ export default Ember.ObjectController.extend({
     			}
     			else
         		{
-        			var uploadController = this.get('controllers.refsets/upload');		
     				conceptsToImport = uploadController.getMembersMarkedForImport();
         		}	
 
@@ -234,6 +231,9 @@ export default Ember.ObjectController.extend({
 		clearForm : function()
 		{
 			this.createEmptyRefset();
+			this.set("isRF2Import",false);
+			this.set("rf2FileToImport.id9","loading...");
+			this.set("rf2FileToImport.label","loading...");
 		},
 		
 		clearImportList : function()

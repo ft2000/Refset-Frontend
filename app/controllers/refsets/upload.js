@@ -13,7 +13,7 @@ export default Ember.ArrayController.extend({
 	conceptsQueue : [],
 	
 	moreThanOneRefsetInRF2 	: false,
-	rf2FileToImport 		: '',
+	rf2FileToImport 		: {id:"loading...",label:"loading..."},
 	
 	processGetConceptsQueueTempData : {},
 	
@@ -293,7 +293,10 @@ export default Ember.ArrayController.extend({
     		this.set("rf2file",members);
     		var _this = this;
     		
-    		Ember.run.next(this, function()
+			var loginController = this.get('controllers.login');
+			var user = loginController.user;
+			
+			Ember.run.next(this, function()
     	    {	
 	    		// Process file to remove any blank lines or trailing CR/LF 
 	    		var rawArray = members.split('\n');
@@ -301,6 +304,7 @@ export default Ember.ArrayController.extend({
 	    		rawArray.shift(); // Remove the header row at the top
 	    		
 	    		var refsetsInRF2File = {};
+	    		var promises = [];
 	    		
 				var rowsToImportArray = rawArray.map(function(member)
 				{
@@ -317,7 +321,14 @@ export default Ember.ArrayController.extend({
 						// We may have more than one refset in an RF2 file, so lets deal with them separately.
 						if (!(refsetId in refsetsInRF2File))
 						{
-							refsetsInRF2File[refsetId] = {id:refsetId,concepts:{}};
+							refsetsInRF2File[refsetId] = {id:refsetId,label:'loading...',concepts:{}}
+								
+							var promise = membersAdapter.find(user,refsetId).then(function(response)
+							{
+								return {id:refsetId,label:response.content.concept.label};	
+							});
+							
+							promises.push(promise);
 						}
 						
 						refsetsInRF2File[refsetId].concepts[conceptId] = 1;						
@@ -353,15 +364,31 @@ export default Ember.ArrayController.extend({
 				
 				_this.set("moreThanOneRefsetInRF2",refsets.length>1);
 				
-				if (refsets.length > 0)
+				Ember.RSVP.all(promises).then(function(result)
 				{
-					_this.set("rf2FileToImport",refsets[0].id);
-				}
-				else
-				{
-					_this.set("rf2FileToImport","");
-				}
-	
+					for (var l=0;l<result.length;l++)
+					{
+						for (var r=0;r<refsets.length;r++)
+						{
+							if (refsets[r].id === result[l].id)
+							{
+								refsets[r].label = result[l].label;
+							}
+						}
+					}
+
+					if (refsets.length > 0)
+					{
+						_this.set("rf2FileToImport",refsets[0]);
+					}
+					else
+					{
+						_this.set("rf2FileToImport",{});
+					}
+
+					_this.model.setObjects(refsets);
+				});
+				
 				_this.model.setObjects(refsets);
     	    });
 		},
