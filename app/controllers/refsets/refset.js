@@ -49,12 +49,15 @@ export default Ember.ObjectController.extend({
 		
 		var _this 			= this;
 		var id 				= params.params["refsets.refset"].id;
+
+		Ember.Logger.log("controllers.refsets.refset:initModel (id)",id);
+				
 		var dataController 	= this.get('controllers.data');
-		
+
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		Ember.run.next(function()
 		{
-			dataController.getRefset(id,_this,'getRefsetComplete');			
+			dataController.getRefset(id,_this,'getRefsetComplete');
 		});
 	
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -258,18 +261,13 @@ export default Ember.ObjectController.extend({
 				return member;
 			});
 			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
-
-			
-			
+	
 			// members we are going to import
-			
-			
+						
 			var uploadController = this.get('controllers.refsets/upload');		
 			var conceptsToImport = uploadController.getMembersMarkedForImport();
 			
-			this.set("membersToAdd",conceptsToImport);
-			
-			
+			this.set("membersToAdd",conceptsToImport);	
 			
 			// Members we are going to delete
 			
@@ -564,7 +562,7 @@ export default Ember.ObjectController.extend({
 	            }]
 	        });
 		},	
-		
+				
 		doDeleteRefset : function(id)
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
@@ -617,6 +615,100 @@ export default Ember.ObjectController.extend({
     		}
 		},
 		
+		activateRefset : function()
+		{
+			
+			var _this 	= this;
+			var refset 	= this.get("model");			
+			
+			refset.active = true;
+			delete refset["members"];
+			delete refset["meta"];
+			
+			Ember.Logger.log("controllers.refsets.refset:actions:activateRefset");
+
+			this.dialogInstance = BootstrapDialog.show({
+	            title: 'Activating your refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Activating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			
+			this.dialogInstance.getModalFooter().hide();
+			
+			var dataController = this.get('controllers.data');
+			dataController.updateRefset(refset,this,'activateRefsetComplete');
+			
+		},	
+	
+		inactivateRefset : function()
+		{
+			
+			var _this 	= this;
+			var refset 	= this.get("model");	
+			
+			refset.active = false;
+			delete refset["members"];
+			delete refset["meta"];
+			
+			Ember.Logger.log("controllers.refsets.refset:actions:inactivateRefset");
+
+			this.dialogInstance = BootstrapDialog.show({
+	            title: 'Activating your refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Inactivating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			
+			this.dialogInstance.getModalFooter().hide();
+			
+			var dataController = this.get('controllers.data');
+			dataController.updateRefset(refset,this,'activateRefsetComplete');
+			
+		},	
+		
+		activateRefsetComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:activateRefsetComplete",response);
+			
+    		if (response.error)
+    		{
+    			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset activation/inactivation failed.</h2></td></tr></table>';
+
+    			if (typeof response.unauthorised !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">You are not authorised to activate/inactivate refsets. You may need to log in.</p>';
+    			}
+
+    			if (typeof response.commsError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
+    			}
+
+    			this.dialogInstance.setMessage(message);
+    			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+    		{
+    			this.dialogInstance.close();
+    			var refset = this.get("model");
+    			this.initModel({params:{"refsets.refset":refset}});
+    		}
+		},
+	
 		clearImportList : function()
 		{
 			var uploadController = this.get('controllers.refsets/upload');		

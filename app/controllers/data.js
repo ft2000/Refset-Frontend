@@ -429,6 +429,8 @@ export default Ember.ObjectController.extend({
 				
 				response.content.refsets.map(function(item)
 				{
+					Ember.Logger.log("item.description",item.description, item.active);
+					
 					if (item.active)
 					{
 						if (item.published)

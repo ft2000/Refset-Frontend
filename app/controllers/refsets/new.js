@@ -55,7 +55,7 @@ export default Ember.ObjectController.extend({
 		Refset.typeId 				= this.get("model.typeId");
 		Refset.componentTypeId 		= this.get("model.componentTypeId");
 		Refset.moduleId 			= this.get("model.moduleId");
-		Refset.active 				= this.get("model.active");
+		Refset.active 				= true; // Always make new refsets active
 		Refset.languageCode 		= this.get("model.languageCode");
 		Refset.description 			= this.get("model.description");
 		
