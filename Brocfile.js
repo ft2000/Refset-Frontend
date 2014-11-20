@@ -64,6 +64,11 @@ app.import('vendor/my_utilities/drag_drop_file_upload.js');
 app.import('vendor/my_utilities/sessvars-1.0.0-min.js');
 app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
 
+//String matching / sorting
+app.import('vendor/my_utilities/liquidmetal-min.js');
+app.import('vendor/my_utilities/QuickSort-min.js');
+
+
 // Bootstrap Date Picker
 app.import('vendor/bootstrap-datepicker-release/js/bootstrap-datepicker.js');
 app.import('vendor/bootstrap-datepicker-release/css/datepicker3.css');

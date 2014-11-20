@@ -5,6 +5,8 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","data","application","refsets/upload"],
 	
+	user						: Ember.computed.alias("controllers.login.user"),
+	
 	model 						: Ember.computed.alias("controllers.data.refset"),
 	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
@@ -19,6 +21,94 @@ export default Ember.ObjectController.extend({
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
 	
 	editModel					: {},
+	
+	filterByStatus 				: -1,
+	filterByModuleId 			: -1,
+	filterByEffectiveTime		: -1,
+	filterByLastUpdateDate		: -1,
+	filterByLastUpdateUser		: -1,
+	filterByInactiveConcepts	: -1,
+	filterByDescription			: '',
+	
+	filterByStatusIsActive				: function(){ return this.filterByStatus !== -1;}.property('filterByStatus'),
+	filterByModuleIdIsActive			: function(){ return this.filterByModuleId !== -1;}.property('filterByModuleId'),
+	filterByEffectiveTimeIsActive		: function(){ return this.filterByEffectiveTime !== -1;}.property('filterByEffectiveTime'),
+	filterByLastUpdateDateIsActive		: function(){ return this.filterByLastUpdateDate !== -1;}.property('filterByLastUpdateDate'),
+	filterByLastUpdateUserIsActive		: function(){ return this.filterByLastUpdateUser !== -1;}.property('filterByLastUpdateUser'),
+	filterByInactiveConceptsIsActive	: function(){ return this.filterByInactiveConcepts !== -1;}.property('filterByInactiveConcepts'),
+	
+	filteredMembers: function()
+	{
+		var allMembers = this.get('model.members');
+		
+		if (typeof allMembers !== "undefined")
+		{
+			var filterByStatus 			= this.get("filterByStatus");
+			var filterByModuleId 		= this.get("filterByModuleId");
+			var filterByEffectiveTime 	= this.get("filterByEffectiveTime");
+			var filterByDescription 	= this.get("filterByDescription");
+			
+			var filteredMembers = allMembers.map(function(member)
+			{
+				if (typeof member !== "undefined")
+				{
+					if (filterByStatus !== -1)
+					{
+						if (member.active !== filterByStatus)
+						{
+							return null;
+						}
+					}
+					
+
+					if (filterByModuleId !== -1)
+					{
+						if (member.moduleId !== filterByModuleId)
+						{
+							return null;
+						}
+					}
+					
+
+					if (filterByEffectiveTime !== -1)
+					{
+						if (member.effectiveTime !== filterByEffectiveTime)
+						{
+							return null;
+						}
+					}
+					
+					member.meta.score = 1;
+					
+					if (filterByDescription !== '')
+					{
+						var score = LiquidMetal.score(member.description, filterByDescription);
+						
+						if (score < 0.75)
+						{
+							return null;
+						}
+						else
+						{
+							member.meta.score = score;
+						}
+					}
+					
+					return member;	
+				}
+ 
+			});
+
+			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n) });
+			
+			
+			quick_sort(nullsRemoved);
+			
+			return nullsRemoved;
+
+		}
+		
+	}.property('model.members.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
 
 	memberRowHeight  			: function()
 	{
@@ -132,6 +222,12 @@ export default Ember.ObjectController.extend({
 		this.importListChangedInProgress = false;
 
 	}.observes('potentialMembersToImport.@each'),
+	
+	getDefaultModuleId : function()
+	{
+		var members = this.get("model.members");
+		return members[0].moduleId;
+	},
 	
 	actions :
 	{
@@ -713,6 +809,49 @@ export default Ember.ObjectController.extend({
 		{
 			var uploadController = this.get('controllers.refsets/upload');		
 			uploadController.clearMemberList();	
+		},
+		
+		addFilter : function()
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:addFilter");
+			
+			var filterName = $('#filterSelect').val();
+			
+			Ember.Logger.log(filterName);
+			
+			var defaultValue = true;
+			
+			switch(filterName)
+			{
+				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
+				case 'filterByEffectiveTime' : {defaultValue = 0; break;}
+				case 'filterByLastUpdateDate' : {defaultValue = 0; break;}
+				case 'filterByLastUpdateUser' : {defaultValue = 0; break;}
+			}
+			
+			this.set(filterName,defaultValue);
+			
+			$('#filterSelect').val(0);
+
+		},
+
+		removeFilter : function(filterName)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:removeFilter",filterName);
+			
+			this.set(filterName,-1);
+			
+			var _this = this;
+			
+			Ember.run.next(function()
+			{
+				_this.set(filterName,-1); // deals with selects changing the value again!
+			});			
+		},
+		
+		clearDescriptionFilter : function()
+		{
+			this.set("filterByDescription","");
 		}
-	}
+}
 });

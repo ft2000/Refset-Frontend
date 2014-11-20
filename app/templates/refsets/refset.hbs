@@ -166,7 +166,7 @@
 		        <div class="panel-collapse collapse in">
 		            <div id="collapseMembers" class="panel-body">
 						<ul class="list-group checkboxList member-list">
-							{{#if members}}
+							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
 									<span class="active">SCTID</span>
 									<span>Description</span>
@@ -180,7 +180,7 @@
 		
 								{{#if editMode}}
 					            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-										 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=memberRowHeight width="100%"}}
+										 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 											<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 												<span class="right"><a class="pointer icon info"></a></span>
 												<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
@@ -213,7 +213,7 @@
 									{{else}}
 									
 						            	{{#with controller.moduleTypes as moduleTypes }}
-											 {{#collection Ember.ListView contentBinding="members" height=400 rowHeight=memberRowHeight width="100%"}}
+											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 						
 													<span class="right">{{member-meta-data-icon content}}</span>
@@ -222,7 +222,7 @@
 			
 													<div class="memberRowWrapper">
 														<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
-														<span class="effective-time">{{effective-time-format effective-time}}</span>
+														<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
 													</div>
 																					
@@ -285,25 +285,90 @@
 					
 				{{else}}
 					{{#if active}}
-						<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
-	
+						{{#if user.token}}
+							<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
+						{{/if}}
+						
 						<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
 	
 						<button class="btn btn-default btn-side-menu" {{action 'exportRefset'}}>Export Refset Delta RF2</button>
 	
-						{{#if published}}
-							<button class="btn btn-warning btn-side-menu" {{action 'inactivateRefset'}}>Inactivate Refset</button>
+						{{#if user.token}}
+							{{#if published}}
+								<button class="btn btn-warning btn-side-menu" {{action 'inactivateRefset'}}>Inactivate Refset</button>
+							{{/if}}
+							
+							<button class="btn btn-danger btn-side-menu" {{action 'deleteRefset'}}>Delete Refset</button>
 						{{/if}}
-						
-						<button class="btn btn-danger btn-side-menu" {{action 'deleteRefset'}}>Delete Refset</button>
-					
 					{{else}}
-						<button class="btn btn-warning btn-side-menu" {{action 'activateRefset'}}>Activate Refset</button>					
+						{{#if user.token}}
+							<button class="btn btn-warning btn-side-menu" {{action 'activateRefset'}}>Activate Refset</button>					
+						{{/if}}
 					{{/if}}
 				{{/if}}
 
 			{{/if}}
+			
+			<h3>Filter members</h3>
+			Filtered count : {{filteredMembers.length}}<br><br>
+			
+			<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
+				<option value="0">Add a filter...</option>
+				{{#unless filterByInactiveConceptsIsActive}}<option value="filterByStatus">Filter inactive concepts</option>{{/unless}}
+				{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by status</option>{{/unless}}
+				{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
+				{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+				{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
+				{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+			</select>
+			<br>
+			
+			<p class="filterItem">
+				Filter by member description: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+				{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
+			</p>
+
+			{{#if filterByInactiveConceptsIsActive}}
+				<p class="filterItem">
+					Active members with inactive concepts: <a {{action 'removeFilter' 'filterByInactiveConcepts'}} class="right pointer">remove</a><br>
+				</p>
+			{{/if}}
+
+			{{#if filterByStatusIsActive}}
+				<p class="filterItem">
+					Status: {{radio-button value=true checked=filterByStatus}} Active {{radio-button value=false checked=filterByStatus}} Inactive <a {{action 'removeFilter' 'filterByStatus'}} class="right pointer">remove</a><br>
+				</p>
+			{{/if}}
+
+			{{#if filterByEffectiveTimeIsActive}}
+				<p class="filterItem">
+					Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
+
+				</p>
+			{{/if}}
+
+			{{#if filterByModuleIdIsActive}}
+				<p class="filterItem">
+					Module Id: <a {{action 'removeFilter' 'filterByModuleId'}} class="right pointer">remove</a><br>
+					{{snomed-data-dropdown value=filterByModuleId dataType="moduleTypesArray"}}
+				</p>
+			{{/if}}
+
+			{{#if filterByLastUpdateDateIsActive}}
+				<p class="filterItem">
+					Last Update Date: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
+
+				</p>
+			{{/if}}
+
+			{{#if filterByLastUpdateUserIsActive}}
+				<p class="filterItem">
+					Last Updater: <a {{action 'removeFilter' 'filterByLastUpdateUser'}} class="right pointer">remove</a><br>
+
+				</p>
+			{{/if}}
 
 		</div>
 	</div>
+	
 {{/if}}
