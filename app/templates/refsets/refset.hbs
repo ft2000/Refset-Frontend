@@ -164,7 +164,7 @@
 		             <h4 class="panel-title">{{totalNoOfMembers}} Members {{#if totalNoOfMembers}}(Loaded {{members.length}} of {{totalNoOfMembers}}){{/if}}</h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
-		            <div id="collapseMembers" class="panel-body">
+		            <div id="collapseMembers" class="panel-body member-list">
 						<ul class="list-group checkboxList member-list">
 							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
@@ -362,7 +362,7 @@
 				<p class="filterItem">
 					Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
 					{{view Em.TextField 
-						placeholder="Show memebers modified since..."
+						placeholder="Show members modified since..."
 					    valueBinding="filterByLastUpdateDate"
 						data-provide="datepicker"
 						data-date-format="MM d, yyyy"

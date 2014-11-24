@@ -84,8 +84,6 @@ export default Ember.ObjectController.extend({
 					{
 						var comparisonDate = new Date(filterByLastUpdateDate);
 						
-						Ember.Logger.log("comparisonDate",comparisonDate);
-
 						if (comparisonDate instanceof Date && !isNaN(comparisonDate.valueOf()))
 						{
 							if (new Date(member.modifiedDate).getTime() < comparisonDate.getTime())
@@ -865,10 +863,10 @@ export default Ember.ObjectController.extend({
 			{
 				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
 				case 'filterByEffectiveTime' : {defaultValue = 0; break;}
-				case 'filterByLastUpdateDate' : {defaultValue = new Date(); break;}
+				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = 0; break;}
 			}
-			
+		
 			this.set(filterName,defaultValue);
 			
 			$('#filterSelect').val(0);
