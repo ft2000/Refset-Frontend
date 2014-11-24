@@ -47,6 +47,8 @@ export default Ember.ObjectController.extend({
 			var filterByModuleId 		= this.get("filterByModuleId");
 			var filterByEffectiveTime 	= this.get("filterByEffectiveTime");
 			var filterByDescription 	= this.get("filterByDescription");
+			var filterByLastUpdateDate 	= this.get("filterByLastUpdateDate");
+			var filterByLastUpdateUser 	= this.get("filterByLastUpdateUser");
 			
 			var filteredMembers = allMembers.map(function(member)
 			{
@@ -78,19 +80,56 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
+					if (filterByLastUpdateDate !== -1)
+					{
+						var comparisonDate = new Date(filterByLastUpdateDate);
+						
+						Ember.Logger.log("comparisonDate",comparisonDate);
+
+						if (comparisonDate instanceof Date && !isNaN(comparisonDate.valueOf()))
+						{
+							if (new Date(member.modifiedDate).getTime() < comparisonDate.getTime())
+							{
+								return null;
+							}
+						}
+					}
+					
+					if (filterByLastUpdateUser !== -1)
+					{
+						
+					}
+					
 					member.meta.score = 1;
 					
 					if (filterByDescription !== '')
 					{
-						var score = LiquidMetal.score(member.description, filterByDescription);
-						
-						if (score < 0.75)
+						if (filterByDescription.match(/^[0-9]*$/))
 						{
-							return null;
+							var regExp = new RegExp(filterByDescription,"g");
+							var score = member.referencedComponentId.search(regExp);
+							
+							if (score === -1)
+							{
+								return null;
+							}
+							else
+							{
+								member.meta.score = 100 - score;
+							}
 						}
 						else
 						{
-							member.meta.score = score;
+							var score = LiquidMetal.score(member.description, filterByDescription);
+
+							if (score < 0.75)
+							{
+								return null;								
+							}
+							else
+							{
+								member.meta.score = score;
+							}
 						}
 					}
 					
@@ -99,8 +138,7 @@ export default Ember.ObjectController.extend({
  
 			});
 
-			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n) });
-			
+			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n) });			
 			
 			quick_sort(nullsRemoved);
 			
@@ -258,6 +296,8 @@ export default Ember.ObjectController.extend({
 		{
 			this.set("showMemberMetaData",!this.showMemberMetaData);
 
+			// Doing this because we need to know this INSIDE the member data...
+			
 			var refset = $.extend(true, {}, this.get("model"));
 
 			for (var m=0;m<refset.members.length;m++)
@@ -825,7 +865,7 @@ export default Ember.ObjectController.extend({
 			{
 				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
 				case 'filterByEffectiveTime' : {defaultValue = 0; break;}
-				case 'filterByLastUpdateDate' : {defaultValue = 0; break;}
+				case 'filterByLastUpdateDate' : {defaultValue = new Date(); break;}
 				case 'filterByLastUpdateUser' : {defaultValue = 0; break;}
 			}
 			

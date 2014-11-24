@@ -317,7 +317,11 @@
 				{{#unless filterByInactiveConceptsIsActive}}<option value="filterByStatus">Filter inactive concepts</option>{{/unless}}
 				{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by status</option>{{/unless}}
 				{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
-				{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+				
+				{{#if model.published}}
+					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+				{{/if}}
+				
 				{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
 				{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
 			</select>
@@ -356,8 +360,15 @@
 
 			{{#if filterByLastUpdateDateIsActive}}
 				<p class="filterItem">
-					Last Update Date: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
-
+					Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
+					{{view Em.TextField 
+						placeholder="Show memebers modified since..."
+					    valueBinding="filterByLastUpdateDate"
+						data-provide="datepicker"
+						data-date-format="MM d, yyyy"
+						data-date-clear-btn="true"
+						data-date-autoclose="true"
+						class="form-control"}}	
 				</p>
 			{{/if}}
 
