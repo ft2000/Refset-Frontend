@@ -48,7 +48,7 @@
 							</tr>
 
 							<tr>
-								<td class="label">RefsetId</td><td class="content">{{#if published}}{{id}}{{/if}}</td>
+								<td class="label">Refset Id</td><td class="content">{{#if published}}{{id}}{{/if}}</td>
 								<td class="label">UUID</td><td class="content" colspan=2>{{id}}</td>
 							</tr>
 		
@@ -75,11 +75,13 @@
 							<tr>
 								<td class="label">Refset Members Type ID</td><td class="content">
 									{{#if published}}
-										{{refset-list-item-span 'component-type-id' componentTypeId componentTypes}}
+										<input type=hidden id="newRefsetModuleId" {{bind-attr value="componentTypeId"}}>
+ 										{{refset-list-item-span 'component-type-id' componentTypeId componentTypes}}
 									{{else}}
 										{{#if editMode}}
-											{{snomed-data-dropdown value=componentTypeId dataType="componentTypesArray"}}
+											{{snomed-data-dropdown value=componentTypeId dataType="componentTypesArray" id="newRefsetModuleId"}}
 										{{else}}
+											<input type=hidden id="newRefsetModuleId" {{bind-attr value="componentTypeId"}}>
 											{{refset-list-item-span 'component-type-id' componentTypeId componentTypes}}
 										{{/if}}																			
 							  		{{/if}}		
@@ -98,7 +100,7 @@
 							</tr>
 							
 							<tr>
-								<td class="label">ModuleId</td><td class="content">
+								<td class="label">Module Id</td><td class="content">
 									{{#if published}}
 										{{refset-list-item-span 'module-id' moduleId moduleTypes}}
 									{{else}}
@@ -139,7 +141,7 @@
 				        <div class="panel-collapse collapse in">
 				            <div id="importMemberList" class="panel-body member-list">
 				            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-									 {{#collection Ember.ListView contentBinding="potentialMembersToImport" height=400 rowHeight=59 width="100%"}}
+									 {{#collection Ember.ListView contentBinding="filteredImportMembers" height=400 rowHeight=59 width="100%"}}
 										<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 											<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponentId}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 		
@@ -161,21 +163,31 @@
 			
 		    <div class="panel panel-info ember-view fade in panelNoPadding">
 		        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#collapseMembers">
-		             <h4 class="panel-title">{{totalNoOfMembers}} Members {{#if totalNoOfMembers}}(Loaded {{members.length}} of {{totalNoOfMembers}}){{/if}}</h4>
+		             <h4 class="panel-title">
+		             	{{#if meta}}
+							{{#if filteringActive}}
+								Showing {{filteredMembers.length}} out of {{members.length}} {{#unless meta.allMembersLoaded}}retrieved{{/unless}} members matching your filter.
+							{{else}}
+								{{totalNoOfMembers}} Members.
+							{{/if}}
+							 
+							{{#unless meta.allMembersLoaded}}(Retrieved {{members.length}} of {{totalNoOfMembers}}){{/unless}}
+						{{/if}}
+					 </h4>
 		        </div>
 		        <div class="panel-collapse collapse in">
-		            <div id="collapseMembers" class="panel-body member-list">
+		            <div id="collapseMembers" class="panel-body">
 						<ul class="list-group checkboxList member-list">
 							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
 									<span class="active">SCTID</span>
 									<span>Description</span>
-									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
+									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
 								<li class="list-group-item member-list-header" style="border-top:none">
-									<span class="active">Status</span>
-									<span class="effective-time">Effective Time</span>
-									<span class="module-id">ModuleId</span>
+									<span class="active pointer" rel="tooltip" title="Member (not underlying concept) status (active/inactive)">Status</span>
+									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time">Effective Time</span>
+									<span class="module-id">Module Id</span>
 								</li>
 		
 								{{#if editMode}}
@@ -191,11 +203,7 @@
 	
 												<span class="effective-time">{{date-time-format effectiveTime}}</span>
 												<span>
-													{{#if published}}
-														{{snomed-id-to-label moduleId moduleTypes}}
-													{{else}}
-														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
-													{{/if}}
+													{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 									 			</span>
 
 												{{#if meta.viewMeta}}
@@ -241,7 +249,11 @@
 							{{else}}
 								<li class='list-group-item'>
 									{{#if totalNoOfMembers}}
-										Loading members. Please wait...
+										{{#if meta.allMembersLoaded}}
+											No matches found for your filter.
+										{{else}}
+											Still loading members. Please wait...
+										{{/if}}
 									{{else}}
 										Your refset does not have any members yet...
 									{{/if}}
@@ -257,7 +269,9 @@
 			
 			{{#if meta}}
 				{{#if editMode}}				
-					<button class="btn btn-primary btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
+					<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
+
+					<hr>
 
 					<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 					<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
@@ -278,105 +292,122 @@
 							<p><b{{importError}}</b></p>
 						{{/if}}
 
-						<button {{action 'cancelEdits'}} class="btn btn-danger left">Discard Changes</button>
-						<button {{action 'updateRefset'}} class="btn btn-success right">Save changes</button>
-
 					{{/if}}
 					
 				{{else}}
 					{{#if active}}
-						{{#if user.token}}
-							<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
-						{{/if}}
-						
-						<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
-	
+						<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>	
 						<button class="btn btn-default btn-side-menu" {{action 'exportRefset'}}>Export Refset Delta RF2</button>
+					{{/if}}
+				{{/if}}
+
+				<hr>
+			
+				<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
+					<option value="0">Filter members...</option>
+					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive concepts</option>{{/unless}}
+					
+					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by active status</option>{{/unless}}
+					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
+					
+					{{#if model.published}}
+						{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Filter modified members</option>{{/unless}}
+					{{/if}}										
+					
+					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
+					{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+				</select>
+
+				<p class="filterItem">
+					Filter by description/sctid: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+					{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
+				</p>
+
+				{{#if filterByInactiveConceptsIsActive}}
+					<p class="filterItem">
+						Active members with inactive concepts: <a {{action 'removeFilter' 'filterByInactiveConcepts'}} class="right pointer">remove</a><br>
+					</p>
+				{{/if}}
+
+				{{#if filterByStatusIsActive}}
+					<p class="filterItem">
+						Status: {{radio-button value=true checked=filterByStatus}} Active {{radio-button value=false checked=filterByStatus}} Inactive <a {{action 'removeFilter' 'filterByStatus'}} class="right pointer">remove</a><br>
+					</p>
+				{{/if}}
+
+				
+				{{#if filterByModuleIdIsActive}}
+					<p class="filterItem">
+						Module Id: <a {{action 'removeFilter' 'filterByModuleId'}} class="right pointer">remove</a><br>
+						{{snomed-data-dropdown value=filterByModuleId dataType="moduleTypesArray"}}
+					</p>
+				{{/if}}
+
+				{{#if filterByEffectiveTimeIsActive}}
+					<p class="filterItem">
+						Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
 	
-						{{#if user.token}}
+					</p>
+				{{/if}}
+
+				{{#if filterByPublishedMembersIsActive}}
+					<p class="filterItem">
+						Member change history:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
+						{{radio-button value=true checked=filterByPublishedMembers}} Published {{radio-button value=false checked=filterByPublishedMembers}} Unpublished/Modified 
+					</p>				
+				{{/if}}	
+	
+				{{#if filterByLastUpdateDateIsActive}}
+					<p class="filterItem">
+						Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
+						{{view Em.TextField 
+							placeholder="Pick date..."
+						    valueBinding="filterByLastUpdateDate"
+							data-provide="datepicker"
+							data-date-format="MM d, yyyy"
+							data-date-clear-btn="true"
+							data-date-autoclose="true"
+							class="form-control"}}	
+					</p>
+				{{/if}}
+	
+				{{#if filterByLastUpdateUserIsActive}}
+					<p class="filterItem">
+						Last Updater: <a {{action 'removeFilter' 'filterByLastUpdateUser'}} class="right pointer">remove</a><br>
+						{{snomed-data-dropdown value=filterByLastUpdateUser dataType="moduleUpdatersArray"}}
+					</p>
+				{{/if}}
+			{{/if}}
+			
+			{{#if potentialMembersToImport}}
+				<p><b>NOTE:</b> Filters apply to both existing member list and import member list</p>
+			{{/if}}
+			
+			<hr>
+			
+			{{#if meta}}
+			
+				{{#if editMode}}									
+					{{#unless getConceptDataInProgress}}		
+						<button {{action 'cancelEdits'}} class="btn btn-danger left">Discard Changes</button>
+						<button {{action 'updateRefset'}} class="btn btn-success right">Save changes</button>
+					{{/unless}}
+				{{else}}
+					{{#if user.token}}
+						{{#if active}}
+							<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
+
 							{{#if published}}
 								<button class="btn btn-warning btn-side-menu" {{action 'inactivateRefset'}}>Inactivate Refset</button>
 							{{/if}}
 							
 							<button class="btn btn-danger btn-side-menu" {{action 'deleteRefset'}}>Delete Refset</button>
-						{{/if}}
-					{{else}}
-						{{#if user.token}}
+						{{else}}
 							<button class="btn btn-warning btn-side-menu" {{action 'activateRefset'}}>Activate Refset</button>					
 						{{/if}}
 					{{/if}}
 				{{/if}}
-
-			{{/if}}
-			
-			<h3>Filter members</h3>
-			Filtered count : {{filteredMembers.length}}<br><br>
-			
-			<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
-				<option value="0">Add a filter...</option>
-				{{#unless filterByInactiveConceptsIsActive}}<option value="filterByStatus">Filter inactive concepts</option>{{/unless}}
-				{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by status</option>{{/unless}}
-				{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
-				
-				{{#if model.published}}
-					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
-				{{/if}}
-				
-				{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
-				{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
-			</select>
-			<br>
-			
-			<p class="filterItem">
-				Filter by member description: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
-				{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
-			</p>
-
-			{{#if filterByInactiveConceptsIsActive}}
-				<p class="filterItem">
-					Active members with inactive concepts: <a {{action 'removeFilter' 'filterByInactiveConcepts'}} class="right pointer">remove</a><br>
-				</p>
-			{{/if}}
-
-			{{#if filterByStatusIsActive}}
-				<p class="filterItem">
-					Status: {{radio-button value=true checked=filterByStatus}} Active {{radio-button value=false checked=filterByStatus}} Inactive <a {{action 'removeFilter' 'filterByStatus'}} class="right pointer">remove</a><br>
-				</p>
-			{{/if}}
-
-			{{#if filterByEffectiveTimeIsActive}}
-				<p class="filterItem">
-					Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
-
-				</p>
-			{{/if}}
-
-			{{#if filterByModuleIdIsActive}}
-				<p class="filterItem">
-					Module Id: <a {{action 'removeFilter' 'filterByModuleId'}} class="right pointer">remove</a><br>
-					{{snomed-data-dropdown value=filterByModuleId dataType="moduleTypesArray"}}
-				</p>
-			{{/if}}
-
-			{{#if filterByLastUpdateDateIsActive}}
-				<p class="filterItem">
-					Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
-					{{view Em.TextField 
-						placeholder="Show members modified since..."
-					    valueBinding="filterByLastUpdateDate"
-						data-provide="datepicker"
-						data-date-format="MM d, yyyy"
-						data-date-clear-btn="true"
-						data-date-autoclose="true"
-						class="form-control"}}	
-				</p>
-			{{/if}}
-
-			{{#if filterByLastUpdateUserIsActive}}
-				<p class="filterItem">
-					Last Updater: <a {{action 'removeFilter' 'filterByLastUpdateUser'}} class="right pointer">remove</a><br>
-
-				</p>
 			{{/if}}
 
 		</div>

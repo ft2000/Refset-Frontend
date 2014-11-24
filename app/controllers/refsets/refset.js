@@ -12,15 +12,25 @@ export default Ember.ObjectController.extend({
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
 	languageTypes 				: Ember.computed.alias("controllers.data.languageTypes"),
-
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
+	moduleUpdatersArray			: Ember.computed.alias("controllers.data.moduleUpdatersArray"),
 	
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
 	
-	editModel					: {},
+	editModel					: {},	
+	membersToDelete 			: [],
+	membersToAdd				: [],
+	
+	editMode					: false,
+	showHeaderMetaData			: false,
+	showMemberMetaData			: false,
+		
+	importListChangedInProgress	: false,
+
+	dialogInstance				: null,
 	
 	filterByStatus 				: -1,
 	filterByModuleId 			: -1,
@@ -28,6 +38,7 @@ export default Ember.ObjectController.extend({
 	filterByLastUpdateDate		: -1,
 	filterByLastUpdateUser		: -1,
 	filterByInactiveConcepts	: -1,
+	filterByPublishedMembers	: -1,
 	filterByDescription			: '',
 	
 	filterByStatusIsActive				: function(){ return this.filterByStatus !== -1;}.property('filterByStatus'),
@@ -36,19 +47,38 @@ export default Ember.ObjectController.extend({
 	filterByLastUpdateDateIsActive		: function(){ return this.filterByLastUpdateDate !== -1;}.property('filterByLastUpdateDate'),
 	filterByLastUpdateUserIsActive		: function(){ return this.filterByLastUpdateUser !== -1;}.property('filterByLastUpdateUser'),
 	filterByInactiveConceptsIsActive	: function(){ return this.filterByInactiveConcepts !== -1;}.property('filterByInactiveConcepts'),
-	
-	filteredMembers: function()
+	filterByPublishedMembersIsActive	: function(){ return this.filterByPublishedMembers !== -1;}.property('filterByPublishedMembers'),
+
+	filteringActive						: function(){ var filteredMembers = this.get("filteredMembers"); if (typeof filteredMembers === "undefined") {return false;} var loadedMembers = this.get("this.model.members"); return (filteredMembers.length !== loadedMembers.length)}.property('model.members.@each','filterByDescription','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+
+	filteredMembers						: function()
 	{
 		var allMembers = this.get('model.members');
 		
+		return this.filterMembers(allMembers);
+		
+	}.property('model.members.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+
+	filteredImportMembers				: function()
+	{
+		var allMembers = this.get('potentialMembersToImport');
+		
+		return this.filterMembers(allMembers);
+		
+	}.property('potentialMembersToImport.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+
+	
+	filterMembers						: function(allMembers)
+	{
 		if (typeof allMembers !== "undefined")
 		{
-			var filterByStatus 			= this.get("filterByStatus");
-			var filterByModuleId 		= this.get("filterByModuleId");
-			var filterByEffectiveTime 	= this.get("filterByEffectiveTime");
-			var filterByDescription 	= this.get("filterByDescription");
-			var filterByLastUpdateDate 	= this.get("filterByLastUpdateDate");
-			var filterByLastUpdateUser 	= this.get("filterByLastUpdateUser");
+			var filterByStatus 				= this.get("filterByStatus");
+			var filterByModuleId 			= this.get("filterByModuleId");
+			var filterByEffectiveTime 		= this.get("filterByEffectiveTime");
+			var filterByDescription 		= this.get("filterByDescription");
+			var filterByLastUpdateDate 		= this.get("filterByLastUpdateDate");
+			var filterByLastUpdateUser 		= this.get("filterByLastUpdateUser");
+			var filterByPublishedMembers 	= this.get("filterByPublishedMembers");
 			
 			var filteredMembers = allMembers.map(function(member)
 			{
@@ -93,9 +123,35 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
+					if(filterByPublishedMembers !== -1)
+					{
+						if (filterByPublishedMembers)
+						{
+							if (typeof member.effectiveTime === "undefined")
+							{
+								return null;
+							}
+							
+							// Also need to exclude if member modified since last pusblished...
+						}
+						else
+						{
+							if (typeof member.effectiveTime !== "undefined")
+							{
+								if (1) // Check here if effectiveTime is the same as last modfied date. If not, return null since member has been modified.
+								{
+									
+								}
+							}							
+						}
+					}
+					
 					if (filterByLastUpdateUser !== -1)
 					{
-						
+						if (member.modifiedBy !== filterByLastUpdateUser)
+						{
+							return null;
+						}
 					}
 					
 					member.meta.score = 1;
@@ -142,10 +198,9 @@ export default Ember.ObjectController.extend({
 			
 			return nullsRemoved;
 
-		}
-		
-	}.property('model.members.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
-
+		}		
+	},
+	
 	memberRowHeight  			: function()
 	{
 		if (this.editMode)
@@ -158,20 +213,12 @@ export default Ember.ObjectController.extend({
 		}
 	}.property("showMemberMetaData","editMode"),
 
-	membersToDelete 			: [],
-	membersToAdd				: [],
-	
-	editMode					: false,
-	showHeaderMetaData			: false,
-	showMemberMetaData			: false,
-		
-	importListChangedInProgress	: false,
-
-	dialogInstance	: null,
-
 	initModel : function(params)
 	{
 		Ember.Logger.log("controllers.refsets.refset:initModel");
+		
+		this.set("editMode",false);
+		this.set("filterByDescription","");
 		
 		var _this 			= this;
 		var id 				= params.params["refsets.refset"].id;
@@ -265,6 +312,12 @@ export default Ember.ObjectController.extend({
 		return members[0].moduleId;
 	},
 	
+	getDefaultLastUpdater : function()
+	{
+		var members = this.get("model.members");
+		return members[0].modifiedBy;
+	},
+
 	actions :
 	{
 		toggleEditMode : function()
@@ -308,6 +361,8 @@ export default Ember.ObjectController.extend({
 		
 		cancelEdits : function()
 		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();	
 			this.set("editMode",false);
 			this.set("model",$.extend(true, {}, this.get("editModel")));	
 		},
@@ -864,7 +919,7 @@ export default Ember.ObjectController.extend({
 				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
 				case 'filterByEffectiveTime' : {defaultValue = 0; break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
-				case 'filterByLastUpdateUser' : {defaultValue = 0; break;}
+				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
 			}
 		
 			this.set(filterName,defaultValue);
@@ -890,6 +945,7 @@ export default Ember.ObjectController.extend({
 		clearDescriptionFilter : function()
 		{
 			this.set("filterByDescription","");
-		}
-}
+		},
+	
+	}
 });

@@ -421,7 +421,7 @@ export default Ember.ArrayController.extend({
 				_this.set("getConceptDataInProgress",true);
 				
 				var defaultMemberModuleId = $('#newRefsetModuleId').val();
-	
+				
 				var idArraySlices		= [];			
 				while(idArray.length)
 				{

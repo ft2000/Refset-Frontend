@@ -10,7 +10,7 @@
 		<span class="snomed-id">Component Type Id</span>
 		<span class="effective-time">Effective Time</span>
 		<span class="num-members">Members</span>
-		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for lookup)</span>
+		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 	</li>	
 	{{#if refsets}}
 		{{#with view as outerView}}
@@ -23,7 +23,7 @@
 					{{refset-list-item-span 'snomed-id' typeId outerView.controller.refsetTypes}}
 					{{refset-list-item-span 'snomed-id' moduleId outerView.controller.moduleTypes}}
 					{{refset-list-item-span 'snomed-id' componentTypeId outerView.controller.componentTypes}}
-					{{effective-time-format publishedDate}}
+					<span class="effective-time">{{effective-time-format publishedDate}}</span>
 
 					<span class="num-members">{{totalNoOfMembers}}</span>
 				</li>

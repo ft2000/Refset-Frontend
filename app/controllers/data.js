@@ -39,6 +39,34 @@ export default Ember.ObjectController.extend({
 	initialised				: false,
 	refsetMemberRequestQueue : [],
 	
+	moduleUpdatersArray			: function()
+	{
+		var users = [];
+		
+		var members = this.get("refset.members");
+		
+		for (var m=0;m<members.length;m++)
+		{
+			var updater = members[m].modifiedBy;
+					
+			if ($.inArray(updater,users) === -1)
+			{
+				users.push(updater);
+			}
+		}
+		
+		Ember.Logger.log("moduleUpdatersArray (users)",users);
+
+		for (m=0;m<users.length;m++)
+		{
+			var userObj = {id:users[m],label:users[m]};
+			users[m] = userObj;
+		}
+		
+		Ember.Logger.log("moduleUpdatersArray (users)",users);
+		
+		return users;
+	}.property('refset.members.@each'),
 
 	init : function()
 	{
@@ -511,6 +539,8 @@ export default Ember.ObjectController.extend({
 				response.content.refset.meta 	= {};
 				response.content.refset.members	= [];
 				
+				response.content.refset.meta.allMembersLoaded = false;
+				
 				_this.set("refset",response.content.refset);
 				
 				// Now get member data...
@@ -599,6 +629,11 @@ export default Ember.ObjectController.extend({
 			_this.refset.members.setObjects(MemberData);
 			
 			Ember.Logger.log("got member data");
+			
+			if (_this.refset.members.length === _this.refset.totalNoOfMembers)
+			{
+				_this.set("refset.meta.allMembersLoaded",true);
+			}
 			
 			return {error:false};
 		});

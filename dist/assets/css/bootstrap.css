@@ -6366,9 +6366,13 @@ td.label {
 .refset-header .snomed-id {
   width: 150px;
 }
+.refset-list .effective-time,
+.refset-header .effective-time {
+  width: 65px;
+}
 .refset-list .num-members,
 .refset-header .num-members {
-  width: 50px;
+  width: 60px;
   text-align: right;
   margin-right: 5px;
 }
@@ -6566,6 +6570,9 @@ input.form-control {
 .panelNoPadding .panel-body {
   padding: 0;
 }
+.panelNoPadding .panel-body .list-group {
+  margin: 0;
+}
 tr.hr,
 tr.hr td,
 tr.hr td hr {
@@ -6653,9 +6660,22 @@ label.notALabel {
   font-weight: inherit;
 }
 p.filterItem {
-  border: 1px solid #e9e9e9;
+  border: 1px solid #e0e0e0;
   margin-bottom: 3px;
   border-radius: 3px;
-  background-color: #f9f9f9;
+  background-color: #f3f3f3;
   padding: 3px;
+}
+p.filterItem input {
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+.list-group-item:after,
+p.filterItem:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
 }
