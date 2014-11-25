@@ -62828,6 +62828,62 @@ function handleDragLeave(evt)
 ;sessionStoreManager=function(){var e={prefs:{hasLocalStorage:0},getSessionVar:function(e){if(this.prefs.hasLocalStorage)var s=localStorage.getItem(e);else if("undefined"!=typeof sessvars[e])var s=sessvars[e];else var s=null;return s},setSessionVar:function(e,s){this.prefs.hasLocalStorage?localStorage.setItem(e,s):sessvars[e]=s},deleteSessionVar:function(e){this.prefs.hasLocalStorage?localStorage.removeItem(e):delete sessvars[e]},clearSessionVars:function(){this.prefs.hasLocalStorage?localStorage.clear():sessvars.$.clearMem()},getSessionVarsSize:function(){if(this.prefs.hasLocalStorage){var e=0;for(i=0;i<localStorage.length;i++)e+=localStorage.getItem(localStorage[i]).length;return Math.ceil(e/1024)}return sessvars.$.usedMem()},init:function(){try{localStorage.setItem("init",1),null!=localStorage.getItem("init")&&(this.prefs.hasLocalStorage=1,this.deleteSessionVar("init"))}catch(e){}}};return e.init(),e}();
 ;var LiquidMetal=function(){function r(r,t){var e=r.charAt(t);return e>="A"&&"Z">=e}function t(r,t){var e=r.charAt(t-1);return-1!=c.indexOf(e)}function e(r,t,e,n){for(var a=e;n>a;a++)r[a]=t;return r}var n=0,a=1,l=.8,o=.9,i=.85,c=" 	_-";return{lastScore:null,lastScoreArray:null,score:function(r,t){if(0===t.length)return l;if(t.length>r.length)return n;var e=[],a=r.toLowerCase();if(t=t.toLowerCase(),this._scoreAll(r,a,t,-1,0,[],e),0==e.length)return 0;for(var o=0,i=[],c=0;c<e.length;c++){for(var h=e[c],u=0,f=0;f<r.length;f++)u+=h[f];u>o&&(o=u,i=h)}return o/=r.length,this.lastScore=o,this.lastScoreArray=i,o},_scoreAll:function(c,h,u,f,s,v,A){if(s==u.length){var g=h.charAt(0)==u.charAt(0),d=g?o:l;return e(v,d,v.length,c.length),void A.push(v.slice(0))}var S=u.charAt(s);s++;var _=h.indexOf(S,f);if(-1!=_)for(var x=f;-1!=(_=h.indexOf(S,f+1));)t(c,_)?(v[_-1]=1,e(v,i,x+1,_-1)):r(c,_)?e(v,i,x+1,_):e(v,n,x+1,_),v[_]=a,f=_,this._scoreAll(c,h,u,f,s,v,A)}}}();
 ;function swapArray(r,a,o){var t=r[a];r[a]=r[o],r[o]=t}function partition(r,a,o,t){var n=r[t].meta.score;swapArray(r,t,o-1);var s=a,i;for(i=a;o-1>i;++i)r[i].meta.score>=n&&(swapArray(r,s,i),++s);return swapArray(r,o-1,s),s}function qsort(r,a,o){if(o-1>a){var t=a+Math.floor(Math.random()*(o-a));t=partition(r,a,o,t),qsort(r,a,t),qsort(r,t+1,o)}}function quick_sort(r){qsort(r,0,r.length)}
+
+
+var mergesort = function(array,sortBy,sortOrder)
+{
+	var len = array.length;
+	  if(len < 2) { 
+	    return array;
+	  }
+	  var pivot = Math.ceil(len/2);
+	  return merge(mergesort(array.slice(0,pivot),sortBy,sortOrder), mergesort(array.slice(pivot),sortBy,sortOrder),sortBy,sortOrder);
+	};
+
+	var merge = function(left, right,sortBy,sortOrder) {
+	  var result = [];
+	  while((left.length > 0) && (right.length > 0))
+	  {
+		var x = left[0][sortBy];
+		var y = right[0][sortBy];
+		
+		if (sortBy === "referencedComponentId" || sortBy === "moduleId")
+		{
+			x = Number.parseInt(left[0][sortBy],10);
+			y = Number.parseInt(right[0][sortBy],10);
+		}
+		
+		if (sortBy === "active")
+		{
+			x = left[0].active ? 1 : 0;
+			y = right[0].active ? 1 : 0;
+		}
+			
+		if (sortOrder === "desc")  
+		{
+		    if(x > y)
+		    {
+		      result.push(left.shift());
+		    }
+		    else {
+		      result.push(right.shift());
+		    }
+		}
+		else
+		{
+		    if(x > y)
+		    {
+			      result.push(right.shift());
+		    }
+		    else {
+			      result.push(left.shift());
+		    }	
+		}
+	  }
+
+	  result = result.concat(left, right);
+	  return result;
+	};
 ;/* =========================================================
  * bootstrap-datepicker.js
  * Repo: https://github.com/eternicode/bootstrap-datepicker/

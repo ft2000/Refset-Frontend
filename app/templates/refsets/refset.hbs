@@ -305,14 +305,14 @@
 			
 				<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
 					<option value="0">Filter members...</option>
-					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive concepts</option>{{/unless}}
+					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive concepts (not working yet)</option>{{/unless}}
 					
 					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by active status</option>{{/unless}}
 					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
 					
 					{{#if model.published}}
 						{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
-						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Filter modified members</option>{{/unless}}
+						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Filter modified members (not working yet)</option>{{/unless}}
 					{{/if}}										
 					
 					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
@@ -347,7 +347,9 @@
 				{{#if filterByEffectiveTimeIsActive}}
 					<p class="filterItem">
 						Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
-	
+						{{#with effectiveTimeArray}}
+							{{snomed-data-dropdown value=filterByEffectiveTime dataType="effectiveTimeArray"}}
+						{{/with}}
 					</p>
 				{{/if}}
 
@@ -375,7 +377,9 @@
 				{{#if filterByLastUpdateUserIsActive}}
 					<p class="filterItem">
 						Last Updater: <a {{action 'removeFilter' 'filterByLastUpdateUser'}} class="right pointer">remove</a><br>
-						{{snomed-data-dropdown value=filterByLastUpdateUser dataType="moduleUpdatersArray"}}
+						{{#with moduleUpdatersArray}}
+							{{snomed-data-dropdown value=filterByLastUpdateUser dataType="moduleUpdatersArray"}}
+						{{/with}}
 					</p>
 				{{/if}}
 			{{/if}}
@@ -410,7 +414,18 @@
 				{{/if}}
 			{{/if}}
 
+<button {{action 'setSortCriteria' 'referencedComponentId' 'asc'}} class="btn btn-danger left">Sort by SCTID asc</button>
+<button {{action 'setSortCriteria' 'referencedComponentId' 'desc'}} class="btn btn-danger left">Sort by SCTID desc</button>
+<button {{action 'setSortCriteria' 'description' 'score'}} class="btn btn-danger left">Sort by Description score</button>
+<button {{action 'setSortCriteria' 'description' 'asc'}} class="btn btn-danger left">Sort by Description asc</button>
+<button {{action 'setSortCriteria' 'description' 'desc'}} class="btn btn-danger left">Sort by Description desc</button>
+
+[sortBy = {{sortBy}} sortOrder = {{sortOrder}}]
+
 		</div>
 	</div>
-	
+
+
+
+
 {{/if}}

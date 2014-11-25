@@ -14,6 +14,7 @@ export default Ember.ObjectController.extend({
 	languageTypes 				: Ember.computed.alias("controllers.data.languageTypes"),
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
 	moduleUpdatersArray			: Ember.computed.alias("controllers.data.moduleUpdatersArray"),
+	effectiveTimeArray			: Ember.computed.alias("controllers.data.effectiveTimeArray"),
 	
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
@@ -48,8 +49,21 @@ export default Ember.ObjectController.extend({
 	filterByLastUpdateUserIsActive		: function(){ return this.filterByLastUpdateUser !== -1;}.property('filterByLastUpdateUser'),
 	filterByInactiveConceptsIsActive	: function(){ return this.filterByInactiveConcepts !== -1;}.property('filterByInactiveConcepts'),
 	filterByPublishedMembersIsActive	: function(){ return this.filterByPublishedMembers !== -1;}.property('filterByPublishedMembers'),
+	
+	sortBy 								: 'description',
+	sortOrder							: 'asc',
 
-	filteringActive						: function(){ var filteredMembers = this.get("filteredMembers"); if (typeof filteredMembers === "undefined") {return false;} var loadedMembers = this.get("this.model.members"); return (filteredMembers.length !== loadedMembers.length)}.property('model.members.@each','filterByDescription','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+	filteringActive						: function()
+	{ 
+		if (this.get("filterByStatusIsActive")) { return true; }
+		if (this.get("filterByModuleIdIsActive")) { return true; }
+		if (this.get("filterByEffectiveTimeIsActive")) { return true; }
+		if (this.get("filterByLastUpdateDateIsActive")) { return true; }
+		if (this.get("filterByLastUpdateUserIsActive")) { return true; }
+		if (this.get("filterByInactiveConceptsIsActive")) { return true; }
+		if (this.get("filterByPublishedMembersIsActive")) { return true; }
+		
+	}.property('model.members.@each','sortBy','sortOrder','filterByPublishedMembers','filterByDescription','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
 
 	filteredMembers						: function()
 	{
@@ -57,7 +71,7 @@ export default Ember.ObjectController.extend({
 		
 		return this.filterMembers(allMembers);
 		
-	}.property('model.members.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+	}.property('model.members.@each', 'sortBy','sortOrder','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser','filterByPublishedMembers'),
 
 	filteredImportMembers				: function()
 	{
@@ -65,7 +79,7 @@ export default Ember.ObjectController.extend({
 		
 		return this.filterMembers(allMembers);
 		
-	}.property('potentialMembersToImport.@each', 'filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+	}.property('potentialMembersToImport.@each', 'sortBy','sortOrder','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser','filterByPublishedMembers'),
 
 	
 	filterMembers						: function(allMembers)
@@ -126,21 +140,24 @@ export default Ember.ObjectController.extend({
 					if(filterByPublishedMembers !== -1)
 					{
 						if (filterByPublishedMembers)
-						{
-							if (typeof member.effectiveTime === "undefined")
+						{ 
+							if (typeof member.effectiveTime === "undefined") //Not published
 							{
 								return null;
 							}
 							
-							// Also need to exclude if member modified since last pusblished...
+							if (!moment(member.effectiveTime).isSame(member.modifiedDate))
+							{
+								return null;
+							}
 						}
 						else
 						{
 							if (typeof member.effectiveTime !== "undefined")
 							{
-								if (1) // Check here if effectiveTime is the same as last modfied date. If not, return null since member has been modified.
+								if (moment(member.effectiveTime).isSame(member.modifiedDate)) 
 								{
-									
+									return null;
 								}
 							}							
 						}
@@ -153,8 +170,6 @@ export default Ember.ObjectController.extend({
 							return null;
 						}
 					}
-					
-					member.meta.score = 1;
 					
 					if (filterByDescription !== '')
 					{
@@ -193,12 +208,20 @@ export default Ember.ObjectController.extend({
 			});
 
 			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n) });			
+			var sortBy 		= this.get("sortBy");
+			var sortOrder 	= this.get("sortOrder");
 			
-			quick_sort(nullsRemoved);
+			if (filterByDescription !== '' && sortOrder === "score" && (sortBy === "description" || sortBy === "referencedComponentId"))
+			{
+				quick_sort(nullsRemoved);
+			}
+			else
+			{
+				nullsRemoved = mergesort(nullsRemoved,sortBy,sortOrder);
+			}
 			
 			return nullsRemoved;
-
-		}		
+		}	
 	},
 	
 	memberRowHeight  			: function()
@@ -317,9 +340,21 @@ export default Ember.ObjectController.extend({
 		var members = this.get("model.members");
 		return members[0].modifiedBy;
 	},
+	
+	getDefaultEffectiveTime : function()
+	{
+		var times = this.get("effectiveTimeArray");
+		return times[0].id;		
+	},
 
 	actions :
 	{
+		setSortCriteria : function(sortBy,sortOrder)
+		{
+			this.set("sortBy",sortBy);
+			this.set("sortOrder",sortOrder);
+		},
+		
 		toggleEditMode : function()
 		{
 			this.set("editMode",!this.editMode);
@@ -917,9 +952,10 @@ export default Ember.ObjectController.extend({
 			switch(filterName)
 			{
 				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
-				case 'filterByEffectiveTime' : {defaultValue = 0; break;}
+				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
+				case 'filterByPublishedMembers' : {defaultValue = true; break;}
 			}
 		
 			this.set(filterName,defaultValue);

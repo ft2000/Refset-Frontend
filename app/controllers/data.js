@@ -55,19 +55,41 @@ export default Ember.ObjectController.extend({
 			}
 		}
 		
-		Ember.Logger.log("moduleUpdatersArray (users)",users);
-
 		for (m=0;m<users.length;m++)
 		{
 			var userObj = {id:users[m],label:users[m]};
 			users[m] = userObj;
 		}
 		
-		Ember.Logger.log("moduleUpdatersArray (users)",users);
-		
 		return users;
 	}.property('refset.members.@each'),
 
+	effectiveTimeArray			: function()
+	{
+		var times = [];
+		
+		var members = this.get("refset.members");
+		
+		for (var m=0;m<members.length;m++)
+		{
+			var effTime = members[m].effectiveTime;
+					
+			if ($.inArray(effTime,times) === -1)
+			{
+				times.push(effTime);
+			}
+		}
+		
+		for (m=0;m<times.length;m++)
+		{
+			var timeString = moment(times[m]).format("YYYYMMDD");
+			var timeObj = {id:times[m],label:timeString};
+			times[m] = timeObj;
+		}
+		
+		return times;
+	}.property('refset.members.@each'),
+	
 	init : function()
 	{
 		Ember.Logger.log("controllers.data:init");
