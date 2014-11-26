@@ -117,10 +117,6 @@
 							<tr class="hr"><td colspan=5><hr></td></tr>
 		
 							<tr>
-								<td class="label">Created</td><td class="content">{{date-time-format created}}</td>
-								<td class="label">Created by</td><td class="content" colspan=2>{{createdBy}}</td>
-							</tr>
-							<tr>
 								<td class="label">Last Updated</td><td class="content">{{date-time-format modifiedDate}}</td>
 								<td class="label">Last Updated by</td><td class="content" colspan=2>{{modifiedBy}}</td>
 							</tr>
@@ -180,7 +176,7 @@
 						<ul class="list-group checkboxList member-list">
 							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
-									<span class="active"><a {{action 'setSortCriteria' 'referencedComponentId'}} class="pointer">SCTID</a></span>
+									<span class="active"><a {{action 'setSortCriteria' 'referencedComponentId'}} class="pointer">Referenced Component Id</a></span>
 									<span><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a></span>
 									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
@@ -210,7 +206,6 @@
 												
 													<hr>
 													
-													<span class="label">Created</span><span class="created-date">{{date-time-format created}}</span>
 													<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
 													<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
 												{{/if}}
@@ -237,7 +232,6 @@
 													{{#if meta.viewMeta}}												
 														<hr>
 														
-														<span class="label">Created</span><span class="created-date">{{date-time-format created}}</span>
 														<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
 														<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
 													{{/if}}
@@ -320,7 +314,7 @@
 				</select>
 
 				<p class="filterItem">
-					Filter by description/sctid: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+					Filter by description or referenced component id: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
 					{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
 				</p>
 
