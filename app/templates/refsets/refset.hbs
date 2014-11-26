@@ -197,7 +197,7 @@
 		
 												<span class="left active"><a {{action 'toggleMemberActive' id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 	
-												<span class="effective-time">{{date-time-format effectiveTime}}</span>
+												<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 												<span>
 													{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 									 			</span>
