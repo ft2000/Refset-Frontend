@@ -349,8 +349,42 @@ export default Ember.ObjectController.extend({
 
 	actions :
 	{
-		setSortCriteria : function(sortBy,sortOrder)
+		setSortCriteria : function(sortBy)
 		{
+			var oldSortBy 			= this.get("sortBy");
+			var oldSortOrder 		= this.get("sortOrder");
+			var filterByDescription	= this.get("filterByDescription");
+
+			var sortOrder = "asc";
+
+			if (oldSortBy === sortBy)
+			{
+				switch (oldSortOrder)
+				{
+					case "asc":
+					{
+						sortOrder = "desc";
+						break
+					}
+
+					case "desc":
+					{						
+						if (sortBy === "description" && filterByDescription !== "")
+						{
+							sortOrder = "score";
+						}
+						break
+					}	
+				}
+			}
+			else
+			{
+				if (sortBy === "description" && filterByDescription !== "")
+				{
+					sortOrder = "score";
+				}
+			}
+			
 			this.set("sortBy",sortBy);
 			this.set("sortOrder",sortOrder);
 		},

@@ -180,14 +180,14 @@
 						<ul class="list-group checkboxList member-list">
 							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
-									<span class="active">SCTID</span>
-									<span>Description</span>
+									<span class="active"><a {{action 'setSortCriteria' 'referencedComponentId'}} class="pointer">SCTID</a></span>
+									<span><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a></span>
 									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
 								<li class="list-group-item member-list-header" style="border-top:none">
-									<span class="active pointer" rel="tooltip" title="Member (not underlying concept) status (active/inactive)">Status</span>
-									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time">Effective Time</span>
-									<span class="module-id">Module Id</span>
+									<span class="active pointer" rel="tooltip" title="Member (not underlying concept) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a></span>
+									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time">{{#if published}}<a {{action 'setSortCriteria' 'effectiveTime'}} class="pointer">Effective Time</a>{{/if}}</span>
+									<span class="module-id"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a></span>
 								</li>
 		
 								{{#if editMode}}
@@ -413,19 +413,7 @@
 					{{/if}}
 				{{/if}}
 			{{/if}}
-
-<button {{action 'setSortCriteria' 'referencedComponentId' 'asc'}} class="btn btn-danger left">Sort by SCTID asc</button>
-<button {{action 'setSortCriteria' 'referencedComponentId' 'desc'}} class="btn btn-danger left">Sort by SCTID desc</button>
-<button {{action 'setSortCriteria' 'description' 'score'}} class="btn btn-danger left">Sort by Description score</button>
-<button {{action 'setSortCriteria' 'description' 'asc'}} class="btn btn-danger left">Sort by Description asc</button>
-<button {{action 'setSortCriteria' 'description' 'desc'}} class="btn btn-danger left">Sort by Description desc</button>
-
-[sortBy = {{sortBy}} sortOrder = {{sortOrder}}]
-
 		</div>
 	</div>
-
-
-
 
 {{/if}}
