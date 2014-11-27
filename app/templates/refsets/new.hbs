@@ -1,9 +1,9 @@
 <h1>Create New Refset</h1>
 
 <div class="row">
-	
+
 	<div class="col-md-9">
-			
+
 		<div class="panel panel-info ember-view fade in">
 		    <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#refsetHeader">
 		         <h4 class="panel-title">Refset Header</h4>
@@ -14,11 +14,11 @@
 					{{#unless isRF2Import}}
 						<label>Are you importing a Published Refset?</label> {{radio-button value=false checked=disablePublishedFormFields}} Yes {{radio-button value=true checked=disablePublishedFormFields}} No
 					{{/unless}}
-					
+
 					<form class="refset-header">
-						
+
 						<table width="100%">
-						
+
 							<tr>
 								{{#if isRF2Import}}	
 									<td class="label">Refset Description</td>
@@ -32,14 +32,14 @@
 									</td>
 								{{/if}}
 							</tr>
-									
+
 							<tr>
 								<td class="label">Language</td>
 								<td class="content">
 									{{snomed-data-dropdown valueBinding="languageCode" dataType="languagesArray" class="form-control"}}
 					  			</td>
 							</tr>
-		
+
 							<tr>
 								<td class="label">Refset Type</td>
 								<td class="content">
@@ -90,7 +90,7 @@
 		</div>
 
 		{{#if isRF2Import}}
-			
+
 		    <div class="panel panel-info ember-view fade in">
 		        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importRF2File">
 		             <h4 class="panel-title">Import RF2 File</h4>
@@ -99,27 +99,27 @@
 		            <div id="importRF2File" class="panel-body member-list">
 		            	
 						{{#if potentialMembersToImport}}
-						
+
 			            	{{#if moreThanOneRefsetInRF2}}
-							
+
 								Your RF2 file contains more than one Refset. Please choose which refset you wish to import:
-							
+
 								<p>
-								{{#each member in potentialMembersToImport}}					
-									<label class="notALabel">{{radio-button value=member.id name='refsetId' checked=rf2FileToImport.id}} {{member.id}} | {{member.label}} | {{member.concepts.length}} members</label><br>
+								{{#each mbr in potentialMembersToImport}}
+									<label class="notALabel">{{radio-button value=mbr name='refsetId' checked=rf2FileToImport}} {{mbr.id}} | {{mbr.label}} | {{mbr.concepts.length}} members</label><br>
 								{{/each}}
 								</p>
-							
+
 							{{else}}
-							
+
 								Your RF2 file contains a single Refset:
-							
+
 								<p>
 								{{#each member in potentialMembersToImport}}					
 									{{member.id}} | {{member.label}} | {{member.concepts.length}} members<br>
 								{{/each}}
 								</p>
-							
+
 							{{/if}}
 						{{else}}
 							There are no published refsets in that file...

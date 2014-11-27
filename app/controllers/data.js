@@ -606,8 +606,6 @@ export default Ember.ObjectController.extend({
 		{
 			var membersToProcess = this.refsetMemberRequestQueue.shift();
 	
-			Ember.Logger.log("getting member data");
-			
 			var promise = this.getRefsetMembers(user,id,membersToProcess.from,membersToProcess.to).then(function(response)
 			{
 				if (response.error)
@@ -650,8 +648,6 @@ export default Ember.ObjectController.extend({
 			
 			_this.refset.members.setObjects(MemberData);
 			
-			Ember.Logger.log("got member data");
-			
 			if (_this.refset.members.length === _this.refset.totalNoOfMembers)
 			{
 				_this.set("refset.meta.allMembersLoaded",true);
@@ -676,8 +672,6 @@ export default Ember.ObjectController.extend({
 		{
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				Ember.Logger.log("Refset created:",response.content.id);
-				
 				refset.id = response.content.id;		
 		
 				_this.set("model",refset);

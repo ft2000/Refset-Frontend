@@ -234,7 +234,7 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
 		{
 			this.createEmptyRefset();
 			this.set("isRF2Import",false);
-			this.set("rf2FileToImport.id9","loading...");
+			this.set("rf2FileToImport.id","0");
 			this.set("rf2FileToImport.label","loading...");
 		},
 		
@@ -266,7 +266,6 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
 		{
 			var member = memberWrapper.content;
 			var newModuleId = $('#member-module-id-' + member.referencedComponentId).val();
-			Ember.Logger.log("-------------------------------",newModuleId,member.referencedComponentId,member);
 			member.moduleId = newModuleId;
 		}
 		

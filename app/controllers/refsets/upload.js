@@ -13,7 +13,7 @@ export default Ember.ArrayController.extend({
 	conceptsQueue : [],
 	
 	moreThanOneRefsetInRF2 	: false,
-	rf2FileToImport 		: {id:"loading...",label:"loading..."},
+	rf2FileToImport 		: {id:"0",label:"loading...x"},
 	
 	processGetConceptsQueueTempData : {},
 	
