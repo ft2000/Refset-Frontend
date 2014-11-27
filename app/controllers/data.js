@@ -175,21 +175,15 @@ export default Ember.ObjectController.extend({
 			}
 		}
 		
+		
 		if (this.initialised)
 		{
 			this.set("showWaitCounter",this.callsInProgressCounter);
 			this.set("hideWaitCounter",0);
 
-			var queue = this.retryQueue;
-			
-			for (var q=0;q<queue.length;q++)
-			{
-				var queueItem 	= queue[q];
-				Bootstrap.GNM.push('Aborting communication','Aborting queued request for ' + queueItem.resourceType + ' from the server.', 'info');			
-			}
-			
 			// Need to alert aborts before we do this...
 			this.set("retryQueue",[]);
+			this.set("refsetMemberRequestQueue",[]);		
 			
 			$('.waitAnim').hide();
 		}
@@ -479,8 +473,6 @@ export default Ember.ObjectController.extend({
 				
 				response.content.refsets.map(function(item)
 				{
-					Ember.Logger.log("item.description",item.description, item.active);
-					
 					if (item.active)
 					{
 						if (item.published)
@@ -608,7 +600,7 @@ export default Ember.ObjectController.extend({
 	
 			var promise = this.getRefsetMembers(user,id,membersToProcess.from,membersToProcess.to).then(function(response)
 			{
-				if (response.error)
+				if (typeof response === "undefined" || response.error)
 				{
 					Ember.Logger.log("processRefsetMemberRequestQueue error",response);
 				}
@@ -630,29 +622,33 @@ export default Ember.ObjectController.extend({
 		
 		return refsetsAdapter.findMembers(user,id,from,to).then(function(response)
 		{
-			var members = _this.refset.members.concat(response.content.members);
-			
-			var MemberData = members.map(function(member)
+			if (typeof _this.refset.members !== "undefined")
 			{
-				member.meta = {};
-
-				member.meta.conceptActive 			= true;
-				member.meta.found 					= true;
-				member.meta.deleteConcept			= false;
+				var members = _this.refset.members.concat(response.content.members);
 				
-				member.meta.originalActive			= member.active;
-				member.meta.originalModuleId		= member.moduleId;
+				var MemberData = members.map(function(member)
+				{
+					member.meta = {};
+	
+					member.meta.conceptActive 			= true;
+					member.meta.found 					= true;
+					member.meta.deleteConcept			= false;
+					
+					member.meta.originalActive			= member.active;
+					member.meta.originalModuleId		= member.moduleId;
+					
+					return member;
+				});
 				
-				return member;
-			});
-			
-			_this.refset.members.setObjects(MemberData);
-			
-			if (_this.refset.members.length === _this.refset.totalNoOfMembers)
-			{
-				_this.set("refset.meta.allMembersLoaded",true);
+				_this.refset.members.setObjects(MemberData);
+				
+				if (_this.refset.members.length === _this.refset.totalNoOfMembers)
+				{
+					_this.set("refset.meta.allMembersLoaded",true);
+				}
 			}
-			
+			else
+
 			return {error:false};
 		});
 	
