@@ -75,13 +75,11 @@
 							<tr>
 								<td class="label">Refset Members Type ID</td><td class="content">
 									{{#if published}}
-										<input type=hidden id="newRefsetModuleId" {{bind-attr value="componentTypeId"}}>
  										{{refset-list-item-span 'component-type-id' componentTypeId componentTypes}}
 									{{else}}
 										{{#if editMode}}
-											{{snomed-data-dropdown value=componentTypeId dataType="componentTypesArray" id="newRefsetModuleId"}}
+											{{snomed-data-dropdown value=componentTypeId dataType="componentTypesArray"}}
 										{{else}}
-											<input type=hidden id="newRefsetModuleId" {{bind-attr value="componentTypeId"}}>
 											{{refset-list-item-span 'component-type-id' componentTypeId componentTypes}}
 										{{/if}}																			
 							  		{{/if}}		
@@ -102,11 +100,13 @@
 							<tr>
 								<td class="label">Module Id</td><td class="content">
 									{{#if published}}
+										<input type=hidden id="newRefsetModuleId" {{bind-attr value="moduleId"}}>
 										{{refset-list-item-span 'module-id' moduleId moduleTypes}}
 									{{else}}
 										{{#if editMode}}
 											{{snomed-data-dropdown value=moduleId dataType="moduleTypesArray" id="newRefsetModuleId"}}
 										{{else}}
+											<input type=hidden id="newRefsetModuleId" {{bind-attr value="moduleId"}}>
 											{{refset-list-item-span 'module-id' moduleId moduleTypes}}
 										{{/if}}																	
 									{{/if}}

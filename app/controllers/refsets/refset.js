@@ -82,7 +82,19 @@ export default Ember.ObjectController.extend({
 	}.property('potentialMembersToImport.@each', 'sortBy','sortOrder','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser','filterByPublishedMembers'),
 
 	
-	filterMembers						: function(allMembers)
+	clearAllFilters : function()
+	{
+		this.set("filterByStatus",-1);
+		this.set("filterByModuleId",-1);
+		this.set("filterByEffectiveTime",-1);
+		this.set("filterByLastUpdateDate",-1);
+		this.set("filterByLastUpdateUser",-1);
+		this.set("filterByInactiveConcepts",-1);
+		this.set("filterByPublishedMembers",-1);
+		this.set("filterByDescription","");		
+	},
+	
+	filterMembers : function(allMembers)
 	{
 		if (typeof allMembers !== "undefined")
 		{
@@ -242,6 +254,8 @@ export default Ember.ObjectController.extend({
 		
 		this.set("editMode",false);
 		this.set("filterByDescription","");
+		
+		this.clearAllFilters();
 		
 		var _this 			= this;
 		var id 				= params.params["refsets.refset"].id;
