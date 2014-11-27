@@ -147,7 +147,7 @@
 		
 											<label><span>{{view Em.Select value=content.moduleId content=moduleTypesArray optionValuePath="content.id" optionLabelPath="content.label" class="form-control"}}</span></label>
 					
-											{{#unless meta.conceptActive}}<label class="inactiveMemberText">Note: This concept is INACTIVE</label>{{/unless}}
+											{{#unless meta.conceptActive}}<label class="inactiveMemberText">Note: This component is INACTIVE</label>{{/unless}}
 										</div>
 									  {{/collection}}
 								  {{/with}}
@@ -181,7 +181,7 @@
 									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
 								<li class="list-group-item member-list-header" style="border-top:none">
-									<span class="active pointer" rel="tooltip" title="Member (not underlying concept) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a></span>
+									<span class="active pointer" rel="tooltip" title="Member (not underlying component) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a></span>
 									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time">{{#if published}}<a {{action 'setSortCriteria' 'effectiveTime'}} class="pointer">Effective Time</a>{{/if}}</span>
 									<span class="module-id"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a></span>
 								</li>
@@ -269,7 +269,7 @@
 
 					<!-- This requires vendore/my_utilities/drag_drop_file_upload.js --->
 					<h2>Import Members <a {{action 'showImportHelp' }}class="right icon info pointer"></a></h2>
-					<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drag a file of concepts or an individual concept from the Snomed CT browser here.<br><br>Alternatively use the file requestor below to choose a file.</span></div>
+					<div id="fileUploadDropZone" class="fileUploadDropZone"><span id="droptext">Drag a file of component IDs or an individual component from the Snomed CT browser here.<br><br>Alternatively use the file requestor below to choose a file.</span></div>
 					<br><input type="file" id="refsetUploadFileInput" />
 					
 					{{#if potentialMembersToImport}}
@@ -299,7 +299,7 @@
 			
 				<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
 					<option value="0">Filter members...</option>
-					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive concepts (not working yet)</option>{{/unless}}
+					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive components (not working yet)</option>{{/unless}}
 					
 					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by active status</option>{{/unless}}
 					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
