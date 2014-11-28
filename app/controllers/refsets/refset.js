@@ -26,8 +26,7 @@ export default Ember.ObjectController.extend({
 	membersToAdd				: [],
 	
 	editMode					: false,
-	showHeaderMetaData			: false,
-	showMemberMetaData			: false,
+	showMetaData				: false,
 		
 	importListChangedInProgress	: false,
 
@@ -421,25 +420,9 @@ export default Ember.ObjectController.extend({
 			}
 		},
 
-		toggleHeaderMetaData : function()
+		toggleMetaData : function()
 		{
-			this.set("showHeaderMetaData",!this.showHeaderMetaData);
-		},
-		
-		toggleMemberMetaData : function()
-		{
-			this.set("showMemberMetaData",!this.showMemberMetaData);
-
-			// Doing this because we need to know this INSIDE the member data...
-			
-			var refset = $.extend(true, {}, this.get("model"));
-
-			for (var m=0;m<refset.members.length;m++)
-			{
-				refset.members[m].meta.viewMeta = this.showMemberMetaData;
-			}
-
-			this.set("model",refset);
+			this.set("showMetaData",!this.showMetaData);
 		},
 		
 		cancelEdits : function()

@@ -44,7 +44,6 @@
 										<td class="content title" colspan="4">{{description}}</td>
 									{{/if}}
 								{{/if}}
-								<td align=right rowspan="2"><a {{action 'toggleHeaderMetaData'}} {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}}></a></td>								
 							</tr>
 
 							<tr>
@@ -113,7 +112,7 @@
 								</td>
 							</tr>
 		
-							{{#if showHeaderMetaData}}
+							{{#if showMetaData}}
 							<tr class="hr"><td colspan=5><hr></td></tr>
 		
 							<tr>
@@ -180,12 +179,20 @@
 									<span><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a></span>
 									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
+
 								<li class="list-group-item member-list-header" style="border-top:none">
 									<span class="active pointer" rel="tooltip" title="Member (not underlying component) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a></span>
 									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time">{{#if published}}<a {{action 'setSortCriteria' 'effectiveTime'}} class="pointer">Effective Time</a>{{/if}}</span>
 									<span class="module-id"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a></span>
 								</li>
-		
+									
+								{{#if showMetaData}}
+								<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
+									<span class="last-modified pointer" rel="tooltip" title="Last date this member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a></span>
+									<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this member"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a></span>
+								</li>								
+								{{/if}}
+
 								{{#if editMode}}
 					            	{{#with controller.moduleTypesArray as moduleTypesArray }}
 										 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
@@ -202,13 +209,9 @@
 													{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 									 			</span>
 
-												{{#if meta.viewMeta}}
-												
-													<hr>
-													
-													<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
-													<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
-												{{/if}}
+												<hr>
+												<span class="last-modified">{{date-time-format modifiedDate}}</span>
+												<span class="last-modified-by">{{modifiedBy}}</span>
 											</div>
 										  {{/collection}}
 									  {{/with}}
@@ -228,13 +231,11 @@
 														<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
 													</div>
-																					
-													{{#if meta.viewMeta}}												
-														<hr>
-														
-														<span class="label">Last Updated</span><span class="last-modified">{{date-time-format modifiedDate}}</span>
-														<span class="label">Last Updated By</span><span class="last-modified-by">{{modifiedBy}}</span>
-													{{/if}}
+																																					
+													<hr>				
+													<span class="last-modified">{{date-time-format modifiedDate}}</span>
+													<span class="last-modified-by">{{modifiedBy}}</span>
+										
 												</div>
 											  {{/collection}}
 										  {{/with}}									
@@ -262,8 +263,8 @@
 		<div class="col-md-3">
 			
 			{{#if meta}}
-				{{#if editMode}}				
-					<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>
+				{{#if editMode}}
+					<button class="btn btn-default btn-side-menu icon-btn" {{action 'toggleMetaData'}}><span class="btn-text">Toggle Meta Data</span><span {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}}></span></button>
 
 					<hr>
 
@@ -290,8 +291,8 @@
 					
 				{{else}}
 					{{#if active}}
-						<button class="btn btn-default btn-side-menu" {{action 'toggleMemberMetaData'}}>Toggle All Member Meta Data</button>	
-						<button class="btn btn-default btn-side-menu" {{action 'exportRefset'}}>Export Refset Delta RF2</button>
+						<button class="btn btn-default btn-side-menu icon-btn" {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}} {{action 'toggleMetaData'}}><span class="btn-text">Toggle Meta Data</span><span {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}}></span></button>
+						<button class="btn btn-default btn-side-menu icon-btn" {{action 'exportRefset'}}><span class="btn-text">Export Refset Delta RF2</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>
 					{{/if}}
 				{{/if}}
 
@@ -394,15 +395,15 @@
 				{{else}}
 					{{#if user.token}}
 						{{#if active}}
-							<button class="btn btn-primary btn-side-menu" {{action 'toggleEditMode'}}>Edit Refset</button>
+							<button class="btn btn-primary btn-side-menu icon-btn" {{action 'toggleEditMode'}}><span class="btn-text">Edit Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>
 
 							{{#if published}}
-								<button class="btn btn-warning btn-side-menu" {{action 'inactivateRefset'}}>Inactivate Refset</button>
+								<button class="btn btn-warning btn-side-menu icon-btn" {{action 'inactivateRefset'}}><span class="btn-text">Inactivate Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>
 							{{/if}}
 							
-							<button class="btn btn-danger btn-side-menu" {{action 'deleteRefset'}}>Delete Refset</button>
+							<button class="btn btn-danger btn-side-menu icon-btn" {{action 'deleteRefset'}}><span class="btn-text">Delete Refset</span><span {{bind-attr class=':pointer :icon :undelete'}}></span></button>
 						{{else}}
-							<button class="btn btn-warning btn-side-menu" {{action 'activateRefset'}}>Activate Refset</button>					
+							<button class="btn btn-warning btn-side-menu icon-btn" {{action 'activateRefset'}}><span class="btn-text">Activate Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>					
 						{{/if}}
 					{{/if}}
 				{{/if}}
