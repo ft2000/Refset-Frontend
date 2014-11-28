@@ -6368,13 +6368,17 @@ td.label {
 }
 .refset-list .effective-time,
 .refset-header .effective-time {
-  width: 65px;
+  width: 95px;
 }
 .refset-list .num-members,
 .refset-header .num-members {
-  width: 60px;
+  width: 70px;
   text-align: right;
   margin-right: 5px;
+}
+.refset-list .last-modified,
+.refset-header .last-modified {
+  width: 88px;
 }
 .refset-list .date-field,
 .refset-header .date-field {
@@ -6430,9 +6434,6 @@ td.label {
 .refset-list .refset-header:last-child,
 .refset-header .refset-header:last-child {
   margin-right: 0;
-}
-.last-modified {
-  width: 223px;
 }
 .ember-list-item-view {
   width: 100%;

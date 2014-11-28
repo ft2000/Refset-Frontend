@@ -1,4 +1,4 @@
-<h1>Create New Refset</h1>
+<h1>Create New Reference Set</h1>
 
 <div class="row">
 
@@ -6,13 +6,13 @@
 
 		<div class="panel panel-info ember-view fade in">
 		    <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#refsetHeader">
-		         <h4 class="panel-title">Refset Header</h4>
+		         <h4 class="panel-title">Reference Set Header</h4>
 		    </div>
 		    <div class="panel-collapse collapse in">
 		        <div id="refsetHeader" class="panel-body">
 
 					{{#unless isRF2Import}}
-						<label>Are you importing a Published Refset?</label> {{radio-button value=false checked=disablePublishedFormFields}} Yes {{radio-button value=true checked=disablePublishedFormFields}} No
+						<label>Are you importing a published Reference Set?</label> {{radio-button value=false checked=disablePublishedFormFields}} Yes {{radio-button value=true checked=disablePublishedFormFields}} No
 					{{/unless}}
 
 					<form class="refset-header">
@@ -21,13 +21,13 @@
 
 							<tr>
 								{{#if isRF2Import}}	
-									<td class="label">Refset Description</td>
+									<td class="label pointer">Refset Description</td>
 									<td class="content" colspan="3">
 										{{rf2FileToImport.label}}
 						  			</td>
 								{{else}}
 									<td class="content" colspan="4">
-										<label class="control-label" for="description" class="form-control">Refset Description</label>
+										<label class="control-label pointer" rel="tooltip" title="Reference Set description should conform to the editorial rules for Fully Specified Name, including valid semantic (hierarchy) tags.">Reference Set Description</label>
 										{{textarea value=description class="form-control"}}
 									</td>
 								{{/if}}
@@ -52,12 +52,13 @@
 							</tr>
 
 							<tr>
-								<td class="label">Anticipated Published Date</td><td class="content">
+								<td class="label"><span class="pointer" rel="tooltip" title="Planned publish member effective time">Planned Published Date</span></td>
+								<td class="content">
 									{{view Em.TextField 
-										placeholder="Date expected to be published"
+										placeholder="enter date..."
 									    valueBinding="meta.expectedReleaseDateInput"
 										data-provide="datepicker"
-										data-date-format="MM d, yyyy"
+										data-date-format="yyyymmdd"
 										data-date-clear-btn="true"
 										data-date-autoclose="true"
 										class="form-control"}}								
@@ -67,18 +68,10 @@
 					  			</td>
 							</tr>
 							<tr>
-								<td class="label">SCTID</td>
 								{{#if isRF2Import}}									
+									<td class="label">SCTID</td>
 									<td class="content" colspan=3>
 										{{rf2FileToImport.id}}
-									</td>
-								{{else}}
-									<td class="content" colspan=3>
-										{{#if disablePublishedFormFields}}
-											{{input type="text" value=id disabled="true" placeholder="A temporary UUID will be auto generated" class="form-control"}}
-										{{else}}
-											{{input type="text" value=id placeholder="Enter refsetId (SCTID) here" class="form-control"}}
-										{{/if}}
 									</td>
 								{{/if}}
 							</tr>

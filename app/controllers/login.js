@@ -338,12 +338,11 @@ export default Ember.ObjectController.extend({
 		registerUser: function()
 		{
 			var regBody = "Name : " + this.regname + "%0A%0A";
-			regBody += "Phone : " + this.regphone + "%0A%0A";
 			regBody += "IHTSDO Login : " + this.reguser + "%0A%0A";
-			regBody += "Nationality : " + this.regnationality + "%0A%0A";
+			regBody += "Organisations : " + this.regorg + "%0A%0A";
 			regBody += this.regnotes;
 			
-			window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Snomed CT&body=' + regBody;
+			window.location.href = 'mailto:' + RefsetENV.APP.RegistrationEmail + '?subject=Request for access to Reference Set Management Service&body=' + regBody;
 			this.send('closeRegistrationModal');
 		},	
 		

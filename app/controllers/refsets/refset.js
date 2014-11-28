@@ -239,13 +239,13 @@ export default Ember.ObjectController.extend({
 	{
 		if (this.editMode)
 		{
-			return this.showMemberMetaData ? 81 : 56;			
+			return this.showMetaData ? 81 : 56;			
 		}
 		else
 		{
-			return this.showMemberMetaData ? 70 : 45;
+			return this.showMetaData ? 70 : 45;
 		}
-	}.property("showMemberMetaData","editMode"),
+	}.property("showMetaData","editMode"),
 
 	initModel : function(params)
 	{
@@ -253,6 +253,7 @@ export default Ember.ObjectController.extend({
 		
 		this.set("editMode",false);
 		this.set("filterByDescription","");
+		this.set("showMetaData",false);
 		
 		this.clearAllFilters();
 		

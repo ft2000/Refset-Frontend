@@ -71,9 +71,9 @@ export default Ember.ObjectController.extend({
 		// Need to validate the form at this point and abort if required fields are not completed
 				
 		this.dialogInstance = BootstrapDialog.show({
-            title: 'Creating your refset',
+            title: 'Creating your Refsetence Set',
             closable: false,
-            message: '<br><br><div class="centre">We are creating your refset. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+            message: '<br><br><div class="centre">We are creating your Reference Set Header. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
             buttons: [{
                 label: 'OK',
                 cssClass: 'btn-primary',
@@ -84,8 +84,6 @@ export default Ember.ObjectController.extend({
         });
 		this.dialogInstance.getModalFooter().hide();
 
-Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);		
-		
 		var dataController = this.get('controllers.data');		
 		dataController.createRefset(Refset,this,'createRefsetComplete');
 	},
@@ -102,7 +100,7 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
 
     			if (typeof response.unauthorised !== "undefined")
     			{
-    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to log in.</p>';
+    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to sign in.</p>';
     			}
 
     			if (typeof response.commsError !== "undefined")
@@ -138,14 +136,14 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
     			{
     				if (isRF2Import) // Importing an RF2 file
     				{
-            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members from your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
     					
             			// Now initiate sending RF2 file to the API.
             			dataController.importRF2(refsetId,conceptsToImport,this,'importRF2Complete');	
     				}
     				else // Flat file of concepts IDs to import
     				{
-            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing concepts. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
                 		
             			// Now initiate adding members to our new refset...
             			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
@@ -161,7 +159,7 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
 
     	importRF2Complete : function(response)
     	{
-			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">RF2 file imported.<br><br>');
+			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file imported.<br><br>');
 			this.dialogInstance.getModalFooter().show();
     	},
     	
@@ -194,7 +192,7 @@ Ember.Logger.log("+++++++++++++++++++++++++++++++",Refset);
     		}
     		else
 			{
-    			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">Members imported.<br><br>');
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">Members imported.<br><br>');
     			this.dialogInstance.getModalFooter().show();
 			}
     	},
