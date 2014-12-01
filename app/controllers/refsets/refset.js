@@ -258,16 +258,16 @@ export default Ember.ObjectController.extend({
 		this.clearAllFilters();
 		
 		var _this 			= this;
-		var id 				= params.params["refsets.refset"].id;
+		var uuid 				= params.params["refsets.refset"].uuid;
 
-		Ember.Logger.log("controllers.refsets.refset:initModel (id)",id);
+		Ember.Logger.log("controllers.refsets.refset:initModel (uuid)",uuid);
 				
 		var dataController 	= this.get('controllers.data');
 
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		Ember.run.next(function()
 		{
-			dataController.getRefset(id,_this,'getRefsetComplete');
+			dataController.getRefset(uuid,_this,'getRefsetComplete');
 		});
 	
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -358,7 +358,7 @@ export default Ember.ObjectController.extend({
 	getDefaultEffectiveTime : function()
 	{
 		var times = this.get("effectiveTimeArray");
-		return times[0].id;		
+		return times[0].id;
 	},
 
 	actions :
@@ -440,7 +440,7 @@ export default Ember.ObjectController.extend({
 			
 			for (var m=0;m<refset.members.length;m++)
 			{
-				if (refset.members[m].id === memberId)
+				if (refset.members[m].uuid === memberId)
 				{
 					refset.members[m].meta.deleteConcept = !refset.members[m].meta.deleteConcept;
 					this.set("model",refset);
@@ -461,7 +461,7 @@ export default Ember.ObjectController.extend({
 			
 			for (var m=0;m<refset.members.length;m++)
 			{
-				if (refset.members[m].id === memberId)
+				if (refset.members[m].uuid === memberId)
 				{
 					refset.members[m].active = !refset.members[m].active;
 					this.set("model",refset);
@@ -665,7 +665,7 @@ export default Ember.ObjectController.extend({
     				
     				this.dialogInstance.setMessage(newAddMessage);
 
-    				dataController.addMembers(this.get("model").id,this.membersToAdd,this,'addMembersComplete');
+    				dataController.addMembers(this.get("model").uuid,this.membersToAdd,this,'addMembersComplete');
     			}
     			else
     			{
@@ -678,7 +678,7 @@ export default Ember.ObjectController.extend({
         				
         				this.dialogInstance.setMessage(newDelMessage);
         				
-        				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+        				dataController.deleteMembers(this.get("model").uuid,this.membersToDelete,this,'deleteMembersComplete');
     				}
     				else
     				{
@@ -707,7 +707,7 @@ export default Ember.ObjectController.extend({
 				this.dialogInstance.setMessage(newMessage);
 				
 				var dataController = this.get('controllers.data');
-				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+				dataController.deleteMembers(this.get("model").uuid,this.membersToDelete,this,'deleteMembersComplete');
 			}
 			else
 			{
@@ -730,7 +730,7 @@ export default Ember.ObjectController.extend({
 		exportRefset : function()
 		{
 			var refset = this.get("model");
-			var id = refset.id;
+			var id = refset.uuid;
 			
 			Ember.Logger.log("controllers.refsets.refset:actions:exportRefset (id)",id);
 			
@@ -793,7 +793,7 @@ export default Ember.ObjectController.extend({
 			
 			var _this 	= this;
 			var refset 	= this.get("model");			
-			var id 		= refset.id;
+			var id 		= refset.uuid;
 			
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
 
@@ -916,7 +916,7 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("controllers.refsets.refset:actions:inactivateRefset");
 
 			this.dialogInstance = BootstrapDialog.show({
-	            title: 'Activating your refset',
+	            title: 'Inactivating your refset',
 	            closable: false,
 	            message: '<br><br><div class="centre">Inactivating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            buttons: [{

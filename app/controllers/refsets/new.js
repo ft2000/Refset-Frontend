@@ -12,7 +12,6 @@ export default Ember.ObjectController.extend({
 	isRF2Import					: Ember.computed.alias("controllers.refsets/upload.isRF2Import"),
 
 	dialogInstance 				: null,
-	disablePublishedFormFields	: true,
 	
 	rf2FileToImport				: Ember.computed.alias("controllers.refsets/upload.rf2FileToImport"),
 	moreThanOneRefsetInRF2		: Ember.computed.alias("controllers.refsets/upload.moreThanOneRefsetInRF2"),
@@ -20,8 +19,6 @@ export default Ember.ObjectController.extend({
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
-		this.set("model.meta.expectedReleaseDateInput",null);
-		this.set("disablePublishedFormFields",true);
 		
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();
@@ -46,7 +43,7 @@ export default Ember.ObjectController.extend({
 		if (isRF2Import)
 		{
 			var rf2 = this.get("rf2FileToImport");
-			this.set("model.id",rf2.id);
+			this.set("model.sctId",rf2.sctId);
 			this.set("model.description",rf2.label);
 		}
 
@@ -58,14 +55,14 @@ export default Ember.ObjectController.extend({
 		Refset.active 				= true; // Always make new refsets active
 		Refset.languageCode 		= this.get("model.languageCode");
 		Refset.description 			= this.get("model.description");
+		Refset.published 			= this.get("model.published");
 		
 		var releaseDate 			= this.get("model.expectedReleaseDate");
 		Refset.expectedReleaseDate 	= releaseDate;
 
-		if (!this.disablePublishedFormFields || isRF2Import)
+		if (isRF2Import)
 		{
-			Refset.id 				= this.get("model.id");
-			Refset.published 		= true;
+			Refset.sctId 			= this.get("model.sctId");
 		}
 		
 		// Need to validate the form at this point and abort if required fields are not completed
@@ -114,9 +111,9 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			var refsetId = response.id;
+    			var refsetId = response.uuid;
 
-    			this.transitionToRoute('refsets.refset',response.id);
+    			this.transitionToRoute('refsets.refset',refsetId);
     			
     			var conceptsToImport;
     			var isRF2Import 		= this.get("isRF2Import");
@@ -232,7 +229,7 @@ export default Ember.ObjectController.extend({
 		{
 			this.createEmptyRefset();
 			this.set("isRF2Import",false);
-			this.set("rf2FileToImport.id","0");
+			this.set("rf2FileToImport.sctId","0");
 			this.set("rf2FileToImport.label","loading...");
 		},
 		

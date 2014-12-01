@@ -204,7 +204,7 @@ export default Ember.ObjectController.extend({
 		// If we are holding a refset then refresh it
 		if (this.currentRefset !== null)
 		{
-			this.getRefset(this.currentRefset.id,this.currentRefset.callingController,this.currentRefset.completeAction);
+			this.getRefset(this.currentRefset.uuid,this.currentRefset.callingController,this.currentRefset.completeAction);
 		}
 	},
 	
@@ -666,15 +666,18 @@ export default Ember.ObjectController.extend({
 		
 		refsetsAdapter.create(user,refset).then(function(response)
 		{
+			Ember.Logger.log('============================================' ,response);
+			
+			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				refset.id = response.content.id;		
+				refset.uuid = response.content.uuid;		
 		
 				_this.set("model",refset);
 				
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
-					callingController.send(completeAction,{error:0,id:refset.id});				
+					callingController.send(completeAction,{error:0,uuid:refset.uuid});				
 				}
 			}
 			else

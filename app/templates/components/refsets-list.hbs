@@ -18,8 +18,8 @@
 		{{#with view as outerView}}
 			{{#each refsets}}
 				<li class="list-group-item refset-list-item">
-					{{#link-to 'refsets.refset' id}}<button class="btn btn-primary right">view</button>{{/link-to}}
-					<span class="id-desc">{{#if published}}{{id}} | {{/if}}{{description}}</span>
+					{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
+					<span class="id-desc">{{#if published}}{{sctId}} | {{/if}}{{description}}</span>
 	
 					{{refset-list-item-span 'language' languageCode outerView.controller.languageTypes}}
 					{{refset-list-item-span 'snomed-id' typeId outerView.controller.refsetTypes}}

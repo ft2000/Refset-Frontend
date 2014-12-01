@@ -11,9 +11,9 @@
 		    <div class="panel-collapse collapse in">
 		        <div id="refsetHeader" class="panel-body">
 
-					{{#unless isRF2Import}}
-						<label>Are you importing a published Reference Set?</label> {{radio-button value=false checked=disablePublishedFormFields}} Yes {{radio-button value=true checked=disablePublishedFormFields}} No
-					{{/unless}}
+					{{#if isRF2Import}}
+						<label>Are you importing a published Reference Set?</label> {{radio-button value=false checked=model.published}} Yes {{radio-button value=true checked=model.published}} No
+					{{/if}}
 
 					<form class="refset-header">
 
@@ -71,7 +71,7 @@
 								{{#if isRF2Import}}									
 									<td class="label">SCTID</td>
 									<td class="content" colspan=3>
-										{{rf2FileToImport.id}}
+										{{rf2FileToImport.sctId}}
 									</td>
 								{{/if}}
 							</tr>
@@ -99,7 +99,7 @@
 
 								<p>
 								{{#each mbr in potentialMembersToImport}}
-									<label class="notALabel">{{radio-button value=mbr name='refsetId' checked=rf2FileToImport}} {{mbr.id}} | {{mbr.label}} | {{mbr.concepts.length}} members</label><br>
+									<label class="notALabel">{{radio-button value=mbr name='refsetId' checked=rf2FileToImport}} {{mbr.uuid}} | {{mbr.label}} | {{mbr.concepts.length}} members</label><br>
 								{{/each}}
 								</p>
 
@@ -109,7 +109,7 @@
 
 								<p>
 								{{#each member in potentialMembersToImport}}					
-									{{member.id}} | {{member.label}} | {{member.concepts.length}} members<br>
+									{{member.uuid}} | {{member.label}} | {{member.concepts.length}} members<br>
 								{{/each}}
 								</p>
 

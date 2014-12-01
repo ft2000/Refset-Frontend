@@ -13,7 +13,7 @@ export default Ember.ArrayController.extend({
 	conceptsQueue : [],
 	
 	moreThanOneRefsetInRF2 	: false,
-	rf2FileToImport 		: {id:"0",label:"loading...x"},
+	rf2FileToImport 		: {sctId:"0",label:"loading...x"},
 	
 	processGetConceptsQueueTempData : {},
 	
@@ -321,11 +321,11 @@ export default Ember.ArrayController.extend({
 						// We may have more than one refset in an RF2 file, so lets deal with them separately.
 						if (!(refsetId in refsetsInRF2File))
 						{
-							refsetsInRF2File[refsetId] = {id:refsetId,label:'loading...',concepts:{}}
+							refsetsInRF2File[refsetId] = {sctId:refsetId,label:'loading...',concepts:{}}
 								
 							var promise = membersAdapter.find(user,refsetId).then(function(response)
 							{
-								return {id:refsetId,label:response.content.concept.label};	
+								return {sctId:refsetId,label:response.content.concept.label};	
 							});
 							
 							promises.push(promise);
@@ -370,7 +370,7 @@ export default Ember.ArrayController.extend({
 					{
 						for (var r=0;r<refsets.length;r++)
 						{
-							if (refsets[r].id === result[l].id)
+							if (refsets[r].sctId === result[l].sctId)
 							{
 								refsets[r].label = result[l].label;
 							}
