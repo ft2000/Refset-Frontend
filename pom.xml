@@ -37,12 +37,8 @@
 							<signPackage>false</signPackage>
 							<dataSet>
 								<data>
-									<src>${basedir}</src>
+									<src>${basedir}/dist</src>
 									<type>directory</type>
-									<excludes>**/pom.xml,**/deb</excludes>
-
-									<!-- <exclude>pom.xml</exclude> <exclude>${basedir}/deb</exclude> -->
-
 									<mapper>
 										<type>perm</type>
 										<prefix>/opt/${packageName}/lib/</prefix>
