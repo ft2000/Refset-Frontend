@@ -593,12 +593,13 @@ export default Ember.ObjectController.extend({
 	processRefsetMemberRequestQueue : function(user,id)
 	{
 		var _this = this;
+		var promise;
 		
 		if (this.refsetMemberRequestQueue.length)
 		{
 			var membersToProcess = this.refsetMemberRequestQueue.shift();
 	
-			var promise = this.getRefsetMembers(user,id,membersToProcess.from,membersToProcess.to).then(function(response)
+			promise = this.getRefsetMembers(user,id,membersToProcess.from,membersToProcess.to).then(function(response)
 			{
 				if (typeof response === "undefined" || response.error)
 				{
@@ -607,11 +608,11 @@ export default Ember.ObjectController.extend({
 			});
 		}
 		
-		Ember.RSVP.all([promise]).then(function(response)
+		Ember.RSVP.all([promise]).then(function()
 		{
 			if (_this.refsetMemberRequestQueue.length)
 			{
-				_this.processRefsetMemberRequestQueue(user,id)
+				_this.processRefsetMemberRequestQueue(user,id);
 			}
 		});
 	},
@@ -648,8 +649,9 @@ export default Ember.ObjectController.extend({
 				}
 			}
 			else
-
-			return {error:false};
+			{
+				return {error:false};
+			}
 		});
 	
 	},

@@ -182,12 +182,14 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
+					var score;
+					
 					if (filterByDescription !== '')
 					{
 						if (filterByDescription.match(/^[0-9]*$/))
 						{
 							var regExp = new RegExp(filterByDescription,"g");
-							var score = member.referencedComponentId.search(regExp);
+							score = member.referencedComponentId.search(regExp);
 							
 							if (score === -1)
 							{
@@ -200,7 +202,7 @@ export default Ember.ObjectController.extend({
 						}
 						else
 						{
-							var score = LiquidMetal.score(member.description, filterByDescription);
+							score = LiquidMetal.score(member.description, filterByDescription);
 
 							if (score < 0.75)
 							{
@@ -218,7 +220,7 @@ export default Ember.ObjectController.extend({
  
 			});
 
-			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n) });			
+			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n); });			
 			var sortBy 		= this.get("sortBy");
 			var sortOrder 	= this.get("sortOrder");
 			
@@ -378,7 +380,7 @@ export default Ember.ObjectController.extend({
 					case "asc":
 					{
 						sortOrder = "desc";
-						break
+						break;
 					}
 
 					case "desc":
@@ -387,7 +389,7 @@ export default Ember.ObjectController.extend({
 						{
 							sortOrder = "score";
 						}
-						break
+						break;
 					}	
 				}
 			}
@@ -874,7 +876,6 @@ export default Ember.ObjectController.extend({
 		activateRefset : function()
 		{
 			
-			var _this 	= this;
 			var refset 	= this.get("model");			
 			
 			refset.active = true;
@@ -905,8 +906,6 @@ export default Ember.ObjectController.extend({
 	
 		inactivateRefset : function()
 		{
-			
-			var _this 	= this;
 			var refset 	= this.get("model");	
 			
 			refset.active = false;

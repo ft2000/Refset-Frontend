@@ -154,7 +154,7 @@ export default Ember.ObjectController.extend({
     		}
     	},
 
-    	importRF2Complete : function(response)
+    	importRF2Complete : function()
     	{
 			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file imported.<br><br>');
 			this.dialogInstance.getModalFooter().show();

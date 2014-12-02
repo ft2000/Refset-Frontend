@@ -316,12 +316,14 @@ export default Ember.ArrayController.extend({
 						var conceptId 		= memberRow[5];
 
 						if (effectiveTime === "") // If no effective Time, then not published, so ignore it
+						{
 							return null;
+						}
 						
 						// We may have more than one refset in an RF2 file, so lets deal with them separately.
 						if (!(refsetId in refsetsInRF2File))
 						{
-							refsetsInRF2File[refsetId] = {sctId:refsetId,label:'loading...',concepts:{}}
+							refsetsInRF2File[refsetId] = {sctId:refsetId,label:'loading...',concepts:{}};
 								
 							var promise = membersAdapter.find(user,refsetId).then(function(response)
 							{
@@ -338,9 +340,6 @@ export default Ember.ArrayController.extend({
 				});
 				
 				rowsToImportArray = $.grep(rowsToImportArray,function(n){ return(n); });
-
-				// count how many rows are in the RF2 file - a member might well be in the file more than one in different states, so num rows != num members...
-				var numRowsToImport 	= rowsToImportArray.length;
 				
 				var refsetsArray		= Object.keys(refsetsInRF2File);
 				

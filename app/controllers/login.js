@@ -18,7 +18,7 @@ export default Ember.ObjectController.extend({
 
 	loginExpiryLength 	: RefsetENV.APP.loginExpiry * 60 * 1000, // Setting is in MINUTES, we need milliseconds here. This is the inactivity period before auto logout
 	
-	showLogoutTimer		: Ember.computed.lte("logoutTimerDisplay",200),	// Only show the logout progress bar if there are 100 seconds or less left until logout.
+	showLogoutTimer		: Ember.computed.lte("logoutTimerDisplay",200),	// Only show the logout progress bar if there are 200 seconds or less left until logout.
 	
 	logoutTimerDisplay 	: function() 		// A auto calculated property which returns how many seconds are left until user is automatically logged out
 	{
@@ -199,7 +199,7 @@ export default Ember.ObjectController.extend({
 		var autoLogoutTime 		= new Date(this.user.autoLogoutTime);
 		var timeLeftToLogout 	= parseInt((autoLogoutTime.getTime() - new Date().getTime()) /1000); // seconds
 
-		if (this.user.token !== null && !this.logoutDialogOpen && timeLeftToLogout < 90)
+		if (this.user.token !== null && !this.logoutDialogOpen && timeLeftToLogout < 90 && timeLeftToLogout > 0)
 		{
 			this.set("logoutDialogOpen",true);
 			Bootstrap.ModalManager.open('logoutModal', '<img src="assets/img/login.png"> Snomed CT', 'logout-alert', this.logoutButtons, this); // modal ID, title, template (hbs), buttons, controller (usually this)

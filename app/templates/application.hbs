@@ -30,7 +30,6 @@
 				
 				{{#if user.token}}
 					<li><a href="#" {{action 'logout'}}>Logout</a></li>
-					{{#if showLogoutTimer}}{{bs-progress progressBinding="logoutProgressDisplay" type="danger" stripped="true"}} <p class="warningText">Logging you out in {{logoutTimerDisplay}} seconds{{/if}}</p>
 				{{else}}
 					<li><a href="#" {{action 'showRegistrationForm'}}>Register</a></li>
 					<li><a href="#" {{action 'showLoginForm'}}>Login</a></li>
@@ -38,6 +37,18 @@
 
             </ul>
         </div>
+		{{#if showLogoutTimer}}
+		<table style="margin-top:5px">
+		<tr>
+			<td width="320">
+				{{bs-progress progressBinding="logoutProgressDisplay" type="danger" stripped="true"}}
+			</td>
+			<td class="warningText" valign=top>
+				&nbsp;&nbsp;Logging you out in {{logoutTimerDisplay}} seconds
+			</td>
+		</tr>
+		</table>
+		{{/if}}
     </div>
 </nav>
 
