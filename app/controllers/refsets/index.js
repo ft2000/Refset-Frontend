@@ -7,9 +7,7 @@ export default Ember.ObjectController.extend({
 	moduleTypes 	: Ember.computed.alias("controllers.data.moduleTypes"),
 	languageTypes 	: Ember.computed.alias("controllers.data.languageTypes"),
 	
-	published 		: Ember.computed.alias("controllers.data.publishedRefsets"),
-	unpublished 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
-	inactive	 	: Ember.computed.alias("controllers.data.inactiveRefsets"),
+	refsets			: Ember.computed.alias("controllers.data.refsets"),
 	user 			: Ember.computed.alias("controllers.login.user"),
 	
 	queryParams		: ['showUnpublished','showInactive'],

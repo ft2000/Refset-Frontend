@@ -101,7 +101,7 @@
 									{{/if}}
 								</td>
 								<td class="label" rel="tooltip" title="Planned publish member effective time"><span class="pointer">Planned Publish Date</span></td><td class="content" colspan=2>				
-									not in data yet
+									not available in data yet...
 								</td>
 							</tr>
 
@@ -192,6 +192,7 @@
 									<span class="active pointer" rel="tooltip" title="Member (not underlying component) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a></span>
 									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time"><a {{action 'setSortCriteria' 'effectiveTime'}} class="pointer">Effective Time</a></span>
 									<span class="module-id"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a></span>
+									<span>Member Id</span>
 								</li>
 									
 								{{#if showMetaData}}
@@ -237,6 +238,7 @@
 														<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 														<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+														<span>{{uuid}}</span>
 													</div>
 													
 													<hr>				
@@ -262,6 +264,7 @@
 													<span>
 														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 										 			</span>
+													<span>{{uuid}}</span>
 												</div>
 											  {{/collection}}
 										  {{/with}}
@@ -280,6 +283,7 @@
 															<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 															<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 															<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+															<span>{{uuid}}</span>
 														</div>
 													</div>
 												  {{/collection}}
@@ -396,7 +400,7 @@
 
 				{{#if filterByPublishedMembersIsActive}}
 					<p class="filterItem">
-						Member change history:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
+						Modified members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
 						{{radio-button value=true checked=filterByPublishedMembers}} Published {{radio-button value=false checked=filterByPublishedMembers}} Unpublished/Modified 
 					</p>				
 				{{/if}}	

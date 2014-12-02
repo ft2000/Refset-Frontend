@@ -468,28 +468,37 @@ export default Ember.ObjectController.extend({
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
 				var inactiveArray 		= [];
+				var refsetsArray 		= [];
 				
-				_this.refsets.setObjects(response);
 				
 				response.content.refsets.map(function(item)
 				{
+					item.meta = {type:'blah',moduleType:'fred',componentType:'sheep',language:'US English'};
+					
+					refsetsArray.push(item);
+
 					if (item.active)
 					{
 						if (item.published)
 						{
+							item.meta.status = 'published';
 							publishedArray.push(item);
 						}
 						else
 						{
+							item.meta.status = 'unpublished';
 							unpublishedArray.push(item);					
 						}
 					}
 					else
 					{
+						item.meta.status = 'inactive';
 						inactiveArray.push(item);
 					}
 				});
 								
+				_this.refsets.setObjects(refsetsArray);
+
 				var sortedPublishedArray = publishedArray.sort(function(a,b)
 				{
 				    return new Date(b.publishedDate) - new Date (a.publishedDate);

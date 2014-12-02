@@ -986,7 +986,7 @@ export default Ember.ObjectController.extend({
 				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
-				case 'filterByPublishedMembers' : {defaultValue = true; break;}
+				case 'filterByPublishedMembers' : {defaultValue = false; break;}
 			}
 		
 			this.set(filterName,defaultValue);

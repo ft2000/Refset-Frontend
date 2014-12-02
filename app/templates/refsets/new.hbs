@@ -127,12 +127,12 @@
 				{{#if potentialMembersToImport}}
 				    <div class="panel panel-info ember-view fade in panelNoPadding">
 				        <div class="panel-heading accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="#importMemberList">
-				             <h4 class="panel-title">Review potential members to import({{potentialMembersToImport.length}})</h4>
+				             <h4 class="panel-title">Review potential members to import. {{#if filteringActive}}Showing {{filteredImportMembers.length}} of {{potentialMembersToImport.length}} items matching your filter{{else}}({{potentialMembersToImport.length}}){{/if}}</h4>
 				        </div>
 				        <div class="panel-collapse collapse in">
 				            <div id="importMemberList" class="panel-body member-list">
 				            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-									 {{#collection Ember.ListView contentBinding="potentialMembersToImport" height=400 rowHeight=59 width="100%"}}
+									 {{#collection Ember.ListView contentBinding="filteredImportMembers" height=400 rowHeight=59 width="100%"}}
 										<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 											<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponentId}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 		
@@ -176,10 +176,34 @@
 				<h2>Importing failed</h2>
 				<p><b{{importError}}</b></p>
 			{{/if}}
+		{{/if}}
+		
+		{{#if potentialMembersToImport}}
+			<hr>
+			
+			<h2>Filter concepts</h2>
+		
+			<p>NOTE: All listed members will be imported regardless of this filter, which will only limit what you can view, not what wll be imported.
+			
+			<p class="filterItem">
+				Filter by description or referenced component id: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+				{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
+			</p>
 
+			<p class="filterItem">
+				Show: <br>
+				{{radio-button value=-1 checked=filterByInactiveConcepts}} All concepts<br>
+				{{radio-button value=false checked=filterByInactiveConcepts}} Inactive Concepts<br>
+				{{radio-button value=true checked=filterByInactiveConcepts}} Active Concepts<br>
+			</p>
+			
+		{{/if}}
+				
+		{{#unless getConceptDataInProgress}}		
+			<hr>
 			<button {{action "clearForm"}} class="btn btn-danger left">Clear Form</button>
 			<button {{action "initRefsetImport"}} class="btn btn-primary right">Create Refset</button>
-
-		{{/if}}
+		{{/unless}}
+		
 	</div>
 </div>

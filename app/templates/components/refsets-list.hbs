@@ -1,9 +1,9 @@
-<ul class="list-group refset-list">
+<ul class="list-group refset-list" style="clear:both">
 	
 	<li class="list-group-item list-header">
 		<span class="snomed-id">Refset Id</span>
 		<span>Description</span>
-	<br>
+		<br>
 		<span class="language">Language</span>
 		<span class="snomed-id">Refset Type Id</span>
 		<span class="snomed-id">Module Id</span>
@@ -13,28 +13,34 @@
 		<span class="last-modified">Last Update Date</span>
 		<span class="last-modified-by">Last Update User</span>
 		<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
-	</li>	
+	</li>
+	
 	{{#if refsets}}
-		{{#with view as outerView}}
-			{{#each refsets}}
-				<li class="list-group-item refset-list-item">
+		<li class="list-group-item refset-list-item">
+    	{{#with controller.moduleTypes as moduleTypes }}
+			 {{#collection Ember.ListView contentBinding="refsets" height=400 rowHeight=59 width="100%"}}
+				<div>
 					{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
 					<span class="id-desc">{{#if published}}{{sctId}} | {{/if}}{{description}}</span>
 	
-					{{refset-list-item-span 'language' languageCode outerView.controller.languageTypes}}
-					{{refset-list-item-span 'snomed-id' typeId outerView.controller.refsetTypes}}
-					{{refset-list-item-span 'snomed-id' moduleId outerView.controller.moduleTypes}}
-					{{refset-list-item-span 'snomed-id' componentTypeId outerView.controller.componentTypes}}
+					<span class="language pointer" rel="tooltip" {{bind-attr title='meta.language'}}>{{languageCode}}</span>
+					<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.type'}}>{{typeId}}</span>
+					<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
+					<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
+					
+					{{meta.status}}
 					
 					{{#if published}}<span class="effective-time">{{effective-time-format latestEffectiveTime}}</span>{{/if}}
 
 					<span class="num-members">{{totalNoOfMembers}}</span>
 					<span class="last-modified">{{date-format modifiedDate}}</span>
 					<span class="last-modified-by">{{modifiedBy}}</span>
-				</li>
-			{{/each}}
-		{{/with}}
+				</div>
+			  {{/collection}}
+		  {{/with}}
+		</li>
 	{{else}}
 		<p>There are currently no matching refsets available.</p>
 	{{/if}}
 </ul>
+
