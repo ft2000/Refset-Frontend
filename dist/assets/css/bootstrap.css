@@ -4622,9 +4622,10 @@ a.thumbnail.active {
 }
 .alert {
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   border: 1px solid transparent;
   border-radius: 4px;
+  width: 100%;
 }
 .alert h4 {
   margin-top: 0;
@@ -6366,11 +6367,19 @@ td.label {
 .refset-header .snomed-id {
   width: 150px;
 }
+.refset-list .effective-time,
+.refset-header .effective-time {
+  width: 95px;
+}
 .refset-list .num-members,
 .refset-header .num-members {
-  width: 50px;
+  width: 70px;
   text-align: right;
   margin-right: 5px;
+}
+.refset-list .last-modified,
+.refset-header .last-modified {
+  width: 88px;
 }
 .refset-list .date-field,
 .refset-header .date-field {
@@ -6459,7 +6468,7 @@ td.label {
 }
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
-  width: 80px;
+  width: 120px;
 }
 .member-list .member-list-item .effective-time,
 .member-list .member-list-header .effective-time {
@@ -6503,13 +6512,6 @@ td.label {
 .member-list .member-list-item .module-id {
   cursor: pointer;
   color: #00a7e1;
-}
-.growl-notifications .icon {
-  background: url('../img/sprite-icons.white.png') no-repeat 0px 0px;
-  display: block;
-  height: 35px;
-  text-indent: -9999px;
-  width: 35px;
 }
 /* Upload Refsets */
 .fileUploadDropZone {
@@ -6565,6 +6567,9 @@ input.form-control {
 }
 .panelNoPadding .panel-body {
   padding: 0;
+}
+.panelNoPadding .panel-body .list-group {
+  margin: 0;
 }
 tr.hr,
 tr.hr td,
@@ -6629,6 +6634,26 @@ td.title {
 span.icon {
   display: inline-block;
 }
+.icon-btn {
+  text-align: left;
+  padding-right: 0;
+  padding-top: 10px;
+  padding-bottom: 2px;
+}
+.icon-btn span.icon {
+  margin-top: -10px;
+  margin-bottom: -10px;
+  float: right;
+  width: 30px;
+}
+.icon-btn span.btn-text {
+  font-size: 13px;
+  font-weight: 500;
+  float: left;
+}
+.icon-btn:hover span.icon {
+  background: url('../img/sprite-icons.white.png') no-repeat 0px 0px;
+}
 .btn-side-menu {
   width: 100%;
   margin-bottom: 5px;
@@ -6651,4 +6676,24 @@ span.icon {
 label.notALabel {
   font-size: inherit;
   font-weight: inherit;
+}
+p.filterItem {
+  border: 1px solid #e0e0e0;
+  margin-bottom: 3px;
+  border-radius: 3px;
+  background-color: #f3f3f3;
+  padding: 3px;
+}
+p.filterItem input {
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+.list-group-item:after,
+p.filterItem:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
 }

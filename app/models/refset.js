@@ -27,5 +27,6 @@ export default Ember.Object.extend({
 	{
 		createdDateInput 	: null,
 		publishedDateInput 	: null,
+		expectedReleaseDateInput : null,
 	}
 });

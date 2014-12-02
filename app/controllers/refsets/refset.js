@@ -5,56 +5,271 @@ export default Ember.ObjectController.extend({
 		
 	needs : ["login","data","application","refsets/upload"],
 	
+	user						: Ember.computed.alias("controllers.login.user"),
+	
 	model 						: Ember.computed.alias("controllers.data.refset"),
 	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
 	languageTypes 				: Ember.computed.alias("controllers.data.languageTypes"),
-
 	moduleTypesArray			: Ember.computed.alias("controllers.data.moduleTypesArray"),
+	moduleUpdatersArray			: Ember.computed.alias("controllers.data.moduleUpdatersArray"),
+	effectiveTimeArray			: Ember.computed.alias("controllers.data.effectiveTimeArray"),
 	
 	potentialMembersToImport	: Ember.computed.alias("controllers.refsets/upload.model"),
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
 	
-	editModel					: {},
-
-	memberRowHeight  			: function()
-	{
-		if (this.editMode)
-		{
-			return this.showMemberMetaData ? 81 : 56;			
-		}
-		else
-		{
-			return this.showMemberMetaData ? 70 : 45;
-		}
-	}.property("showMemberMetaData","editMode"),
-
+	editModel					: {},	
 	membersToDelete 			: [],
 	membersToAdd				: [],
 	
 	editMode					: false,
-	showHeaderMetaData			: false,
-	showMemberMetaData			: false,
+	showMetaData				: false,
 		
 	importListChangedInProgress	: false,
 
-	dialogInstance	: null,
+	dialogInstance				: null,
+	
+	filterByStatus 				: -1,
+	filterByModuleId 			: -1,
+	filterByEffectiveTime		: -1,
+	filterByLastUpdateDate		: -1,
+	filterByLastUpdateUser		: -1,
+	filterByInactiveConcepts	: -1,
+	filterByPublishedMembers	: -1,
+	filterByDescription			: '',
+	
+	filterByStatusIsActive				: function(){ return this.filterByStatus !== -1;}.property('filterByStatus'),
+	filterByModuleIdIsActive			: function(){ return this.filterByModuleId !== -1;}.property('filterByModuleId'),
+	filterByEffectiveTimeIsActive		: function(){ return this.filterByEffectiveTime !== -1;}.property('filterByEffectiveTime'),
+	filterByLastUpdateDateIsActive		: function(){ return this.filterByLastUpdateDate !== -1;}.property('filterByLastUpdateDate'),
+	filterByLastUpdateUserIsActive		: function(){ return this.filterByLastUpdateUser !== -1;}.property('filterByLastUpdateUser'),
+	filterByInactiveConceptsIsActive	: function(){ return this.filterByInactiveConcepts !== -1;}.property('filterByInactiveConcepts'),
+	filterByPublishedMembersIsActive	: function(){ return this.filterByPublishedMembers !== -1;}.property('filterByPublishedMembers'),
+	
+	sortBy 								: 'description',
+	sortOrder							: 'asc',
+
+	filteringActive						: function()
+	{ 
+		if (this.get("filterByStatusIsActive")) { return true; }
+		if (this.get("filterByModuleIdIsActive")) { return true; }
+		if (this.get("filterByEffectiveTimeIsActive")) { return true; }
+		if (this.get("filterByLastUpdateDateIsActive")) { return true; }
+		if (this.get("filterByLastUpdateUserIsActive")) { return true; }
+		if (this.get("filterByInactiveConceptsIsActive")) { return true; }
+		if (this.get("filterByPublishedMembersIsActive")) { return true; }
+		
+	}.property('model.members.@each','sortBy','sortOrder','filterByPublishedMembers','filterByDescription','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+
+	filteredMembers						: function()
+	{
+		var allMembers = this.get('model.members');
+		
+		return this.filterMembers(allMembers);
+		
+	}.property('model.members.@each', 'sortBy','sortOrder','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser','filterByPublishedMembers'),
+
+	filteredImportMembers				: function()
+	{
+		var allMembers = this.get('potentialMembersToImport');
+		
+		return this.filterMembers(allMembers);
+		
+	}.property('potentialMembersToImport.@each', 'sortBy','sortOrder','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser','filterByPublishedMembers'),
+
+	
+	clearAllFilters : function()
+	{
+		this.set("filterByStatus",-1);
+		this.set("filterByModuleId",-1);
+		this.set("filterByEffectiveTime",-1);
+		this.set("filterByLastUpdateDate",-1);
+		this.set("filterByLastUpdateUser",-1);
+		this.set("filterByInactiveConcepts",-1);
+		this.set("filterByPublishedMembers",-1);
+		this.set("filterByDescription","");		
+	},
+	
+	filterMembers : function(allMembers)
+	{
+		if (typeof allMembers !== "undefined")
+		{
+			var filterByStatus 				= this.get("filterByStatus");
+			var filterByModuleId 			= this.get("filterByModuleId");
+			var filterByEffectiveTime 		= this.get("filterByEffectiveTime");
+			var filterByDescription 		= this.get("filterByDescription");
+			var filterByLastUpdateDate 		= this.get("filterByLastUpdateDate");
+			var filterByLastUpdateUser 		= this.get("filterByLastUpdateUser");
+			var filterByPublishedMembers 	= this.get("filterByPublishedMembers");
+			
+			var filteredMembers = allMembers.map(function(member)
+			{
+				if (typeof member !== "undefined")
+				{
+					if (filterByStatus !== -1)
+					{
+						if (member.active !== filterByStatus)
+						{
+							return null;
+						}
+					}
+					
+
+					if (filterByModuleId !== -1)
+					{
+						if (member.moduleId !== filterByModuleId)
+						{
+							return null;
+						}
+					}
+					
+
+					if (filterByEffectiveTime !== -1)
+					{
+						if (member.effectiveTime !== filterByEffectiveTime)
+						{
+							return null;
+						}
+					}
+					
+					if (filterByLastUpdateDate !== -1)
+					{
+						var comparisonDate = new Date(filterByLastUpdateDate);
+						
+						if (comparisonDate instanceof Date && !isNaN(comparisonDate.valueOf()))
+						{
+							if (new Date(member.modifiedDate).getTime() < comparisonDate.getTime())
+							{
+								return null;
+							}
+						}
+					}
+					
+					if(filterByPublishedMembers !== -1)
+					{
+						if (filterByPublishedMembers)
+						{ 
+							if (typeof member.effectiveTime === "undefined") //Not published
+							{
+								return null;
+							}
+							
+							if (!moment(member.effectiveTime).isSame(member.modifiedDate))
+							{
+								return null;
+							}
+						}
+						else
+						{
+							if (typeof member.effectiveTime !== "undefined")
+							{
+								if (moment(member.effectiveTime).isSame(member.modifiedDate)) 
+								{
+									return null;
+								}
+							}							
+						}
+					}
+					
+					if (filterByLastUpdateUser !== -1)
+					{
+						if (member.modifiedBy !== filterByLastUpdateUser)
+						{
+							return null;
+						}
+					}
+					
+					var score;
+					
+					if (filterByDescription !== '')
+					{
+						if (filterByDescription.match(/^[0-9]*$/))
+						{
+							var regExp = new RegExp(filterByDescription,"g");
+							score = member.referencedComponentId.search(regExp);
+							
+							if (score === -1)
+							{
+								return null;
+							}
+							else
+							{
+								member.meta.score = 100 - score;
+							}
+						}
+						else
+						{
+							score = LiquidMetal.score(member.description, filterByDescription);
+
+							if (score < 0.75)
+							{
+								return null;								
+							}
+							else
+							{
+								member.meta.score = score;
+							}
+						}
+					}
+					
+					return member;	
+				}
+ 
+			});
+
+			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n); });			
+			var sortBy 		= this.get("sortBy");
+			var sortOrder 	= this.get("sortOrder");
+			
+			if (filterByDescription !== '' && sortOrder === "score" && (sortBy === "description" || sortBy === "referencedComponentId"))
+			{
+				quick_sort(nullsRemoved);
+			}
+			else
+			{
+				nullsRemoved = mergesort(nullsRemoved,sortBy,sortOrder);
+			}
+			
+			return nullsRemoved;
+		}	
+	},
+	
+	memberRowHeight  			: function()
+	{
+		if (this.editMode)
+		{
+			return this.showMetaData ? 81 : 56;			
+		}
+		else
+		{
+			return this.showMetaData ? 70 : 45;
+		}
+	}.property("showMetaData","editMode"),
 
 	initModel : function(params)
 	{
 		Ember.Logger.log("controllers.refsets.refset:initModel");
 		
-		var _this 			= this;
-		var id 				= params.params["refsets.refset"].id;
-		var dataController 	= this.get('controllers.data');
+		this.set("editMode",false);
+		this.set("filterByDescription","");
+		this.set("showMetaData",false);
 		
+		this.clearAllFilters();
+		
+		var _this 			= this;
+		var uuid 				= params.params["refsets.refset"].uuid;
+
+		Ember.Logger.log("controllers.refsets.refset:initModel (uuid)",uuid);
+				
+		var dataController 	= this.get('controllers.data');
+
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		Ember.run.next(function()
 		{
-			dataController.getRefset(id,_this,'getRefsetComplete');			
+			dataController.getRefset(uuid,_this,'getRefsetComplete');
 		});
 	
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -130,8 +345,66 @@ export default Ember.ObjectController.extend({
 
 	}.observes('potentialMembersToImport.@each'),
 	
+	getDefaultModuleId : function()
+	{
+		var members = this.get("model.members");
+		return members[0].moduleId;
+	},
+	
+	getDefaultLastUpdater : function()
+	{
+		var members = this.get("model.members");
+		return members[0].modifiedBy;
+	},
+	
+	getDefaultEffectiveTime : function()
+	{
+		var times = this.get("effectiveTimeArray");
+		return times[0].id;
+	},
+
 	actions :
 	{
+		setSortCriteria : function(sortBy)
+		{
+			var oldSortBy 			= this.get("sortBy");
+			var oldSortOrder 		= this.get("sortOrder");
+			var filterByDescription	= this.get("filterByDescription");
+
+			var sortOrder = "asc";
+
+			if (oldSortBy === sortBy)
+			{
+				switch (oldSortOrder)
+				{
+					case "asc":
+					{
+						sortOrder = "desc";
+						break;
+					}
+
+					case "desc":
+					{						
+						if (sortBy === "description" && filterByDescription !== "")
+						{
+							sortOrder = "score";
+						}
+						break;
+					}	
+				}
+			}
+			else
+			{
+				if (sortBy === "description" && filterByDescription !== "")
+				{
+					sortOrder = "score";
+				}
+			}
+			
+			this.set("sortBy",sortBy);
+			this.set("sortOrder",sortOrder);
+		},
+		
 		toggleEditMode : function()
 		{
 			this.set("editMode",!this.editMode);
@@ -150,27 +423,15 @@ export default Ember.ObjectController.extend({
 			}
 		},
 
-		toggleHeaderMetaData : function()
+		toggleMetaData : function()
 		{
-			this.set("showHeaderMetaData",!this.showHeaderMetaData);
-		},
-		
-		toggleMemberMetaData : function()
-		{
-			this.set("showMemberMetaData",!this.showMemberMetaData);
-
-			var refset = $.extend(true, {}, this.get("model"));
-
-			for (var m=0;m<refset.members.length;m++)
-			{
-				refset.members[m].meta.viewMeta = this.showMemberMetaData;
-			}
-
-			this.set("model",refset);
+			this.set("showMetaData",!this.showMetaData);
 		},
 		
 		cancelEdits : function()
 		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();	
 			this.set("editMode",false);
 			this.set("model",$.extend(true, {}, this.get("editModel")));	
 		},
@@ -181,7 +442,7 @@ export default Ember.ObjectController.extend({
 			
 			for (var m=0;m<refset.members.length;m++)
 			{
-				if (refset.members[m].id === memberId)
+				if (refset.members[m].uuid === memberId)
 				{
 					refset.members[m].meta.deleteConcept = !refset.members[m].meta.deleteConcept;
 					this.set("model",refset);
@@ -202,7 +463,7 @@ export default Ember.ObjectController.extend({
 			
 			for (var m=0;m<refset.members.length;m++)
 			{
-				if (refset.members[m].id === memberId)
+				if (refset.members[m].uuid === memberId)
 				{
 					refset.members[m].active = !refset.members[m].active;
 					this.set("model",refset);
@@ -258,18 +519,13 @@ export default Ember.ObjectController.extend({
 				return member;
 			});
 			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
-
-			
-			
+	
 			// members we are going to import
-			
-			
+						
 			var uploadController = this.get('controllers.refsets/upload');		
 			var conceptsToImport = uploadController.getMembersMarkedForImport();
 			
-			this.set("membersToAdd",conceptsToImport);
-			
-			
+			this.set("membersToAdd",conceptsToImport);	
 			
 			// Members we are going to delete
 			
@@ -411,7 +667,7 @@ export default Ember.ObjectController.extend({
     				
     				this.dialogInstance.setMessage(newAddMessage);
 
-    				dataController.addMembers(this.get("model").id,this.membersToAdd,this,'addMembersComplete');
+    				dataController.addMembers(this.get("model").uuid,this.membersToAdd,this,'addMembersComplete');
     			}
     			else
     			{
@@ -424,7 +680,7 @@ export default Ember.ObjectController.extend({
         				
         				this.dialogInstance.setMessage(newDelMessage);
         				
-        				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+        				dataController.deleteMembers(this.get("model").uuid,this.membersToDelete,this,'deleteMembersComplete');
     				}
     				else
     				{
@@ -453,7 +709,7 @@ export default Ember.ObjectController.extend({
 				this.dialogInstance.setMessage(newMessage);
 				
 				var dataController = this.get('controllers.data');
-				dataController.deleteMembers(this.get("model").id,this.membersToDelete,this,'deleteMembersComplete');
+				dataController.deleteMembers(this.get("model").uuid,this.membersToDelete,this,'deleteMembersComplete');
 			}
 			else
 			{
@@ -476,7 +732,7 @@ export default Ember.ObjectController.extend({
 		exportRefset : function()
 		{
 			var refset = this.get("model");
-			var id = refset.id;
+			var id = refset.uuid;
 			
 			Ember.Logger.log("controllers.refsets.refset:actions:exportRefset (id)",id);
 			
@@ -534,14 +790,15 @@ export default Ember.ObjectController.extend({
 			});	
 		},	
 		
-		deleteRefset : function(id)
+		deleteRefset : function()
 		{
-			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
 			
 			var _this 	= this;
 			var refset 	= this.get("model");			
-			var id 		= refset.id;
+			var id 		= refset.uuid;
 			
+			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
+
 			this.dialogInstance = BootstrapDialog.show({
 	            title: 'Delete refset',
 	            closable: false,
@@ -563,7 +820,7 @@ export default Ember.ObjectController.extend({
 	            }]
 	        });
 		},	
-		
+				
 		doDeleteRefset : function(id)
 		{
 			Ember.Logger.log("controllers.refsets.refset:actions:deleteRefset (id)",id);
@@ -616,10 +873,146 @@ export default Ember.ObjectController.extend({
     		}
 		},
 		
+		activateRefset : function()
+		{
+			
+			var refset 	= this.get("model");			
+			
+			refset.active = true;
+			delete refset["members"];
+			delete refset["meta"];
+			
+			Ember.Logger.log("controllers.refsets.refset:actions:activateRefset");
+
+			this.dialogInstance = BootstrapDialog.show({
+	            title: 'Activating your refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Activating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			
+			this.dialogInstance.getModalFooter().hide();
+			
+			var dataController = this.get('controllers.data');
+			dataController.updateRefset(refset,this,'activateRefsetComplete');
+			
+		},	
+	
+		inactivateRefset : function()
+		{
+			var refset 	= this.get("model");	
+			
+			refset.active = false;
+			delete refset["members"];
+			delete refset["meta"];
+			
+			Ember.Logger.log("controllers.refsets.refset:actions:inactivateRefset");
+
+			this.dialogInstance = BootstrapDialog.show({
+	            title: 'Inactivating your refset',
+	            closable: false,
+	            message: '<br><br><div class="centre">Inactivating. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			
+			this.dialogInstance.getModalFooter().hide();
+			
+			var dataController = this.get('controllers.data');
+			dataController.updateRefset(refset,this,'activateRefsetComplete');
+			
+		},	
+		
+		activateRefsetComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:activateRefsetComplete",response);
+			
+    		if (response.error)
+    		{
+    			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset activation/inactivation failed.</h2></td></tr></table>';
+
+    			if (typeof response.unauthorised !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">You are not authorised to activate/inactivate refsets. You may need to log in.</p>';
+    			}
+
+    			if (typeof response.commsError !== "undefined")
+    			{
+    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
+    			}
+
+    			this.dialogInstance.setMessage(message);
+    			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+    		{
+    			this.dialogInstance.close();
+    			var refset = this.get("model");
+    			this.initModel({params:{"refsets.refset":refset}});
+    		}
+		},
+	
 		clearImportList : function()
 		{
 			var uploadController = this.get('controllers.refsets/upload');		
 			uploadController.clearMemberList();	
-		}
+		},
+		
+		addFilter : function()
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:addFilter");
+			
+			var filterName = $('#filterSelect').val();
+			
+			Ember.Logger.log(filterName);
+			
+			var defaultValue = true;
+			
+			switch(filterName)
+			{
+				case 'filterByModuleId' : {defaultValue = this.getDefaultModuleId(); break;}
+				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
+				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
+				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
+				case 'filterByPublishedMembers' : {defaultValue = true; break;}
+			}
+		
+			this.set(filterName,defaultValue);
+			
+			$('#filterSelect').val(0);
+
+		},
+
+		removeFilter : function(filterName)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:removeFilter",filterName);
+			
+			this.set(filterName,-1);
+			
+			var _this = this;
+			
+			Ember.run.next(function()
+			{
+				_this.set(filterName,-1); // deals with selects changing the value again!
+			});			
+		},
+		
+		clearDescriptionFilter : function()
+		{
+			this.set("filterByDescription","");
+		},
+	
 	}
 });

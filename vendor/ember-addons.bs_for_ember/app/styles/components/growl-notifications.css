@@ -1,7 +1,7 @@
 .growl-notifications {
   position: fixed;
   right: 10px;
-  top: 10px;
+  bottom: 85px;
   z-index: 9999; /*must be highest element on page*/
 }
 

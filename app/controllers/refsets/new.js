@@ -12,7 +12,6 @@ export default Ember.ObjectController.extend({
 	isRF2Import					: Ember.computed.alias("controllers.refsets/upload.isRF2Import"),
 
 	dialogInstance 				: null,
-	disablePublishedFormFields	: true,
 	
 	rf2FileToImport				: Ember.computed.alias("controllers.refsets/upload.rf2FileToImport"),
 	moreThanOneRefsetInRF2		: Ember.computed.alias("controllers.refsets/upload.moreThanOneRefsetInRF2"),
@@ -20,9 +19,6 @@ export default Ember.ObjectController.extend({
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
-		this.set("model.meta.createdDateInput",null);
-		this.set("model.meta.publishedDateInput",null);
-		this.set("disablePublishedFormFields",true);
 		
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();
@@ -43,37 +39,38 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.refsets.new:create");
 		
-		var Refset = {};
-		
-		Refset.typeId 			= this.get("model.typeId");
-		Refset.componentTypeId 	= this.get("model.componentTypeId");
-		Refset.moduleId 		= this.get("model.moduleId");
-		Refset.active 			= this.get("model.active");
-		Refset.languageCode 	= this.get("model.languageCode");
-		Refset.description 		= this.get("model.description");
-
-		if (!this.disablePublishedFormFields)
-		{
-			Refset.id 				= this.get("model.id");
-			Refset.published 		= this.get("model.published");
-			Refset.publishedDate 	= this.get("model.publishedDate");
-			Refset.created 			= this.get("model.created");
-		}
-		
 		var isRF2Import = this.get("isRF2Import");		
 		if (isRF2Import)
 		{
-			Refset = this.get("rf2FileToImport");
-			this.set("model.sctId",Refset.id);
-			this.set("model.description",Refset.label);
+			var rf2 = this.get("rf2FileToImport");
+			this.set("model.sctId",rf2.sctId);
+			this.set("model.description",rf2.label);
+		}
+
+		var Refset = {};
+		
+		Refset.typeId 				= this.get("model.typeId");
+		Refset.componentTypeId 		= this.get("model.componentTypeId");
+		Refset.moduleId 			= this.get("model.moduleId");
+		Refset.active 				= true; // Always make new refsets active
+		Refset.languageCode 		= this.get("model.languageCode");
+		Refset.description 			= this.get("model.description");
+		Refset.published 			= this.get("model.published");
+		
+		var releaseDate 			= this.get("model.expectedReleaseDate");
+		Refset.expectedReleaseDate 	= releaseDate;
+
+		if (isRF2Import)
+		{
+			Refset.sctId 			= this.get("model.sctId");
 		}
 		
 		// Need to validate the form at this point and abort if required fields are not completed
 				
 		this.dialogInstance = BootstrapDialog.show({
-            title: 'Creating your refset',
+            title: 'Creating your Refsetence Set',
             closable: false,
-            message: '<br><br><div class="centre">We are creating your refset. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+            message: '<br><br><div class="centre">We are creating your Reference Set Header. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
             buttons: [{
                 label: 'OK',
                 cssClass: 'btn-primary',
@@ -100,7 +97,7 @@ export default Ember.ObjectController.extend({
 
     			if (typeof response.unauthorised !== "undefined")
     			{
-    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to log in.</p>';
+    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to sign in.</p>';
     			}
 
     			if (typeof response.commsError !== "undefined")
@@ -114,9 +111,9 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			var refsetId = response.id;
+    			var refsetId = response.uuid;
 
-    			this.transitionToRoute('refsets.refset',response.id);
+    			this.transitionToRoute('refsets.refset',refsetId);
     			
     			var conceptsToImport;
     			var isRF2Import 		= this.get("isRF2Import");
@@ -136,14 +133,14 @@ export default Ember.ObjectController.extend({
     			{
     				if (isRF2Import) // Importing an RF2 file
     				{
-            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members from your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
     					
             			// Now initiate sending RF2 file to the API.
             			dataController.importRF2(refsetId,conceptsToImport,this,'importRF2Complete');	
     				}
     				else // Flat file of concepts IDs to import
     				{
-            			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">We are now importing concepts. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
+            			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
                 		
             			// Now initiate adding members to our new refset...
             			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
@@ -157,9 +154,9 @@ export default Ember.ObjectController.extend({
     		}
     	},
 
-    	importRF2Complete : function(response)
+    	importRF2Complete : function()
     	{
-			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">RF2 file imported.<br><br>');
+			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file imported.<br><br>');
 			this.dialogInstance.getModalFooter().show();
     	},
     	
@@ -192,7 +189,7 @@ export default Ember.ObjectController.extend({
     		}
     		else
 			{
-    			this.dialogInstance.setMessage('<br><br><div class="centre">Refset created.<br><br><div class="centre">Members imported.<br><br>');
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">Members imported.<br><br>');
     			this.dialogInstance.getModalFooter().show();
 			}
     	},
@@ -232,7 +229,7 @@ export default Ember.ObjectController.extend({
 		{
 			this.createEmptyRefset();
 			this.set("isRF2Import",false);
-			this.set("rf2FileToImport.id9","loading...");
+			this.set("rf2FileToImport.sctId","0");
 			this.set("rf2FileToImport.label","loading...");
 		},
 		
@@ -264,7 +261,6 @@ export default Ember.ObjectController.extend({
 		{
 			var member = memberWrapper.content;
 			var newModuleId = $('#member-module-id-' + member.referencedComponentId).val();
-			Ember.Logger.log("-------------------------------",newModuleId,member.referencedComponentId,member);
 			member.moduleId = newModuleId;
 		}
 		

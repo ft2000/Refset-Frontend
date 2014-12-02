@@ -13,7 +13,7 @@ export default Ember.ArrayController.extend({
 	conceptsQueue : [],
 	
 	moreThanOneRefsetInRF2 	: false,
-	rf2FileToImport 		: {id:"loading...",label:"loading..."},
+	rf2FileToImport 		: {sctId:"0",label:"loading...x"},
 	
 	processGetConceptsQueueTempData : {},
 	
@@ -316,16 +316,18 @@ export default Ember.ArrayController.extend({
 						var conceptId 		= memberRow[5];
 
 						if (effectiveTime === "") // If no effective Time, then not published, so ignore it
+						{
 							return null;
+						}
 						
 						// We may have more than one refset in an RF2 file, so lets deal with them separately.
 						if (!(refsetId in refsetsInRF2File))
 						{
-							refsetsInRF2File[refsetId] = {id:refsetId,label:'loading...',concepts:{}}
+							refsetsInRF2File[refsetId] = {sctId:refsetId,label:'loading...',concepts:{}};
 								
 							var promise = membersAdapter.find(user,refsetId).then(function(response)
 							{
-								return {id:refsetId,label:response.content.concept.label};	
+								return {sctId:refsetId,label:response.content.concept.label};	
 							});
 							
 							promises.push(promise);
@@ -338,9 +340,6 @@ export default Ember.ArrayController.extend({
 				});
 				
 				rowsToImportArray = $.grep(rowsToImportArray,function(n){ return(n); });
-
-				// count how many rows are in the RF2 file - a member might well be in the file more than one in different states, so num rows != num members...
-				var numRowsToImport 	= rowsToImportArray.length;
 				
 				var refsetsArray		= Object.keys(refsetsInRF2File);
 				
@@ -370,7 +369,7 @@ export default Ember.ArrayController.extend({
 					{
 						for (var r=0;r<refsets.length;r++)
 						{
-							if (refsets[r].id === result[l].id)
+							if (refsets[r].sctId === result[l].sctId)
 							{
 								refsets[r].label = result[l].label;
 							}
@@ -421,7 +420,7 @@ export default Ember.ArrayController.extend({
 				_this.set("getConceptDataInProgress",true);
 				
 				var defaultMemberModuleId = $('#newRefsetModuleId').val();
-	
+				
 				var idArraySlices		= [];			
 				while(idArray.length)
 				{

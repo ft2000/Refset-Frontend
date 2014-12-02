@@ -16,7 +16,10 @@
     "saveAs" : true,
     "BootstrapDialog" : true,
     "Handlebars" : true,
-    "moment" : true
+    "moment" : true,
+    "LiquidMetal" : true,
+    "quick_sort" : true,
+    "mergesort" : true
   },
   "browser" : true,
   "boss" : true,

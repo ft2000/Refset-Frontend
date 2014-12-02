@@ -18,7 +18,7 @@ Originally written by Aaron Haurwitz (http://aaron.haurwitz.com/), licensed unde
 
     contentBinding: 'Bootstrap.GNM.notifications',
     attributeBindings: ['style'],
-    showTime: 10000,
+    showTime: 3000,
     /*
     @property {View} Notification view class
     Determines what view class to render for each item in the content array.
@@ -87,9 +87,9 @@ Originally written by Aaron Haurwitz (http://aaron.haurwitz.com/), licensed unde
         if (index === -1) {
           return '';
         }
-        topPx = row * unitHeight;
+        topPx = row * unitHeight + 85;
         rightPx = column * unitWidth;
-        return 'top: ' + topPx + 'px; right: ' + rightPx + 'px;';
+        return 'bottom: ' + topPx + 'px; right: ' + rightPx + 'px;';
       }).property('parentView.content.@each.closed'),
       /*
       This is simply computed property for mapping a meaningful type name to a FontAwesome CSS class.

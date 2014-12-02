@@ -26,9 +26,9 @@ module.exports = function(environment) {
         passwordResetURL				: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
 
     	// Refsets API
-        refsetApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/refsets',
-        conceptsApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts',
-        snomedTypesApiBaseUrl 			: 'https://refset.ihtsdotools.org/refset-api/v1.0/snomed/',
+        refsetApiBaseUrl				: '//refset.ihtsdotools.org/refset-api/v1.0/refsets',
+        conceptsApiBaseUrl				: '//refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts',
+        snomedTypesApiBaseUrl 			: '//refset.ihtsdotools.org/refset-api/v1.0/snomed/',
 
         numItemsPerPage 				: 10,
         numItemsPerPageDashboard 		: 5,
@@ -46,7 +46,7 @@ module.exports = function(environment) {
         	moduleType 					: '900000000000207008',
         },
 
-        loginExpiry 					: 12 * 60, // minutes before you are logged out
+        loginExpiry 					: 12 * 60, // minutes before you are logged out (12 hours)
         },
   };
     

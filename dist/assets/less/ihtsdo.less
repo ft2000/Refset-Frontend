@@ -225,7 +225,6 @@ td.label
 	margin 			: 0 5px 0 5px;
 }
 
-
 .refset-list,
 .refset-header
 {
@@ -239,24 +238,32 @@ td.label
 		width : 150px;
 	}
 
+	.effective-time
+	{
+		width : 95px;
+	}
+
 	.num-members
 	{
-		width : 50px;
+		width : 70px;
 		text-align: right;
 		margin-right : 5px;
+	}
+	
+	.last-modified
+	{
+		width : 88px;
+	}
+
+	.last-modified-by
+	{
 	}
 	
 	.date-field
 	{
 		width : 85px;
 	}
-	
-	.last_update-by
-	{
-		// width : 100px; // Let it be as wide as it wants...
-	}
-	
-	
+		
 	.list-header
 	{
 		font-size 		: 10px;
@@ -307,7 +314,7 @@ td.label
 		}
 	}
 }
-
+	
 .ember-list-item-view
 {
 		width : 100%;
@@ -353,7 +360,7 @@ td.label
 			
 		.active
 		{
-			width : 80px;
+			width : 120px;
 		}
 		
 		.effective-time
@@ -417,16 +424,6 @@ td.label
 	}
 }
 
-.growl-notifications
-{
-	.icon { 
-	    background:url('../img/sprite-icons.white.png') no-repeat 0px 0px;
-	    display:block;
-	    height:35px;
-	    text-indent:-9999px;
-	    width:35px;
-	}
-}
 
 /* Upload Refsets */
 
@@ -498,7 +495,12 @@ input.form-control
 
 .panelNoPadding .panel-body
 {
-	padding : 0;	
+	padding : 0;
+}
+
+.panelNoPadding .panel-body .list-group
+{
+	margin : 0;
 }
 
 tr.hr,
@@ -573,6 +575,37 @@ span.icon {
     display:inline-block;
 }
 
+.icon-btn
+{
+	text-align : left;
+	padding-right : 0;
+	padding-top : 10px;
+	padding-bottom : 2px;
+	
+	span.icon
+	{
+		margin-top : -10px;
+		margin-bottom : -10px;
+		float : right;
+		width : 30px;
+	}
+		
+	span.btn-text
+	{
+		font-size : 13px;
+		font-weight : 500;
+		float : left;
+	}
+}
+
+.icon-btn:hover
+{
+	span.icon
+	{
+	    background:url('../img/sprite-icons.white.png') no-repeat 0px 0px;	
+	}
+}
+
 .btn-side-menu
 {
 	width : 100%;
@@ -603,4 +636,30 @@ label.notALabel
 {
 	font-size 	: inherit;
 	font-weight	: inherit;
+}
+
+p.filterItem
+{
+	border				: 1px solid #e0e0e0;
+	margin-bottom 		: 3px;
+    border-radius		: 3px;
+    background-color	: #f3f3f3;
+    padding 			: 3px;
+    
+    input
+    {
+    	border				: 1px solid #e0e0e0;
+	    background-color	: #fff;
+    }
+}
+
+.list-group-item:after,
+p.filterItem:after
+{
+     visibility			: hidden;
+     display			: block;
+     font-size			: 0;
+     content			: " ";
+     clear				: both;
+     height				: 0;
 }
