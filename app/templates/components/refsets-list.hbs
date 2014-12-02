@@ -26,7 +26,7 @@
 					{{refset-list-item-span 'snomed-id' moduleId outerView.controller.moduleTypes}}
 					{{refset-list-item-span 'snomed-id' componentTypeId outerView.controller.componentTypes}}
 					
-					{{#if published}}<span class="effective-time">{{effective-time-format publishedDate}}</span>{{/if}}
+					{{#if published}}<span class="effective-time">{{effective-time-format latestEffectiveTime}}</span>{{/if}}
 
 					<span class="num-members">{{totalNoOfMembers}}</span>
 					<span class="last-modified">{{date-format modifiedDate}}</span>

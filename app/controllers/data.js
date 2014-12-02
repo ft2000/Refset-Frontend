@@ -115,17 +115,17 @@ export default Ember.ObjectController.extend({
 		{
 			if (!init.refsets)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Types. retryCounter.', 'warning');	
+				Bootstrap.NM.push('Communication Error : API not responding. Application Failed to initialize Refset Types. retryCounter.', 'warning');	
 			}
 
 			if (!init.modules)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Modules Types. retryCounter.', 'warning');	
+				Bootstrap.NM.push('Communication Error : API not responding. Application Failed to initialize Modules Types. retryCounter.', 'warning');	
 			}
 
 			if (!init.components)
 			{
-				Bootstrap.GNM.push('Communication Error','API not responding. Application Failed to initialize Refset Component Types. retryCounter.', 'warning');	
+				Bootstrap.NM.push('Communication Error : API not responding. Application Failed to initialize Refset Component Types. retryCounter.', 'warning');	
 			}
 			
 			return (init.refsets && init.refsets && init.refsets);
@@ -253,7 +253,7 @@ export default Ember.ObjectController.extend({
 				if (user.token === null)
 				{
 					// User is not logged in, so prompt to login
-					Bootstrap.GNM.push('Authentication Required','The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
+					Bootstrap.NM.push('Authentication Required : The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
 					loginController.showLoginForm();
 
     				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
@@ -264,7 +264,7 @@ export default Ember.ObjectController.extend({
 				else
 				{
 					// User is logged in, but it not permitted to access the requested resource
-					Bootstrap.GNM.push('Not Authorised','You do not have permission to access the ' + resourceType + ' you have requested.', 'warning');
+					Bootstrap.NM.push('Not Authorised : You do not have permission to access the ' + resourceType + ' you have requested.', 'warning');
 					
 			        BootstrapDialog.show({
 			            title: 'Not Authorised',
@@ -293,7 +293,7 @@ export default Ember.ObjectController.extend({
 			case "404":
 			{
 				// Not found
-				Bootstrap.GNM.push('Not found','We cannot locate the ' + resourceType + ' you have requested.', 'warning');
+				Bootstrap.NM.push('Not found : We cannot locate the ' + resourceType + ' you have requested.', 'warning');
 
 				_this.hideWaitAnim();
 				
@@ -308,7 +308,7 @@ export default Ember.ObjectController.extend({
 			case "400":
 			{
 				// Bad Request
-				Bootstrap.GNM.push('Bad Request','Server rejected our request', 'warning');
+				Bootstrap.NM.push('Bad Request : Server rejected our request', 'warning');
 
 				_this.hideWaitAnim();
 				
@@ -349,7 +349,7 @@ export default Ember.ObjectController.extend({
 				{
 					var waitPeriod = _this.getRetryWaitPeriod(retryCounter);
 					
-					Bootstrap.GNM.push('Communication Error','Error communicating with the server ' + (++retryCounter) + ' times. Will retry ' + resourceType + ' in ' + waitPeriod + ' seconds.', 'warning');
+					Bootstrap.NM.push('Communication Error : Error communicating with the server ' + (++retryCounter) + ' times. Will retry ' + resourceType + ' in ' + waitPeriod + ' seconds.', 'warning');
 									
 
 					var params = callbackParams;
@@ -374,7 +374,7 @@ export default Ember.ObjectController.extend({
 					// Too many errors. Time to prompt the user
 					if (!this.loginDialogOpen || !this.initialised)
 					{
-						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to ' + resourceType + ' have failed.', 'danger');
+						Bootstrap.NM.push('Communication Failure : Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to ' + resourceType + ' have failed.', 'danger');
 
 						BootstrapDialog.show({
 				            title: 'Communication Failure : ' + resourceType,
@@ -418,7 +418,7 @@ export default Ember.ObjectController.extend({
 					}
 					else
 					{
-						Bootstrap.GNM.push('Communication Failure','Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed. Giving up.', 'danger');
+						Bootstrap.NM.push('Communication Failure : Error communicating with the server. ' + (numAutoServerRetries +1) + ' sucessive attempts to load ' + resourceType + ' have failed. Giving up.', 'danger');
              			_this.send("abortDataRequest",resourceType);
         				_this.hideWaitAnim();
         				
@@ -703,7 +703,7 @@ export default Ember.ObjectController.extend({
 		{
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				Bootstrap.GNM.push('Refset Service','Refset deleted', 'info');
+				Bootstrap.NM.push('Refset Service : Refset deleted', 'info');
 
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
@@ -731,7 +731,7 @@ export default Ember.ObjectController.extend({
 		{
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				Bootstrap.GNM.push('Refset Service','Refset updated', 'info');
+				Bootstrap.NM.push('Refset Service : Refset updated', 'info');
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
 					callingController.send(completeAction,{error:0});

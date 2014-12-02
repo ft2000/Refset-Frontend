@@ -4622,9 +4622,10 @@ a.thumbnail.active {
 }
 .alert {
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   border: 1px solid transparent;
   border-radius: 4px;
+  width: 100%;
 }
 .alert h4 {
   margin-top: 0;
@@ -6511,13 +6512,6 @@ td.label {
 .member-list .member-list-item .module-id {
   cursor: pointer;
   color: #00a7e1;
-}
-.growl-notifications .icon {
-  background: url('../img/sprite-icons.white.png') no-repeat 0px 0px;
-  display: block;
-  height: 35px;
-  text-indent: -9999px;
-  width: 35px;
 }
 /* Upload Refsets */
 .fileUploadDropZone {

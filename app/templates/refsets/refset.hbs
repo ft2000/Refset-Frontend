@@ -65,9 +65,7 @@
 								</td>
 
 								<td class="label" rel="tooltip" title="Latest member effective time"><span class="pointer">Latest Effective Time</span></td><td class="content" colspan=2>				
-									{{#if published}}
-										{{effective-time-format publishedDate}}
-									{{/if}}								
+									{{effective-time-format latestEffectiveTime}}
 								</td>
 							</tr>
 
@@ -84,9 +82,7 @@
 							  		{{/if}}		
 								</td>
 								<td class="label" rel="tooltip" title="Earliest member effective time"><span class="pointer">Earliest Effective Time</span></td><td class="content" colspan=2>				
-									{{#if published}}
-										{{effective-time-format publishedDate}}
-									{{/if}}								
+									{{effective-time-format earliestEffectiveTime}}
 								</td>
 							</tr>
 							
@@ -105,15 +101,13 @@
 									{{/if}}
 								</td>
 								<td class="label" rel="tooltip" title="Planned publish member effective time"><span class="pointer">Planned Publish Date</span></td><td class="content" colspan=2>				
-									{{#if published}}
-										{{effective-time-format publishedDate}}
-									{{/if}}								
+									not in data yet
 								</td>
 							</tr>
 
 							<tr>
 								<td colspan=2></td>
-								<td class="label">Language</td><td class="content">
+								<td class="label">Language Code</td><td class="content">
 									{{#if published}}
 										{{refset-list-item-span 'language' languageCode languageTypes}}
 									{{else}}
@@ -293,9 +287,6 @@
 										{{/if}}
 								{{/if}}
 							
-
-
-
 							{{else}}
 								<li class='list-group-item'>
 									{{#if totalNoOfMembers}}

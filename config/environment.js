@@ -26,9 +26,9 @@ module.exports = function(environment) {
         passwordResetURL				: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
 
     	// Refsets API
-        refsetApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/refsets',
-        conceptsApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts',
-        snomedTypesApiBaseUrl 			: 'https://refset.ihtsdotools.org/refset-api/v1.0/snomed/',
+        refsetApiBaseUrl				: '//refset.ihtsdotools.org/refset-api/v1.0/refsets',
+        conceptsApiBaseUrl				: '//refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts',
+        snomedTypesApiBaseUrl 			: '//refset.ihtsdotools.org/refset-api/v1.0/snomed/',
 
         numItemsPerPage 				: 10,
         numItemsPerPageDashboard 		: 5,
