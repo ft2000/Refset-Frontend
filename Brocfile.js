@@ -37,7 +37,7 @@ app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-list-group.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-nav.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-notifications.min.js');
 app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-progressbar.min.js');
-app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.min.js');
+app.import('vendor/ember-addons.bs_for_ember/dist/js/bs-growl-notifications.max.js');
 
 app.import('vendor/ember-addons.bs_for_ember/dist/css/bs-growl-notifications.min.css');
 
@@ -63,6 +63,11 @@ app.import('vendor/my_utilities/drag_drop_file_upload.js');
 // Session Store
 app.import('vendor/my_utilities/sessvars-1.0.0-min.js');
 app.import('vendor/my_utilities/sessionStoreManager-1.0.0-min.js');
+
+//String matching / sorting
+app.import('vendor/my_utilities/liquidmetal-min.js');
+app.import('vendor/my_utilities/QuickSort-min.js');
+
 
 // Bootstrap Date Picker
 app.import('vendor/bootstrap-datepicker-release/js/bootstrap-datepicker.js');

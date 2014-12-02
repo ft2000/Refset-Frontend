@@ -8,7 +8,7 @@ Router.map(function() {
 	  this.route("dashboard",{path:'/'});
 	  
 	  this.resource("refsets", function(){
-		  this.route("refset", {path:':id'});
+		  this.route("refset", {path:':uuid'});
 		  this.route("new");
 	  });
 

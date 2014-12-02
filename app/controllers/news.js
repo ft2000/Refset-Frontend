@@ -3,6 +3,18 @@ export default Ember.ArrayController.extend({
 	model : 
 	[
 		{
+	    	"id": "inactive_refsets",
+	    	"title": "We now have the concept of an inactive refset",
+	    	"published": "2014-11-18T10:00:00",
+	    	"description": "We have added th econcept of an inactive refset. An inactive refset can, if required, be made active again. This is the normal action for retiring a refset and differs from deleting a refset."
+	    },
+		{
+	    	"id": "import_rf2",
+	    	"title": "We can now import an RF2 file to create a puclished refset",
+	    	"published": "2014-11-18T10:00:00",
+	    	"description": "It is now possible to import an RF2 file which results in the creation of a puvlished refset and the import of the concepts in the file along with their history."
+	    },
+	    {
 	    	"id": "first_demo",
 	    	"title": "First Public Demonstration : IHTSDO Business Meeting - Amsterdam",
 	    	"published": "2014-10-24T10:00:00",

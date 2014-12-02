@@ -9,11 +9,13 @@ export default Ember.ObjectController.extend({
 	
 	published 		: Ember.computed.alias("controllers.data.publishedRefsets"),
 	unpublished 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
+	inactive	 	: Ember.computed.alias("controllers.data.inactiveRefsets"),
 	user 			: Ember.computed.alias("controllers.login.user"),
 	
-	queryParams		: ['showUnpublished'],
+	queryParams		: ['showUnpublished','showInactive'],
 	 
 	showUnpublished : 0,
+	showInactive	: 0,
 
 	initModel : function()
 	{

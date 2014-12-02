@@ -1,8 +1,14 @@
-{{#if showUnpublished}}
-	<h1>Unpublished Refsets</h1>
-	{{refsets-list refsets=unpublished moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Unpublished Refsets"}}
+{{#if showInactive}}
+	<h1>Inactive Reference Sets</h1>
+	{{refsets-list refsets=inactive moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Inactive Refsets" published=true}}
 {{else}}
-	<h1>Published Refsets</h1>
-	{{refsets-list refsets=published moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Published Refsets"}}
+
+	{{#if showUnpublished}}
+		<h1>Unpublished Reference Sets</h1>
+		{{refsets-list refsets=unpublished moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Unpublished Refsets" published=false}}
+	{{else}}
+		<h1>Published Reference Sets</h1>
+		{{refsets-list refsets=published moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Published Refsets" published=true}}
+	{{/if}}
 {{/if}}
 <button {{action 'refresh'}} class="btn btn-default right">Refresh Refsets</button>

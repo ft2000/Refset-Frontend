@@ -2,8 +2,10 @@ export default Ember.ObjectController.extend({
 
 	needs : ["data","news"],
 
-	news 		: Ember.computed.alias("controllers.news.latestNews"),
-	refsets 	: Ember.computed.alias("controllers.data.publishedRefsets"),
+	news 				: Ember.computed.alias("controllers.news.latestNews"),
+	publishedRefsets 	: Ember.computed.alias("controllers.data.publishedRefsets"),
+	unpublishedRefsets 	: Ember.computed.alias("controllers.data.unpublishedRefsets"),
+	inactiveRefsets 	: Ember.computed.alias("controllers.data.inactiveRefsets"),
 
 	latestPublicRefsets  : [],
 			
@@ -16,16 +18,16 @@ export default Ember.ObjectController.extend({
 		
 		Ember.run.later(function()
 		{
-			var allRefsets = Ember.copy(_this.get("refsets"));					
+			var allRefsets = Ember.copy(_this.get("publishedRefsets"));					
 			_this.latestPublicRefsets.setObjects(allRefsets.splice(0,3));
 		},2000);
 		
 		
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		return Ember.run.next(function()
-			{
-				dataController.getAllRefsets(_this,'getAllRefsetsComplete');
-			});
+		{
+			dataController.getAllRefsets(_this,'getAllRefsetsComplete');
+		});
 	},
 	
 	actions :
