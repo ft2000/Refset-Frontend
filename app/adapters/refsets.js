@@ -242,6 +242,24 @@ export default Ember.Object.extend({
 		
 		return result;
 	},
+
+	importRF2 : function (user,refsetId,rf2file)
+	{
+		Ember.Logger.log("adapters.refsets:importRF2 (user,refsetId)",user,refsetId);
+
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/import', {headers:_this.getHeaders(user), method:"post", data: rf2file, processData: false, contentType: 'application/json'}).then(function(response)
+		{			
+			return response;
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});
+		
+		return result;	
+	},
 	
 });
 

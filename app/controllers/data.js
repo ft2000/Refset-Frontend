@@ -633,7 +633,7 @@ export default Ember.ObjectController.extend({
 		{
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				Bootstrap.GNM.push('Refset Service','Refset created', 'info');
+				Bootstrap.GNM.push('Refset Service','Refset deleted', 'info');
 
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
@@ -676,7 +676,7 @@ export default Ember.ObjectController.extend({
 	
 	addMembers : function(refsetId,members,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.refsets:addMembers (members,retry)",members,retry);
+		Ember.Logger.log("controllers.data:addMembers (members,retry)",members,retry);
 
 		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -717,7 +717,7 @@ export default Ember.ObjectController.extend({
 	
 	getMembers : function(members,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.refsets:getMembers (members,retry)",members,retry);
+		Ember.Logger.log("controllers.data:getMembers (members,retry)",members,retry);
 
 		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -754,7 +754,7 @@ export default Ember.ObjectController.extend({
 	
 	getMember : function(id,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.refsets:getMember (id,retry)",id,retry);
+		Ember.Logger.log("controllers.data:getMember (id,retry)",id,retry);
 
 		var _this 		= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -797,7 +797,7 @@ export default Ember.ObjectController.extend({
 	
 	deleteMembers : function(refsetId,members,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.refsets:deleteMembers (members,retry)",members,retry);
+		Ember.Logger.log("controllers.data:deleteMembers (members,retry)",members,retry);
 
 		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -836,7 +836,7 @@ export default Ember.ObjectController.extend({
 	
 	getSnomedRefsetTypes : function(retry)
 	{
-		Ember.Logger.log("controllers.refsets:getSnomedRefsetTypes (retry)",retry);
+		Ember.Logger.log("controllers.data:getSnomedRefsetTypes (retry)",retry);
 		
 		if (this.refsetTypes.length)
 		{
@@ -883,7 +883,7 @@ export default Ember.ObjectController.extend({
 
 	getSnomedModulesTypes : function(retry)
 	{
-		Ember.Logger.log("controllers.refsets:getSnomedModulesTypes (retry)",retry);
+		Ember.Logger.log("controllers.data:getSnomedModulesTypes (retry)",retry);
 		
 		if (this.moduleTypes.length)
 		{
@@ -929,7 +929,7 @@ export default Ember.ObjectController.extend({
 
 	getSnomedComponentTypes : function(retry)
 	{
-		Ember.Logger.log("controllers.refsets:getSnomedComponentTypes (retry)",retry);
+		Ember.Logger.log("controllers.data:getSnomedComponentTypes (retry)",retry);
 		
 		if (this.componentTypes.length)
 		{
@@ -975,4 +975,45 @@ export default Ember.ObjectController.extend({
 		return promise;
 	},
 
+	importRF2 : function(refsetId,rf2file,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:importRF2 (refsetId,retry)",refsetId,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+
+		var loginController = this.get('controllers.login');
+		var user 			= loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		if (!retryCounter)
+		{
+			this.showWaitAnim();
+		}
+		
+		var result = refsetsAdapter.importRF2(user,refsetId,rf2file).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+
+			_this.hideWaitAnim();
+
+			if (typeof response.meta === "undefined" || typeof response.meta.errorInfo === 'undefined')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,refsetId:refsetId,rf2report:{}});	
+				}
+				
+				_this.getRefset(refsetId);
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Import RF2','importRF2',[refsetId,rf2file],callingController,completeAction,retryCounter);
+			}
+		});
+
+		return result;
+	},
+	
 });
