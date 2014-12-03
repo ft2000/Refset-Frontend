@@ -117,7 +117,6 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
-
 					if (filterByModuleId !== -1)
 					{
 						if (member.moduleId !== filterByModuleId)
@@ -125,11 +124,10 @@ export default Ember.ObjectController.extend({
 							return null;
 						}
 					}
-					
 
 					if (filterByEffectiveTime !== -1)
 					{
-						if (member.effectiveTime !== filterByEffectiveTime)
+						if (member.latestEffectiveTime !== filterByEffectiveTime)
 						{
 							return null;
 						}

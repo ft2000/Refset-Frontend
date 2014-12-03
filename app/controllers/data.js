@@ -64,6 +64,61 @@ export default Ember.ObjectController.extend({
 		return users;
 	}.property('refset.members.@each'),
 
+	refsetUpdatersArray			: function()
+	{
+		var users = [];
+		
+		var refsets = this.get("refsets");
+			
+		for (var m=0;m<refsets.length;m++)
+		{
+			var updater = refsets[m].modifiedBy;
+					
+			if ($.inArray(updater,users) === -1)
+			{
+				users.push(updater);
+			}
+		}
+		
+		for (m=0;m<users.length;m++)
+		{
+			var userObj = {id:users[m],label:users[m]};
+			users[m] = userObj;
+		}
+		
+		return users;
+	}.property('refsets.@each'),
+	
+	refsetEffectiveTimesArray			: function()
+	{
+		var times = [];
+		
+		var refsets = this.get("refsets");
+		
+		for (var m=0;m<refsets.length;m++)
+		{
+			if (typeof refsets[m].latestEffectiveTime !== "undefined")
+			{
+				var effTime = refsets[m].latestEffectiveTime;
+
+				if ($.inArray(effTime,times) === -1)
+				{
+					times.push(effTime);
+				}
+			}
+		}
+		
+		for (m=0;m<times.length;m++)
+		{
+			var timeString = moment(times[m]).format("YYYYMMDD");
+			var timeObj = {id:times[m],label:timeString};
+			times[m] = timeObj;
+		}
+		
+		return times;
+	}.property('refsets.@each'),
+	
+	
 	effectiveTimeArray			: function()
 	{
 		var times = [];
@@ -72,7 +127,7 @@ export default Ember.ObjectController.extend({
 		
 		for (var m=0;m<members.length;m++)
 		{
-			var effTime = members[m].effectiveTime;
+			var effTime = members[m].latestEffectiveTime;
 					
 			if ($.inArray(effTime,times) === -1)
 			{
@@ -89,6 +144,7 @@ export default Ember.ObjectController.extend({
 		
 		return times;
 	}.property('refset.members.@each'),
+
 	
 	init : function()
 	{
@@ -473,7 +529,7 @@ export default Ember.ObjectController.extend({
 				
 				response.content.refsets.map(function(item)
 				{
-					item.meta = {type:'blah',moduleType:'fred',componentType:'sheep',language:'US English'};
+					item.meta = {type:'blah',moduleType:'fred',componentType:'sheep',language:'US English',disabled:false};
 					
 					refsetsArray.push(item);
 
@@ -493,6 +549,7 @@ export default Ember.ObjectController.extend({
 					else
 					{
 						item.meta.status = 'inactive';
+						item.meta.disabled = true;
 						inactiveArray.push(item);
 					}
 				});
