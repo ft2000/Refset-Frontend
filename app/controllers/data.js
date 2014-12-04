@@ -517,7 +517,7 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		refsetsAdapter.findAll(user).then(function(response)
+		refsetsAdapter.findAll(user,0,5).then(function(response)
 		{	
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
@@ -528,8 +528,7 @@ export default Ember.ObjectController.extend({
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
 				var inactiveArray 		= [];
-				var refsetsArray 		= [];
-				
+				var refsetsArray 		= [];			
 				
 				response.content.refsets.map(function(item)
 				{
