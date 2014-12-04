@@ -120,7 +120,7 @@
 		{{#if filterByEffectiveTimeIsActive}}
 			<p class="filterItem">
 				Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
-				{{snomed-data-dropdown value=filterByEffectiveTime dataType="latestEffectiveTimeArray"}}
+				{{snomed-data-dropdown value=filterByEffectiveTime dataType="refsetEffectiveTimesArray"}}
 			</p>
 		{{/if}}
 				

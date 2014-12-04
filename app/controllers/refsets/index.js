@@ -2,15 +2,14 @@ export default Ember.ObjectController.extend({
 		
 	needs 			: ["data","login"],
 
-	refsetTypesArray 		: Ember.computed.alias("controllers.data.refsetTypesArray"),
-	componentTypesArray 	: Ember.computed.alias("controllers.data.componentTypes"),
-	moduleTypesArray 		: Ember.computed.alias("controllers.data.moduleTypes"),
-	languageTypesArray 		: Ember.computed.alias("controllers.data.languageTypes"),
-	latestEffectiveTimeArray : Ember.computed.alias("controllers.data.refsetEffectiveTimesArray"),
-	refsetUpdatersArray 	: Ember.computed.alias("controllers.data.refsetUpdatersArray"),
-
-	refsets					: Ember.computed.alias("controllers.data.refsets"),
-	user 					: Ember.computed.alias("controllers.login.user"),
+	refsetTypesArray 			: Ember.computed.alias("controllers.data.refsetTypesArray"),
+	componentTypesArray 		: Ember.computed.alias("controllers.data.componentTypes"),
+	moduleTypesArray 			: Ember.computed.alias("controllers.data.moduleTypes"),
+	languageTypesArray 			: Ember.computed.alias("controllers.data.languageTypes"),
+	refsetEffectiveTimesArray 	: Ember.computed.alias("controllers.data.refsetEffectiveTimesArray"),
+	refsetUpdatersArray 		: Ember.computed.alias("controllers.data.refsetUpdatersArray"),
+	refsets						: Ember.computed.alias("controllers.data.refsets"),
+	user 						: Ember.computed.alias("controllers.login.user"),
 	
 	sortBy 							: 'description',
 	sortOrder						: 'asc',
@@ -221,7 +220,7 @@ export default Ember.ObjectController.extend({
 			var defaultValue = true;
 			
 			var refsets 					= this.get("refsets");
-			var latestEffectiveTimeArray 	= this.get("latestEffectiveTimeArray");
+			var refsetEffectiveTimesArray 	= this.get("refsetEffectiveTimesArray");
 			var refsetUpdatersArray 		= this.get("refsetUpdatersArray");
 			
 			switch(filterName)
@@ -231,7 +230,7 @@ export default Ember.ObjectController.extend({
 				case 'filterByModuleId' 		: {defaultValue = refsets[0].moduleId; break;}
 				case 'filterByComponentType' 	: {defaultValue = refsets[0].componentTypeId; break;}
 				case 'filterByLanguage' 		: {defaultValue = refsets[0].languageCode; break;}
-				case 'filterByEffectiveTime' 	: {defaultValue = latestEffectiveTimeArray[0].id; break;}
+				case 'filterByEffectiveTime' 	: {defaultValue = refsetEffectiveTimesArray[0].id; break;}
 				case 'filterByLastUpdateDate' 	: {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' 	: {defaultValue = refsetUpdatersArray[0].id; break;}
 			}

@@ -86,6 +86,8 @@ export default Ember.ObjectController.extend({
 			users[m] = userObj;
 		}
 		
+		Ember.Logger.log("------------------ Updaters",users)
+
 		return users;
 	}.property('refsets.@each'),
 	
@@ -114,6 +116,8 @@ export default Ember.ObjectController.extend({
 			var timeObj = {id:times[m],label:timeString};
 			times[m] = timeObj;
 		}
+		
+		Ember.Logger.log("------------------ Eff Times",times)
 		
 		return times;
 	}.property('refsets.@each'),
