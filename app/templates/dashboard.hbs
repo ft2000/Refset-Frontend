@@ -5,9 +5,6 @@
 	<li>There are {{inactiveRefsets.length}} {{#link-to 'refsets' (query-params showUnpublished="0" showInactive="1")}}Inactivated Refsets{{/link-to}}</li>
 </ul>
 
-<h1>Latest Published Refsets</h1>
-{{refsets-list refsets=latestPublicRefsets title="Latest Public Refsets"}}
-
 <h1>Latest Refset Tool News</h1>
 <ul class="list-group refset-list">
 	{{#each news}}
