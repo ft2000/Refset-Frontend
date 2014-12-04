@@ -253,6 +253,58 @@ export default Ember.ObjectController.extend({
 				_this.set(filterName,-1); // deals with selects changing the value again!
 			});			
 		},
+		
+		setSortCriteria : function(sortBy)
+		{
+			var oldSortBy 			= this.get("sortBy");
+			var oldSortOrder 		= this.get("sortOrder");
+			var filterByDescription	= this.get("filterByDescription");
+
+			var sortOrder = "asc";
+
+			if (oldSortBy === sortBy)
+			{
+				switch (oldSortOrder)
+				{
+					case "asc":
+					{
+						sortOrder = "desc";
+						break;
+					}
+
+					case "desc":
+					{						
+						if (sortBy === "description" && filterByDescription !== "")
+						{
+							sortOrder = "score";
+						}
+						break;
+					}	
+				}
+			}
+			else
+			{
+				if (sortBy === "description" && filterByDescription !== "")
+				{
+					sortOrder = "score";
+				}
+			}
+			
+			this.set("sortBy",sortBy);
+			this.set("sortOrder",sortOrder);
+		},
+		
+		clearDescriptionFilter : function()
+		{
+			this.set("filterByDescription","");
+			this.set("sortOrder","asc");
+		},
+		
+		setSortToBestMatch : function()
+		{
+			Ember.Logger.log("setSortToBestMatch");
+			this.set("sortOrder","score");
+		}
 	}
 	
 });

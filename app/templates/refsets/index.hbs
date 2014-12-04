@@ -6,24 +6,24 @@
 		<ul class="list-group checkboxList member-list refset-header" style="clear:both">
 			
 			<li class="list-group-item member-list-header" style="border-bottom:none">
-				<span class="snomed-id">Refset Id</span>
-				<span>Description</span>
+				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'sctId'}} class="pointer">Refset Id</a> {{sort-icon sortBy sortOrder 'sctId'}}</span>
+				<span class="pointer"><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a> {{sort-icon sortBy sortOrder 'description'}}</span>
 				<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 			</li>
 			
 			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
-				<span class="language">Language</span>
-				<span class="snomed-id">Refset Type Id</span>
-				<span class="snomed-id">Module Id</span>
-				<span class="snomed-id">Component Type Id</span>
-				<span class="effective-time pointer" rel="tooltip" title="A Refset can have status: Published, Unpublished or Inactive">Status</span>
-				<span class="num-members">Member Count</span>
+				<span class="language"><a {{action 'languageCode' 'sctId'}} class="pointer">Language</a> {{sort-icon sortBy sortOrder 'languageCode'}}</span>
+				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'typeId'}} class="pointer">Refset Type Id</a> {{sort-icon sortBy sortOrder 'typeId'}}</span>
+				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a> {{sort-icon sortBy sortOrder 'moduleId'}}</span>
+				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'componentTypeId'}} class="pointer">Component Type Id</a> {{sort-icon sortBy sortOrder 'componentTypeId'}}</span>
+				<span class="effective-time pointer" rel="tooltip" title="A Refset can have status: Published, Unpublished or Inactive"><a {{action 'setSortCriteria' 'meta.status'}} class="pointer">Status</a> {{sort-icon sortBy sortOrder 'meta.status'}}</span>
+				<span class="num-members pointer"><a {{action 'setSortCriteria' 'totalNoOfMembers'}} class="pointer">Member Count</a> {{sort-icon sortBy sortOrder 'totalNoOfMembers'}}</span>
 			</li>
 			
 			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
 				<span class="effective-time pointer" rel="tooltip" title="Latest member effective time">Latest Effective Time</span>
-				<span class="last-modified">Last Update Date</span>
-				<span class="last-modified-by">Last Update User</span>
+				<span class="last-modified pointer" rel="tooltip" title="Last date refset header or any member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a> {{sort-icon sortBy sortOrder 'modifiedDate'}}</span>
+				<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this refset"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a> {{sort-icon sortBy sortOrder 'modifiedBy'}}</span>
 			</li>
 			
 			{{#if refsets}}
@@ -77,7 +77,7 @@
 		
 		<p class="filterItem">
 			Filter by description or SCTID: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
-			{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
+			{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control" action="setSortToBestMatch" on="key-press"}}
 		</p>
 			
 		{{#if filterByStatusIsActive}}
@@ -148,4 +148,3 @@
 		<button {{action 'refresh'}} class="btn btn-default btn-side-menu right">Refresh Refsets</button>
 	</div>
 </div>
-
