@@ -117,7 +117,6 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
-
 					if (filterByModuleId !== -1)
 					{
 						if (member.moduleId !== filterByModuleId)
@@ -125,11 +124,10 @@ export default Ember.ObjectController.extend({
 							return null;
 						}
 					}
-					
 
 					if (filterByEffectiveTime !== -1)
 					{
-						if (member.effectiveTime !== filterByEffectiveTime)
+						if (member.latestEffectiveTime !== filterByEffectiveTime)
 						{
 							return null;
 						}
@@ -986,7 +984,7 @@ export default Ember.ObjectController.extend({
 				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
-				case 'filterByPublishedMembers' : {defaultValue = true; break;}
+				case 'filterByPublishedMembers' : {defaultValue = false; break;}
 			}
 		
 			this.set(filterName,defaultValue);
@@ -1012,7 +1010,14 @@ export default Ember.ObjectController.extend({
 		clearDescriptionFilter : function()
 		{
 			this.set("filterByDescription","");
+			this.set("sortOrder","asc");
 		},
+		
+		setSortToBestMatch : function()
+		{
+			Ember.Logger.log("setSortToBestMatch");
+			this.set("sortOrder","score");
+		}
 	
 	}
 });

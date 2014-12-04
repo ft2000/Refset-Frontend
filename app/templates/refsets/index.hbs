@@ -1,14 +1,151 @@
-{{#if showInactive}}
-	<h1>Inactive Reference Sets</h1>
-	{{refsets-list refsets=inactive moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Inactive Refsets" published=true}}
-{{else}}
+<div class="row">
+	
+	<div class="col-md-9">
+	
+		<h1>Browse Reference Sets</h1>
+		<ul class="list-group checkboxList member-list refset-header" style="clear:both">
+			
+			<li class="list-group-item member-list-header" style="border-bottom:none">
+				<span class="snomed-id">Refset Id</span>
+				<span>Description</span>
+				<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
+			</li>
+			
+			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
+				<span class="language">Language</span>
+				<span class="snomed-id">Refset Type Id</span>
+				<span class="snomed-id">Module Id</span>
+				<span class="snomed-id">Component Type Id</span>
+				<span class="effective-time pointer" rel="tooltip" title="A Refset can have status: Published, Unpublished or Inactive">Status</span>
+				<span class="num-members">Member Count</span>
+			</li>
+			
+			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
+				<span class="effective-time pointer" rel="tooltip" title="Latest member effective time">Latest Effective Time</span>
+				<span class="last-modified">Last Update Date</span>
+				<span class="last-modified-by">Last Update User</span>
+			</li>
+			
+			{{#if refsets}}
+				{{#if filteredRefsets}}
+					 {{#collection Ember.ListView contentBinding="filteredRefsets" height=400 rowHeight=65 width="100%"}}
+						<div {{bind-attr class=':list-group-item :member-list-item meta.disabled:inactiveConcept'}}>
+							{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
+							<span class="snomed-id">{{sctId}}</span>{{#if sctId}} | {{/if}}{{description}}
+							
+							<br>
+			
+							<span class="language pointer" rel="tooltip" {{bind-attr title='meta.language'}}>{{languageCode}}</span>
+							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.type'}}>{{typeId}}</span>
+							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
+							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
+							
+							<span class="effective-time">{{meta.status}}</span>
+							<span class="num-members">{{totalNoOfMembers}}</span>
+							
+							<br>
+							
+							<span class="effective-time">{{effective-time-format latestEffectiveTime}}</span>
+							<span class="last-modified">{{date-format modifiedDate}}</span>
+							<span class="last-modified-by">{{modifiedBy}}</span>
+						</div>
+					  {{/collection}}
+				  {{else}}
+				  		No Refset match your search filters
+				  {{/if}}
+			{{else}}
+				<p>There are currently no matching refsets available.</p>
+			{{/if}}
+		</ul>
+	
+	</div>
+	
+	<div class="col-md-3">
+		<h2>Filter Refsets</h2>
+		
+		<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
+			<option value="0">Filter refsets...</option>
+			{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by refset status</option>{{/unless}}
+			{{#unless filterByTypeIsActive}}<option value="filterByType">Filter by refset type</option>{{/unless}}
+			{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
+			{{#unless filterByComponentTypeIsActive}}<option value="filterByComponentType">Filter by component type</option>{{/unless}}
+			{{#unless filterByLanguageIsActive}}<option value="filterByLanguage">Filter by language</option>{{/unless}}
+			{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}			
+			{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
+			{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+		</select>
+		
+		<p class="filterItem">
+			Filter by description or SCTID: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+			{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control"}}
+		</p>
+			
+		{{#if filterByStatusIsActive}}
+			<p class="filterItem">
+				Status:				<a {{action 'removeFilter' 'filterByStatus'}} class="right pointer">remove</a><br>
+				{{radio-button value="published" checked=filterByStatus}} Published
+				{{radio-button value="unpublished" checked=filterByStatus}} Unpublished
+				{{radio-button value="inactive" checked=filterByStatus}} Inactive
+			</p>
+		{{/if}}
+				
+		{{#if filterByTypeIsActive}}
+			<p class="filterItem">
+				Refset Type:		<a {{action 'removeFilter' 'filterByType'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByType dataType="refsetTypesArray"}}
+			</p>
+		{{/if}}
 
-	{{#if showUnpublished}}
-		<h1>Unpublished Reference Sets</h1>
-		{{refsets-list refsets=unpublished moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Unpublished Refsets" published=false}}
-	{{else}}
-		<h1>Published Reference Sets</h1>
-		{{refsets-list refsets=published moduleTypes=moduleTypes refsetTypes=refsetTypes componentTypes=componentTypes languageTypes=languageTypes title="Published Refsets" published=true}}
-	{{/if}}
-{{/if}}
-<button {{action 'refresh'}} class="btn btn-default right">Refresh Refsets</button>
+		{{#if filterByModuleIdIsActive}}
+			<p class="filterItem">
+				Module Type:		<a {{action 'removeFilter' 'filterByModuleId'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByModuleId dataType="moduleTypesArray"}}
+			</p>
+		{{/if}}
+
+		{{#if filterByComponentTypeIsActive}}
+			<p class="filterItem">
+				Component Type:		<a {{action 'removeFilter' 'filterByComponentType'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByComponentType dataType="componentTypesArray"}}
+			</p>
+		{{/if}}
+
+		{{#if filterByLanguageIsActive}}
+			<p class="filterItem">
+				Language:		<a {{action 'removeFilter' 'filterByLanguage'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByLanguage dataType="languagesArray"}}
+			</p>
+		{{/if}}
+
+		{{#if filterByEffectiveTimeIsActive}}
+			<p class="filterItem">
+				Effective Time: <a {{action 'removeFilter' 'filterByEffectiveTime'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByEffectiveTime dataType="refsetEffectiveTimesArray"}}
+			</p>
+		{{/if}}
+				
+		{{#if filterByLastUpdateDateIsActive}}
+			<p class="filterItem">
+				Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
+				{{view Em.TextField 
+					placeholder="Pick date..."
+				    valueBinding="filterByLastUpdateDate"
+					data-provide="datepicker"
+					data-date-format="MM d, yyyy"
+					data-date-clear-btn="true"
+					data-date-autoclose="true"
+					class="form-control"}}	
+			</p>
+		{{/if}}
+
+		{{#if filterByLastUpdateUserIsActive}}
+			<p class="filterItem">
+				Last Updater: <a {{action 'removeFilter' 'filterByLastUpdateUser'}} class="right pointer">remove</a><br>
+				{{snomed-data-dropdown value=filterByLastUpdateUser dataType="refsetUpdatersArray"}}
+			</p>
+		{{/if}}
+					
+		<button {{action 'refresh'}} class="btn btn-default btn-side-menu right">Refresh Refsets</button>
+	</div>
+</div>
+

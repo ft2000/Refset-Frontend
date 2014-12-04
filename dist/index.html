@@ -31,17 +31,7 @@
 				
 				break;
 			}
-
-			case 'prod-refset.ihtsdotools.org':
-			{
-			    window.RefsetENV.APP.refsetApiBaseUrl		= '//prod-refset.ihtsdotools.org:8080/refset/v1.0/refsets';
-			    window.RefsetENV.APP.conceptsApiBaseUrl		= '//prod-refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
-			    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= '//prod-refset.ihtsdotools.org:8080/refset/v1.0/snomed/';  	
-				
-				break;
-			}
 		}
-
     </script>
 	
 	<script type="text/x-handlebars-ignore-me" id="login-form">
@@ -67,5 +57,18 @@
 			<p class="forgetPasswordLink"><a href="{{forgotPasswordLink}}" target="_blank">I've forgotten my password or I would like to change my password</a></p>
 		</form>
 	</script>
+	
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function()
+		{ (i[r].q=i[r].q||[]).push(arguments)}
+		
+		,i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		
+		ga('create', 'UA-41892858-8', 'snomedtools.com');
+		ga('send', 'pageview');
+	</script>
+
   </body>
 </html>

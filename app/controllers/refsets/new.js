@@ -16,9 +16,105 @@ export default Ember.ObjectController.extend({
 	rf2FileToImport				: Ember.computed.alias("controllers.refsets/upload.rf2FileToImport"),
 	moreThanOneRefsetInRF2		: Ember.computed.alias("controllers.refsets/upload.moreThanOneRefsetInRF2"),
 	
+	filterByInactiveConcepts	: -1,
+	filterByDescription			: '',
+	
+	filterByInactiveConceptsIsActive	: function(){ return this.filterByInactiveConcepts !== -1;}.property('filterByInactiveConcepts'),
+	
+	sortBy 								: 'description',
+	sortOrder							: 'asc',
+
+	filteringActive						: function()
+	{ 
+		if (this.get("filterByDescription") !== "") { return true; }
+		if (this.get("filterByInactiveConceptsIsActive")) { return true; }
+		
+	}.property('potentialMembersToImport.@each','sortBy','sortOrder','filterByInactiveConcepts','filterByDescription'),
+
+	filteredImportMembers				: function()
+	{
+		var allMembers = this.get('potentialMembersToImport');
+		
+		return this.filterMembers(allMembers);
+		
+	}.property('potentialMembersToImport.@each','sortBy','sortOrder','filterByInactiveConcepts','filterByDescription'),
+
+	clearAllFilters : function()
+	{
+		this.set("filterByInactiveConcepts",-1);
+		this.set("filterByDescription","");
+	},
+	
+	filterMembers : function(allMembers)
+	{
+		if (typeof allMembers !== "undefined")
+		{
+			var filterByInactiveConcepts 	= this.get("filterByInactiveConcepts");
+			var filterByDescription 		= this.get("filterByDescription");
+			
+			var filteredMembers = allMembers.map(function(member)
+			{
+				if (typeof member !== "undefined")
+				{
+					var score;
+					
+					if (filterByDescription !== '')
+					{
+						if (filterByDescription.match(/^[0-9]*$/))
+						{
+							var regExp = new RegExp(filterByDescription,"g");
+							score = member.referencedComponentId.search(regExp);
+							
+							if (score === -1)
+							{
+								return null;
+							}
+							else
+							{
+								member.meta.score = 100 - score;
+							}
+						}
+						else
+						{
+							score = LiquidMetal.score(member.description, filterByDescription);
+
+							if (score < 0.75)
+							{
+								return null;								
+							}
+							else
+							{
+								member.meta.score = score;
+							}
+						}
+					}
+					
+					return member;	
+				}
+ 
+			});
+
+			var nullsRemoved = $.grep(filteredMembers,function(n){ return(n); });			
+			var sortBy 		= this.get("sortBy");
+			var sortOrder 	= this.get("sortOrder");
+			
+			if (filterByDescription !== '' && sortOrder === "score" && (sortBy === "description" || sortBy === "referencedComponentId"))
+			{
+				quick_sort(nullsRemoved);
+			}
+			else
+			{
+				nullsRemoved = mergesort(nullsRemoved,sortBy,sortOrder);
+			}
+			
+			return nullsRemoved;
+		}	
+	},
+	
 	createEmptyRefset : function()
 	{
 		this.set("model",RefsetModel.create());
+		this.clearAllFilters();
 		
 		var uploadController = this.get('controllers.refsets/upload');		
 		uploadController.clearMemberList();

@@ -64,6 +64,65 @@ export default Ember.ObjectController.extend({
 		return users;
 	}.property('refset.members.@each'),
 
+	refsetUpdatersArray			: function()
+	{
+		var users = [];
+		
+		var refsets = this.get("refsets");
+			
+		for (var m=0;m<refsets.length;m++)
+		{
+			var updater = refsets[m].modifiedBy;
+					
+			if ($.inArray(updater,users) === -1)
+			{
+				users.push(updater);
+			}
+		}
+		
+		for (m=0;m<users.length;m++)
+		{
+			var userObj = {id:users[m],label:users[m]};
+			users[m] = userObj;
+		}
+		
+		Ember.Logger.log("------------------ Updaters",users)
+
+		return users;
+	}.property('refsets.@each'),
+	
+	refsetEffectiveTimesArray			: function()
+	{
+		var times = [];
+		
+		var refsets = this.get("refsets");
+		
+		for (var m=0;m<refsets.length;m++)
+		{
+			if (typeof refsets[m].latestEffectiveTime !== "undefined")
+			{
+				var effTime = refsets[m].latestEffectiveTime;
+
+				if ($.inArray(effTime,times) === -1)
+				{
+					times.push(effTime);
+				}
+			}
+		}
+		
+		for (m=0;m<times.length;m++)
+		{
+			var timeString = moment(times[m]).format("YYYYMMDD");
+			var timeObj = {id:times[m],label:timeString};
+			times[m] = timeObj;
+		}
+		
+		Ember.Logger.log("------------------ Eff Times",times)
+		
+		return times;
+	}.property('refsets.@each'),
+	
+	
 	effectiveTimeArray			: function()
 	{
 		var times = [];
@@ -72,7 +131,7 @@ export default Ember.ObjectController.extend({
 		
 		for (var m=0;m<members.length;m++)
 		{
-			var effTime = members[m].effectiveTime;
+			var effTime = members[m].latestEffectiveTime;
 					
 			if ($.inArray(effTime,times) === -1)
 			{
@@ -89,6 +148,7 @@ export default Ember.ObjectController.extend({
 		
 		return times;
 	}.property('refset.members.@each'),
+
 	
 	init : function()
 	{
@@ -468,28 +528,38 @@ export default Ember.ObjectController.extend({
 				var publishedArray 		= [];
 				var unpublishedArray 	= [];
 				var inactiveArray 		= [];
+				var refsetsArray 		= [];
 				
-				_this.refsets.setObjects(response);
 				
 				response.content.refsets.map(function(item)
 				{
+					item.meta = {type:'blah',moduleType:'fred',componentType:'sheep',language:'US English',disabled:false};
+					
+					refsetsArray.push(item);
+
 					if (item.active)
 					{
 						if (item.published)
 						{
+							item.meta.status = 'published';
 							publishedArray.push(item);
 						}
 						else
 						{
+							item.meta.status = 'unpublished';
 							unpublishedArray.push(item);					
 						}
 					}
 					else
 					{
+						item.meta.status = 'inactive';
+						item.meta.disabled = true;
 						inactiveArray.push(item);
 					}
 				});
 								
+				_this.refsets.setObjects(refsetsArray);
+
 				var sortedPublishedArray = publishedArray.sort(function(a,b)
 				{
 				    return new Date(b.publishedDate) - new Date (a.publishedDate);
