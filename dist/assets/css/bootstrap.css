@@ -6470,9 +6470,13 @@ td.label {
 .member-list .member-list-header .active {
   width: 130px;
 }
+.member-list .member-list-item .status,
+.member-list .member-list-header .status {
+  width: 100px;
+}
 .member-list .member-list-item .effective-time,
 .member-list .member-list-header .effective-time {
-  width: 100px;
+  width: 110px;
 }
 .member-list .member-list-item .last-modified,
 .member-list .member-list-header .last-modified {

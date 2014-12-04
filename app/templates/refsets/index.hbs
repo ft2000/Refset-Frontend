@@ -12,16 +12,16 @@
 			</li>
 			
 			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
-				<span class="language"><a {{action 'languageCode' 'sctId'}} class="pointer">Language</a> {{sort-icon sortBy sortOrder 'languageCode'}}</span>
+				<span class="language"><a {{action 'setSortCriteria' 'languageCode'}} class="pointer">Language</a> {{sort-icon sortBy sortOrder 'languageCode'}}</span>
 				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'typeId'}} class="pointer">Refset Type Id</a> {{sort-icon sortBy sortOrder 'typeId'}}</span>
 				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a> {{sort-icon sortBy sortOrder 'moduleId'}}</span>
 				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'componentTypeId'}} class="pointer">Component Type Id</a> {{sort-icon sortBy sortOrder 'componentTypeId'}}</span>
-				<span class="effective-time pointer" rel="tooltip" title="A Refset can have status: Published, Unpublished or Inactive"><a {{action 'setSortCriteria' 'meta.status'}} class="pointer">Status</a> {{sort-icon sortBy sortOrder 'meta.status'}}</span>
+				<span class="status pointer" rel="tooltip" title="A Refset can have status: Published, Unpublished or Inactive"><a {{action 'setSortCriteria' 'meta.status'}} class="pointer">Status</a> {{sort-icon sortBy sortOrder 'meta.status'}}</span>
 				<span class="num-members pointer"><a {{action 'setSortCriteria' 'totalNoOfMembers'}} class="pointer">Member Count</a> {{sort-icon sortBy sortOrder 'totalNoOfMembers'}}</span>
 			</li>
 			
 			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
-				<span class="effective-time pointer" rel="tooltip" title="Latest member effective time">Latest Effective Time</span>
+				<span class="effective-time pointer" rel="tooltip" title="Latest member effective time"><a {{action 'setSortCriteria' 'latestEffectiveTime'}} class="pointer">Latest Effective Time</a> {{sort-icon sortBy sortOrder 'latestEffectiveTime'}}</span>
 				<span class="last-modified pointer" rel="tooltip" title="Last date refset header or any member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a> {{sort-icon sortBy sortOrder 'modifiedDate'}}</span>
 				<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this refset"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a> {{sort-icon sortBy sortOrder 'modifiedBy'}}</span>
 			</li>
@@ -40,7 +40,7 @@
 							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
 							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
 							
-							<span class="effective-time">{{meta.status}}</span>
+							<span class="status">{{meta.status}}</span>
 							<span class="num-members">{{totalNoOfMembers}}</span>
 							
 							<br>
