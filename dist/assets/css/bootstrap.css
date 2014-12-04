@@ -6631,6 +6631,9 @@ td.title {
 .cross {
   background-position: 0px -480px;
 }
+.edit {
+  background-position: 0px -520px;
+}
 span.icon {
   display: inline-block;
 }
@@ -6651,8 +6654,47 @@ span.icon {
   font-weight: 500;
   float: left;
 }
-.icon-btn:hover span.icon {
-  background: url('../img/sprite-icons.white.png') no-repeat 0px 0px;
+.icon-btn:hover .icon {
+  background-position: -40px 0px;
+}
+.icon-btn:hover .add {
+  background-position: -40px -40px;
+}
+.icon-btn:hover .minus {
+  background-position: -40px -80px;
+}
+.icon-btn:hover .search {
+  background-position: -40px -120px;
+}
+.icon-btn:hover .close {
+  background-position: -40px -160px;
+}
+.icon-btn:hover .expand {
+  background-position: -40px -200px;
+}
+.icon-btn:hover .link {
+  background-position: -40px -240px;
+}
+.icon-btn:hover .tick {
+  background-position: -40px -280px;
+}
+.icon-btn:hover .delete {
+  background-position: -40px -320px;
+}
+.icon-btn:hover .collapse {
+  background-position: -40px -360px;
+}
+.icon-btn:hover .hideinfo {
+  background-position: -40px -400px;
+}
+.icon-btn:hover .undelete {
+  background-position: -40px -440px;
+}
+.icon-btn:hover .cross {
+  background-position: -40px -480px;
+}
+.icon-btn:hover .edit {
+  background-position: -40px -520px;
 }
 .btn-side-menu {
   width: 100%;
