@@ -1010,7 +1010,14 @@ export default Ember.ObjectController.extend({
 		clearDescriptionFilter : function()
 		{
 			this.set("filterByDescription","");
+			this.set("sortOrder","asc");
 		},
+		
+		setSortToBestMatch : function()
+		{
+			Ember.Logger.log("setSortToBestMatch");
+			this.set("sortOrder","score");
+		}
 	
 	}
 });
