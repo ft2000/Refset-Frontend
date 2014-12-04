@@ -6468,11 +6468,15 @@ td.label {
 }
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
-  width: 120px;
+  width: 130px;
 }
 .member-list .member-list-item .effective-time,
 .member-list .member-list-header .effective-time {
   width: 100px;
+}
+.member-list .member-list-item .last-modified,
+.member-list .member-list-header .last-modified {
+  width: 180px;
 }
 .member-list .member-list-item .module-id,
 .member-list .member-list-header .module-id {
