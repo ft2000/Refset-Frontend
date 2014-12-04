@@ -29,13 +29,13 @@ export default Ember.Object.extend({
 		}
 	},
 	
-	findAll : function (user)
+	findAll : function (user,from,to)
 	{
 		Ember.Logger.log("adapters.refsets:findAll (user)",user);
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/?from=0&to=100', {headers:this.getHeaders(user)}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
 		{
 			return response;
 		},
