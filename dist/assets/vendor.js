@@ -63008,8 +63008,8 @@ var mergesort = function(array,sortBy,sortOrder)
 	  {
 		var x = left[0][sortBy];
 		var y = right[0][sortBy];
-		
-		if (sortBy === "referencedComponentId" || sortBy === "moduleId")
+				
+		if (sortBy === "referencedComponentId" || sortBy === "moduleId" || sortBy === "numMembers" || sortBy === "sctId" || sortBy === "typeId")
 		{
 			x = Number.parseInt(left[0][sortBy],10);
 			y = Number.parseInt(right[0][sortBy],10);
@@ -63020,7 +63020,7 @@ var mergesort = function(array,sortBy,sortOrder)
 			x = left[0].active ? 1 : 0;
 			y = right[0].active ? 1 : 0;
 		}
-			
+
 		if (sortOrder === "desc")  
 		{
 		    if(x > y)
