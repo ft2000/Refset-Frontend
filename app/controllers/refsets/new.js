@@ -135,50 +135,69 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.refsets.new:create");
 		
-		var isRF2Import = this.get("isRF2Import");		
-		if (isRF2Import)
+		var parselyForm = $('#refset-header').parsley(
+		{validators:
+			{
+				descriptioninuse: 
+				{
+					fn: function (value) 
+					{			
+						console.log("+++++++++++++++++++++++ ParsleyConfig",value);  	
+						return false;
+					},
+					priority: 32
+				}
+			}
+		});
+
+		if (parselyForm.validate())
 		{
-			var rf2 = this.get("rf2FileToImport");
-			this.set("model.sctId",rf2.sctId);
-			this.set("model.description",rf2.label);
+			var isRF2Import = this.get("isRF2Import");		
+			if (isRF2Import)
+			{
+				var rf2 = this.get("rf2FileToImport");
+				this.set("model.sctId",rf2.sctId);
+				this.set("model.description",rf2.label);
+			}
+	
+			var Refset = {};
+			
+			Refset.typeId 				= this.get("model.typeId");
+			Refset.componentTypeId 		= this.get("model.componentTypeId");
+			Refset.moduleId 			= this.get("model.moduleId");
+			Refset.active 				= true; // Always make new refsets active
+			Refset.languageCode 		= this.get("model.languageCode");
+			Refset.description 			= this.get("model.description");
+			Refset.published 			= this.get("model.published");
+			
+			var releaseDate 			= this.get("model.expectedReleaseDate");
+			Refset.expectedReleaseDate 	= releaseDate;
+	
+			if (isRF2Import)
+			{
+				Refset.sctId 			= this.get("model.sctId");
+			}
+			
+			// Need to validate the form at this point and abort if required fields are not completed
+					
+			this.dialogInstance = BootstrapDialog.show({
+	            title: 'Creating your Refsetence Set',
+	            closable: false,
+	            message: '<br><br><div class="centre">We are creating your Reference Set Header. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
+	            buttons: [{
+	                label: 'OK',
+	                cssClass: 'btn-primary',
+	                action: function(dialogRef){
+	                    dialogRef.close();
+	                }
+	            }]
+	        });
+			this.dialogInstance.getModalFooter().hide();
+	
+			var dataController = this.get('controllers.data');		
+			dataController.createRefset(Refset,this,'createRefsetComplete');
 		}
 
-		var Refset = {};
-		
-		Refset.typeId 				= this.get("model.typeId");
-		Refset.componentTypeId 		= this.get("model.componentTypeId");
-		Refset.moduleId 			= this.get("model.moduleId");
-		Refset.active 				= true; // Always make new refsets active
-		Refset.languageCode 		= this.get("model.languageCode");
-		Refset.description 			= this.get("model.description");
-		Refset.published 			= this.get("model.published");
-		
-		var releaseDate 			= this.get("model.expectedReleaseDate");
-		Refset.expectedReleaseDate 	= releaseDate;
-
-		if (isRF2Import)
-		{
-			Refset.sctId 			= this.get("model.sctId");
-		}
-		
-		// Need to validate the form at this point and abort if required fields are not completed
-				
-		this.dialogInstance = BootstrapDialog.show({
-            title: 'Creating your Refsetence Set',
-            closable: false,
-            message: '<br><br><div class="centre">We are creating your Reference Set Header. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
-            buttons: [{
-                label: 'OK',
-                cssClass: 'btn-primary',
-                action: function(dialogRef){
-                    dialogRef.close();
-                }
-            }]
-        });
-		this.dialogInstance.getModalFooter().hide();
-
-		var dataController = this.get('controllers.data');		
-		dataController.createRefset(Refset,this,'createRefsetComplete');
 	},
 
     actions :
@@ -359,6 +378,5 @@ export default Ember.ObjectController.extend({
 			var newModuleId = $('#member-module-id-' + member.referencedComponentId).val();
 			member.moduleId = newModuleId;
 		}
-		
     }
 });

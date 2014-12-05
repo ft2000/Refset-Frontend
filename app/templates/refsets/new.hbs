@@ -15,7 +15,7 @@
 						<label>Are you importing a published Reference Set?</label> {{radio-button value=false checked=model.published}} Yes {{radio-button value=true checked=model.published}} No
 					{{/if}}
 
-					<form class="refset-header">
+					<form id="refset-header" class="refset-header">
 
 						<table width="100%">
 
@@ -28,7 +28,7 @@
 								{{else}}
 									<td class="content" colspan="4">
 										<label class="control-label pointer" rel="tooltip" title="Reference Set description should conform to the editorial rules for Fully Specified Name, including valid semantic (hierarchy) tags.">Reference Set Description</label>
-										{{textarea value=description class="form-control"}}
+										{{textarea value=description class="form-control" required=true data-parsley-required-message="Refset Description is required" data-parsely-descriptioninuse="true" data-parsely-descriptioninuse-message="Description has to be unique."}}
 									</td>
 								{{/if}}
 							</tr>
@@ -61,7 +61,9 @@
 										data-date-format="yyyymmdd"
 										data-date-clear-btn="true"
 										data-date-autoclose="true"
-										class="form-control"}}								
+										class="form-control"
+										required="true"
+										data-parsley-required-message="Planned Publish Date is required"}}								
 								</td>
 								<td class="label">Module</td><td class="content">
 									{{snomed-data-dropdown valueBinding="moduleId" dataType="moduleTypesArray" id="newRefsetModuleId" class="form-control"}}

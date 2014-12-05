@@ -261,5 +261,20 @@ export default Ember.Object.extend({
 		return result;	
 	},
 	
+	searchRefsetMembers : function(user,searchTerm)
+	{
+		var _this = this;
+
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/search?q=' + searchTerm , {headers:this.getHeaders(user), method:"get", processData: false, contentType: 'application/json'}).then(function(response){
+			return response;	
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
+	
 });
 

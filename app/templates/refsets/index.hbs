@@ -76,8 +76,13 @@
 		</select>
 		
 		<p class="filterItem">
-			Filter by description or SCTID: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
+			Filter by Refset description or SCTID: <a {{action 'clearDescriptionFilter'}} class="right pointer">clear</a><br>
 			{{input type="text" value=filterByDescription placeholder="type filter here..." class="form-control" action="setSortToBestMatch" on="key-press"}}
+		</p>
+
+		<p class="filterItem">
+			Filter by Member description or Referenced Component Id: <a {{action 'clearMemberDescriptionFilter'}} class="right pointer">clear</a><br>
+			{{input type="text" value=filterByMemberDescription placeholder="type filter here..." class="form-control" action="memberSearch" on="key-press"}}
 		</p>
 			
 		{{#if filterByStatusIsActive}}

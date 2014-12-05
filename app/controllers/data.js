@@ -87,8 +87,6 @@ export default Ember.ObjectController.extend({
 			users[m] = userObj;
 		}
 		
-		Ember.Logger.log("------------------ Updaters",users)
-
 		return users;
 	}.property('refsets.@each'),
 	
@@ -117,8 +115,6 @@ export default Ember.ObjectController.extend({
 			var timeObj = {id:times[m],label:timeString};
 			times[m] = timeObj;
 		}
-		
-		Ember.Logger.log("------------------ Eff Times",times)
 		
 		return times;
 	}.property('refsets.@each'),
@@ -522,7 +518,6 @@ export default Ember.ObjectController.extend({
 		{
 			// Need to pick up total number of refsets from the response here...
 			
-			
 			var start = 1, end = 0;
 			var idArraySlices = [];
 			
@@ -541,7 +536,7 @@ export default Ember.ObjectController.extend({
 			
 			_this.refsetsRequestQueue.setObjects(idArraySlices);
 			
-			_this.processRefsetsRequestQueue(user);
+			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter,user);
 							
 			if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 			{
@@ -550,7 +545,7 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
-	processRefsetsRequestQueue : function(user)
+	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter,user)
 	{
 		var _this = this;
 		var promise;
@@ -559,7 +554,7 @@ export default Ember.ObjectController.extend({
 		{
 			var refsetsToProcess = this.refsetsRequestQueue.shift();
 
-			promise = this.getRefsetChunks(user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
+			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
 			{
 				if (typeof response === "undefined" || response.error)
 				{
@@ -572,12 +567,12 @@ export default Ember.ObjectController.extend({
 		{
 			if (_this.refsetsRequestQueue.length)
 			{
-				_this.processRefsetsRequestQueue(user);
+				_this.processRefsetsRequestQueue(callingController,completeAction,user);
 			}
 		});
 	},
 
-	getRefsetChunks : function(user,from,to)
+	getRefsetChunks : function(callingController,completeAction,retryCounter,user,from,to)
 	{	
 		var _this = this;
 		
@@ -621,8 +616,7 @@ export default Ember.ObjectController.extend({
 
 				});
 				
-				var existingRefsets = _this.get("refsets");
-				_this.refsets.setObjects(existingRefsets.concat(refsetsArray));
+				_this.refsets.setObjects(_this.get("refsets").concat(refsetsArray));
 
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
@@ -781,9 +775,6 @@ export default Ember.ObjectController.extend({
 		
 		refsetsAdapter.create(user,refset).then(function(response)
 		{
-			Ember.Logger.log('============================================' ,response);
-			
-			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				refset.uuid = response.content.uuid;		
@@ -1197,6 +1188,32 @@ export default Ember.ObjectController.extend({
 		});
 
 		return result;
+	},
+	
+	searchRefsetMembers : function(searchTerm,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:searchRefset (searchTerm,callingController,completeAction,retry)",searchTerm,callingController,completeAction,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		refsetsAdapter.searchRefsetMembers(user,searchTerm).then(function(response)
+		{
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,response);				
+				}
+			}	
+			else
+			{
+				_this.handleRequestFailure(response,'Search refsets','searchRefset',[searchTerm],callingController,completeAction,retryCounter);
+			}
+		});
 	},
 	
 });

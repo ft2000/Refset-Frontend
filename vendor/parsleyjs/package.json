@@ -1,0 +1,74 @@
+{
+  "name": "parsleyjs",
+  "version": "2.0.6",
+  "homepage": "http://parsleyjs.org",
+  "license": "MIT",
+  "description": "Validate your forms, frontend, without writing a single line of javascript!",
+  "main": "dist/parsley.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guillaumepotier/Parsley.js.git"
+  },
+  "keywords": [
+    "parsley",
+    "form",
+    "validation",
+    "html5",
+    "polyfill"
+  ],
+  "author": {
+    "name": "Guillaume Potier",
+    "email": "guillaume@wisembly.com",
+    "url": "http://guillaumepotier.com/"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "mocha": "1.9.0",
+    "mocha-phantomjs": "*",
+    "expect.js": "*",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-replace": "~0.5.1",
+    "grunt-bower-cli": "0.0.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-docco": "~0.3.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-npm2bower-sync": "~0.3.0"
+  },
+  "scripts": {
+    "test": "mocha-phantomjs test/index.html",
+    "test-all": "mocha-phantomjs test/index.html && mocha-phantomjs test/env/amd.html && mocha-phantomjs test/env/browserify.html"
+  },
+  "spm": {
+    "main": "dist/parsley.js",
+    "ignore": [
+      "doc",
+      "test",
+      "src"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/guillaumepotier/Parsley.js/issues"
+  },
+  "_id": "parsleyjs@2.0.6",
+  "dist": {
+    "shasum": "b643e13f117b9d86cf3c06e0f112ea6354dfceed",
+    "tarball": "http://registry.npmjs.org/parsleyjs/-/parsleyjs-2.0.6.tgz"
+  },
+  "_from": "parsleyjs@*",
+  "_npmVersion": "1.3.8",
+  "_npmUser": {
+    "name": "guillaumepotier",
+    "email": "cobalt2760@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "guillaumepotier",
+      "email": "cobalt2760@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "b643e13f117b9d86cf3c06e0f112ea6354dfceed",
+  "_resolved": "https://registry.npmjs.org/parsleyjs/-/parsleyjs-2.0.6.tgz"
+}
