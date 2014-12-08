@@ -38,6 +38,7 @@ export default Ember.ObjectController.extend({
 	languageTypes			: {'en_US' : 'US English'},
 	initialised				: false,
 	refsetMemberRequestQueue : [],
+	refsetsRequestQueue : [],
 	
 	moduleUpdatersArray			: function()
 	{
@@ -86,8 +87,6 @@ export default Ember.ObjectController.extend({
 			users[m] = userObj;
 		}
 		
-		Ember.Logger.log("------------------ Updaters",users)
-
 		return users;
 	}.property('refsets.@each'),
 	
@@ -116,8 +115,6 @@ export default Ember.ObjectController.extend({
 			var timeObj = {id:times[m],label:timeString};
 			times[m] = timeObj;
 		}
-		
-		Ember.Logger.log("------------------ Eff Times",times)
 		
 		return times;
 	}.property('refsets.@each'),
@@ -502,7 +499,7 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.refsets:getAllRefSets (retry)",retry);
 		
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 	
 		this.set("currentAllRefsets",{callingController:callingController,completeAction:completeAction});	
@@ -517,69 +514,110 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		refsetsAdapter.findAll(user,0,5).then(function(response)
+		return refsetsAdapter.findAll(user,0,1).then(function(response)
+		{
+			// Need to pick up total number of refsets from the response here...
+			
+			var start = 1, end = 0;
+			var idArraySlices = [];
+			
+			var totalNumRefsets = 100;
+			
+			while (start < totalNumRefsets)
+			{
+				end = Math.min(start + 99,totalNumRefsets);
+				
+				if (start === 0) {end = 10;}
+				
+				idArraySlices.push({from:start,to:end});
+				
+				start = end + 1;
+			}
+			
+			_this.refsetsRequestQueue.setObjects(idArraySlices);
+			
+			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter,user);
+							
+			if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+			{
+				callingController.send(completeAction,{error:0});
+			}
+		});
+	},
+	
+	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter,user)
+	{
+		var _this = this;
+		var promise;
+		
+		if (this.refsetsRequestQueue.length)
+		{
+			var refsetsToProcess = this.refsetsRequestQueue.shift();
+
+			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
+			{
+				if (typeof response === "undefined" || response.error)
+				{
+					Ember.Logger.log("processRefsetsRequestQueue error",response);
+				}
+			});
+		}
+		
+		Ember.RSVP.all([promise]).then(function()
+		{
+			if (_this.refsetsRequestQueue.length)
+			{
+				_this.processRefsetsRequestQueue(callingController,completeAction,user);
+			}
+		});
+	},
+
+	getRefsetChunks : function(callingController,completeAction,retryCounter,user,from,to)
+	{	
+		var _this = this;
+		
+		return refsetsAdapter.findAll(user,from,to).then(function(response)
 		{	
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				_this.hideWaitAnim();
-				
-				var publishedArray 		= [];
-				var unpublishedArray 	= [];
-				var inactiveArray 		= [];
+
 				var refsetsArray 		= [];			
-				
+
 				response.content.refsets.map(function(item)
 				{
-					item.meta = {type:'blah',moduleType:'fred',componentType:'sheep',language:'US English',disabled:false};
-					
-					refsetsArray.push(item);
+					var moduleType 		= _this.moduleTypes[item.moduleId];
+					var componentType 	= _this.componentTypes[item.componentTypeId];
+					var language 		= _this.languageTypes[item.languageCode];
+					var typeId 			= _this.refsetTypes[item.typeId];
+
+					item.meta = {type:typeId,moduleType:moduleType,componentType:componentType,language:language,disabled:false};
 
 					if (item.active)
 					{
 						if (item.published)
 						{
 							item.meta.status = 'published';
-							publishedArray.push(item);
 						}
 						else
 						{
 							item.meta.status = 'unpublished';
-							unpublishedArray.push(item);					
 						}
 					}
 					else
 					{
 						item.meta.status = 'inactive';
 						item.meta.disabled = true;
-						inactiveArray.push(item);
 					}
+
+					refsetsArray.push(item);
+
 				});
-								
-				_this.refsets.setObjects(refsetsArray);
+				
+				_this.refsets.setObjects(_this.get("refsets").concat(refsetsArray));
 
-				var sortedPublishedArray = publishedArray.sort(function(a,b)
-				{
-				    return new Date(b.publishedDate) - new Date (a.publishedDate);
-				});			
-
-				_this.publishedRefsets.setObjects(sortedPublishedArray);
-			
-				var sortedUnpublishedArray = unpublishedArray.sort(function(a,b)
-				{
-				    return new Date(b.publishedDate) - new Date (a.publishedDate);
-				});			
-
-				_this.unpublishedRefsets.setObjects(sortedUnpublishedArray);
-
-				var sortedInactiveArray = inactiveArray.sort(function(a,b)
-				{
-				    return new Date(b.publishedDate) - new Date (a.publishedDate);
-				});			
-
-				_this.inactiveRefsets.setObjects(sortedInactiveArray);
-						
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
 					callingController.send(completeAction,{error:0});
@@ -635,7 +673,7 @@ export default Ember.ObjectController.extend({
 				{
 					end = Math.min(start + 99,response.content.refset.totalNoOfMembers);
 					
-					if (start === 0) {end = 24;}
+					if (start === 0) {end = 10;}
 					
 					idArraySlices.push({from:start,to:end});
 					
@@ -737,9 +775,6 @@ export default Ember.ObjectController.extend({
 		
 		refsetsAdapter.create(user,refset).then(function(response)
 		{
-			Ember.Logger.log('============================================' ,response);
-			
-			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				refset.uuid = response.content.uuid;		
@@ -1153,6 +1188,32 @@ export default Ember.ObjectController.extend({
 		});
 
 		return result;
+	},
+	
+	searchRefsetMembers : function(searchTerm,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:searchRefset (searchTerm,callingController,completeAction,retry)",searchTerm,callingController,completeAction,retry);
+
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+		
+		refsetsAdapter.searchRefsetMembers(user,searchTerm).then(function(response)
+		{
+			if (typeof response.meta.errorInfo === 'undefined')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,response);				
+				}
+			}	
+			else
+			{
+				_this.handleRequestFailure(response,'Search refsets','searchRefset',[searchTerm],callingController,completeAction,retryCounter);
+			}
+		});
 	},
 	
 });
