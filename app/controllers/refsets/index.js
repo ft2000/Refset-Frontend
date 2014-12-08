@@ -23,6 +23,7 @@ export default Ember.ObjectController.extend({
 	filterByEffectiveTime			: -1,
 	filterByLastUpdateDate			: -1,
 	filterByLastUpdateUser			: -1,
+	filterByMemberDescription		: '',
 	
 	filterByStatusIsActive			: function(){ return this.filterByStatus !== -1;}.property('filterByStatus'),
 	filterByTypeIsActive			: function(){ return this.filterByType !== -1;}.property('filterByType'),
@@ -32,6 +33,8 @@ export default Ember.ObjectController.extend({
 	filterByEffectiveTimeIsActive	: function(){ return this.filterByEffectiveTime !== -1;}.property('filterByEffectiveTime'),
 	filterByLastUpdateDateIsActive	: function(){ return this.filterByLastUpdateDate !== -1;}.property('filterByLastUpdateDate'),
 	filterByLastUpdateUserIsActive	: function(){ return this.filterByLastUpdateUser !== -1;}.property('filterByLastUpdateUser'),
+	
+	refsetMemberSearchMatchingIDs	: [],
 
 	filteredRefsets : function()
 	{
@@ -39,21 +42,23 @@ export default Ember.ObjectController.extend({
 		
 		return this.filterRefsets(allRefsets);
 		
-	}.property('refsets.@each','sortBy','sortOrder','filterByDescription','filterByStatus','filterByType','filterByModuleId','filterByComponentType','filterByLanguage','filterByEffectiveTime','filterByLastUpdateDate','filterByLastUpdateUser'),
+	}.property('refsets.@each','sortBy','sortOrder','filterByDescription','filterByStatus','filterByType','filterByModuleId','filterByComponentType','filterByLanguage','filterByEffectiveTime','filterByLastUpdateDate','filterByLastUpdateUser','filterByMemberDescription'),
 	
 	filterRefsets : function(allRefsets)
 	{
 		if (typeof allRefsets !== "undefined")
 		{
-			var filterByDescription 	= this.get("filterByDescription");
-			var filterByStatus			= this.get("filterByStatus");
-			var filterByType			= this.get("filterByType");
-			var filterByModuleId		= this.get("filterByModuleId");
-			var filterByComponentType	= this.get("filterByComponentType");
-			var filterByLanguage		= this.get("filterByLanguage");
-			var filterByEffectiveTime	= this.get("filterByEffectiveTime");
-			var filterByLastUpdateDate	= this.get("filterByLastUpdateDate");
-			var filterByLastUpdateUser	= this.get("filterByLastUpdateUser");
+			var filterByDescription 		= this.get("filterByDescription");
+			var filterByStatus				= this.get("filterByStatus");
+			var filterByType				= this.get("filterByType");
+			var filterByModuleId			= this.get("filterByModuleId");
+			var filterByComponentType		= this.get("filterByComponentType");
+			var filterByLanguage			= this.get("filterByLanguage");
+			var filterByEffectiveTime		= this.get("filterByEffectiveTime");
+			var filterByLastUpdateDate		= this.get("filterByLastUpdateDate");
+			var filterByLastUpdateUser		= this.get("filterByLastUpdateUser");
+			var filterByMemberDescription	= this.get("filterByMemberDescription");
+			var refsetMemberSearchMatchingIDs = this.get("refsetMemberSearchMatchingIDs");
 
 			var filteredRefsets = allRefsets.map(function(refset)
 			{
@@ -128,6 +133,14 @@ export default Ember.ObjectController.extend({
 						}
 					}
 					
+					if (filterByMemberDescription !== '')
+					{
+						if(refsetMemberSearchMatchingIDs.indexOf(filterByMemberDescription) === -1)
+						{
+							return null;
+						}
+					}
+					
 					var score;
 					
 					if (filterByDescription !== '')
@@ -180,7 +193,7 @@ export default Ember.ObjectController.extend({
 			}
 			
 			return nullsRemoved;
-		}	
+		}
 	},
 	
 	
@@ -194,6 +207,7 @@ export default Ember.ObjectController.extend({
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		return Ember.run.next(function(){dataController.getAllRefsets(_this,'getAllRefsetsComplete');});
 	},
+
 	
 	actions :
 	{
@@ -300,11 +314,34 @@ export default Ember.ObjectController.extend({
 			this.set("sortOrder","asc");
 		},
 		
+		clearMemberDescriptionFilter: function()
+		{
+			this.set("filterByMemberDescription","");
+			this.set("refsetMemberSearchMatchingIDs",[]);
+			this.set("sortOrder","asc");
+		},
+		
 		setSortToBestMatch : function()
 		{
-			Ember.Logger.log("setSortToBestMatch");
 			this.set("sortOrder","score");
-		}
+		},
+		
+		memberSearch : function()
+		{
+			this.set("sortOrder","score");
+			
+			var searchTerm = this.get("filterByMemberDescription");
+			
+			if (searchTerm !== "")
+			{
+				var dataController = this.get('controllers.data');
+				dataController.searchRefsetMembers(searchTerm,this,'memberSearchComplete');
+			}
+		},
+		
+		memberSearchComplete : function(response)
+		{
+			Ember.Logger.log("memberSearchComplete",response);
+		},
 	}
-	
 });

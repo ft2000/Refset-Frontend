@@ -1,6 +1,10 @@
 Ember.TextField.reopen(
 {
-	  attributeBindings: ['data-provide','data-date-format','data-date-clear-btn','data-date-autoclose','class']
+	  attributeBindings: ['data-provide','data-date-format','data-date-clear-btn','data-date-autoclose','class','data-parsley-type','data-parsley-required-message','required']
+});
+
+Ember.TextArea.reopen({
+	  attributeBindings: ['data-parsley-type','data-parsley-required-message','required','data-parsely-descriptioninuse','data-parsely-descriptioninuse-message']
 });
 
 export default Ember.ObjectController.extend({
