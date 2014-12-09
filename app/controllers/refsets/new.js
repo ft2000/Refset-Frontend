@@ -113,7 +113,10 @@ export default Ember.ObjectController.extend({
 	
 	createEmptyRefset : function()
 	{
-		this.set("model",RefsetModel.create());
+		var model = RefsetModel.create();
+		model.meta.expectedReleaseDateInput = null;
+		this.set("model",model);
+		
 		this.clearAllFilters();
 		
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -141,7 +144,7 @@ export default Ember.ObjectController.extend({
 				descriptioninuse: 
 				{
 					fn: function (value) 
-					{			
+					{
 						console.log("+++++++++++++++++++++++ ParsleyConfig",value);  	
 						return false;
 					},

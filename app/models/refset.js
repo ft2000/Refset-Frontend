@@ -18,15 +18,12 @@ export default Ember.Object.extend({
 						}.property('meta.publishedDateInput'),
 	publishedDate 	: function()
 						{
-							var mydate = moment.utc(this.get("meta.publishedDateInput"),'MMMM D, YYYY');
+							var mydate = moment.utc(this.get("meta.publishedDateInput"),'YYYYMMDD');
 							return mydate.isValid() ? mydate.format() : null;
 						}.property('meta.publishedDateInput'),
 	typeId 			: RefsetENV.APP.defaultSnomedTypes.refsetType,
-	
 	meta			:
 	{
-		createdDateInput 	: null,
-		publishedDateInput 	: null,
 		expectedReleaseDateInput : null,
 	}
 });
