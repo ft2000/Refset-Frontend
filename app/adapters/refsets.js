@@ -265,7 +265,7 @@ export default Ember.Object.extend({
 	{
 		var _this = this;
 
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/search?q=' + searchTerm , {headers:this.getHeaders(user), method:"get", processData: false, contentType: 'application/json'}).then(function(response){
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/search?from=0&to=100&q=' + searchTerm , {headers:this.getHeaders(user), method:"get", processData: false, contentType: 'application/json'}).then(function(response){
 			return response;	
 		},
 		function (response)
