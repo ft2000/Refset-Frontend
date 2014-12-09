@@ -131,24 +131,27 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
+	
+
+	  
+	  
 	create : function()
 	{
 		Ember.Logger.log("controllers.refsets.new:create");
 		
-		var parselyForm = $('#refset-header').parsley(
-		{validators:
-			{
-				descriptioninuse: 
-				{
-					fn: function (value) 
-					{			
-						console.log("+++++++++++++++++++++++ ParsleyConfig",value);  	
-						return false;
-					},
-					priority: 32
-				}
-			}
-		});
+		var parselyForm = $('#refset-header').parsley({
+	        validators: {
+	        	descriptioninuse: {
+	            fn: function (value, requirements) {
+					console.log("+++++++++++++++++++++++ ParsleyConfig",value,requirement);  	
+					return false;
+	            },
+	            priority: 0
+	          }
+	        }});
+
+		Ember.Logger.log("++++++++=============++++++++++++",parselyForm)
+		
 
 		if (parselyForm.validate())
 		{
@@ -181,7 +184,7 @@ export default Ember.ObjectController.extend({
 			// Need to validate the form at this point and abort if required fields are not completed
 					
 			this.dialogInstance = BootstrapDialog.show({
-	            title: 'Creating your Refsetence Set',
+	            title: 'Creating your Reference Set',
 	            closable: false,
 	            message: '<br><br><div class="centre">We are creating your Reference Set Header. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>',
 	            buttons: [{
