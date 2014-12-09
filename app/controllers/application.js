@@ -4,7 +4,7 @@ Ember.TextField.reopen(
 });
 
 Ember.TextArea.reopen({
-	  attributeBindings: ['data-parsley-type','data-parsley-required-message','required','data-parsely-descriptioninuse','data-parsely-descriptioninuse-message']
+	  attributeBindings: ['data-parsley-type','data-parsley-required-message','required','data-parsely-descriptioninuse','data-parsely-descriptioninuse-message','data-parsley-validate-if-empty']
 });
 
 export default Ember.ObjectController.extend({
