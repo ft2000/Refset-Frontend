@@ -3,6 +3,17 @@ import { raw as icAjaxRaw } from 'ic-ajax';
 
 export default Ember.Object.extend({
 	
+	getPreAuthHeaders : function(user)
+	{
+		var headers =
+		{
+			'X-REFSET-PRE-AUTH-USERNAME'	: user.name,
+			'X-REFSET-PRE-AUTH-TOKEN'		: user.token
+		};
+
+		return headers;
+	},
+	
 	getHeaders : function(user)
 	{
 		var headers =
@@ -29,9 +40,32 @@ export default Ember.Object.extend({
 		}
 	},
 	
+	authenticate : function (username,password)
+	{
+		Ember.Logger.log("adapters.refsets:authenticate",username,password);
+		
+		var _this = this;
+		var tempUser = {name:username,token:password};
+
+		var result = icAjaxRaw(RefsetENV.APP.refsetApiBaseUrl + '/getUserDetails', {headers:this.getPreAuthHeaders(tempUser) , type:"post", processData: false, contentType: 'application/json'}).then(function(response)
+		{
+			Ember.Logger.log("adapters.refsets:authenticate (response)",response);
+			var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');
+			Ember.Logger.log("adapters.refsets:authenticate (contentDisposition)",contentDisposition);
+			
+			return response;	
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;				
+	},
+	
 	findAll : function (user,from,to)
 	{
-		Ember.Logger.log("adapters.refsets:findAll (user)",user);
+		Ember.Logger.log("adapters.refsets:findAll (user,from,to)",user,from,to);
 		
 		var _this = this;
 		

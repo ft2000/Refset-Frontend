@@ -23,23 +23,24 @@
 		switch (location.hostname)
 		{
 			case 'refset.local':
-			case 'uat-refset.ihtsdotools.org':
+			case 'dev-refset.ihtsdotools.org':
 			{
-			    window.RefsetENV.APP.refsetApiBaseUrl		= '//uat-refset.ihtsdotools.org:8080/refset/v1.0/refsets';
-			    window.RefsetENV.APP.conceptsApiBaseUrl		= '//uat-refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
-			    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= '//uat-refset.ihtsdotools.org:8080/refset/v1.0/snomed/';  
+			    window.RefsetENV.APP.refsetApiBaseUrl		= '//dev-refset.ihtsdotools.org:8080/refset/v1.0/refsets';
+			    window.RefsetENV.APP.conceptsApiBaseUrl		= '//dev-refset.ihtsdotools.org:8080/refset/v1.0/snomed/concepts';
+			    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= '//dev-refset.ihtsdotools.org:8080/refset/v1.0/snomed/';
 				
 				break;
 			}
-			
-			case 'prod-refset.ihtsdotools.org':
+
+			case 'uat-refset.ihtsdotools.org':
 			{
-			    window.RefsetENV.APP.refsetApiBaseUrl		= '//prod-refset.ihtsdotools.org/refset-api/v1.0/refsets';
-			    window.RefsetENV.APP.conceptsApiBaseUrl		= '//prod-refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts';
-			    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= '//prod-refset.ihtsdotools.org/refset-api/v1.0/snomed/';  
+			    window.RefsetENV.APP.refsetApiBaseUrl		= 'https://uat-refset.ihtsdotools.org/refset-api/v1.0/refsets';
+			    window.RefsetENV.APP.conceptsApiBaseUrl		= 'https://uat-refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts';
+			    window.RefsetENV.APP.snomedTypesApiBaseUrl 	= 'https://uat-refset.ihtsdotools.org/refset-api/v1.0/snomed/';
 				
 				break;
-			}		}
+			}		
+		}
     </script>
 	
 	<script type="text/x-handlebars-ignore-me" id="login-form">
