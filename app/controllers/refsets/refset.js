@@ -436,6 +436,8 @@ export default Ember.ObjectController.extend({
 		
 		toggleDeleteMember : function(memberId)
 		{
+			Ember.Logger.log("toggleDeleteMember",memberId);
+			
 			var refset = $.extend(true, {}, this.get("model"));
 			
 			for (var m=0;m<refset.members.length;m++)
@@ -457,6 +459,8 @@ export default Ember.ObjectController.extend({
 		
 		toggleMemberActive : function(memberId)
 		{
+			Ember.Logger.log("toggleMemberActive",memberId);
+
 			var refset = $.extend(true, {}, this.get("model"));
 			
 			for (var m=0;m<refset.members.length;m++)

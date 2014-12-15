@@ -113,7 +113,14 @@ export default Ember.ObjectController.extend({
 	
 	createEmptyRefset : function()
 	{
-		this.set("model",RefsetModel.create());
+		var model = RefsetModel.create();
+		
+		
+		Ember.Logger.log("xxxxxxxxxxxxxxxxxxxxxxxxxx createEmptyRefset",model);
+
+		model.meta.expectedReleaseDateInput = null;
+		this.set("model",model);
+		
 		this.clearAllFilters();
 		
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -141,7 +148,7 @@ export default Ember.ObjectController.extend({
 				descriptioninuse: 
 				{
 					fn: function (value) 
-					{			
+					{
 						console.log("+++++++++++++++++++++++ ParsleyConfig",value);  	
 						return false;
 					},
@@ -168,15 +175,19 @@ export default Ember.ObjectController.extend({
 			Refset.active 				= true; // Always make new refsets active
 			Refset.languageCode 		= this.get("model.languageCode");
 			Refset.description 			= this.get("model.description");
-			Refset.published 			= this.get("model.published");
+			Refset.published 			= false;
 			
-			var releaseDate 			= this.get("model.expectedReleaseDate");
+			var releaseDate 			= this.get("model.meta.expectedReleaseDateInput");
 			Refset.expectedReleaseDate 	= releaseDate;
 	
 			if (isRF2Import)
 			{
 				Refset.sctId 			= this.get("model.sctId");
+				Refset.published 		= this.get("model.published");
 			}
+			
+			Ember.Logger.log("creat----------------",this.get("model"),Refset)
+			
 			
 			// Need to validate the form at this point and abort if required fields are not completed
 					
