@@ -12,7 +12,7 @@
 		        <div id="refsetHeader" class="panel-body">
 
 					{{#if isRF2Import}}
-						<label>Are you importing a published Reference Set?</label> {{radio-button value=false checked=model.published}} Yes {{radio-button value=true checked=model.published}} No
+						<label>Are you importing a published Reference Set?</label> {{radio-button value=true checked=published}} Yes {{radio-button value=false checked=published}} No
 					{{/if}}
 
 					<form id="refset-header" class="refset-header">
