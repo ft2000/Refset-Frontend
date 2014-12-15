@@ -206,11 +206,11 @@
 										 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 											<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 												<span class="right"><a class="pointer icon info"></a></span>
-												<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+												<span class="right"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 
 												<div class="memberRowWrapperEdit"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 		
-												<span class="left active"><a {{action 'toggleMemberActive' id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+												<span class="left active"><a {{action 'toggleMemberActive' uuid}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 	
 												<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 												<span>
@@ -230,8 +230,6 @@
 											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 						
-													<span class="right">{{member-meta-data-icon content}}</span>
-
 													<div class="memberRowWrapper"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 			
 													<div class="memberRowWrapper">
@@ -254,11 +252,12 @@
 											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 													<span class="right"><a class="pointer icon info"></a></span>
-													<span class="right"><a {{action 'toggleDeleteMember' id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
-	
+													<span class="right"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+	[{{meta.conceptActive}}]
+	[{{meta.deleteConcept}}]
 													<div class="memberRowWrapperEdit"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 			
-													<span class="left active"><a {{action 'toggleMemberActive' id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+													<span class="left active"><a {{action 'toggleMemberActive' uuid}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 		
 													<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 													<span>
@@ -275,8 +274,6 @@
 												 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 													<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 							
-														<span class="right">{{member-meta-data-icon content}}</span>
-	
 														<div class="memberRowWrapper"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
 				
 														<div class="memberRowWrapper">
