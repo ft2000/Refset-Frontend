@@ -514,14 +514,16 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		return refsetsAdapter.findAll(user,0,1).then(function(response)
+		this.set("refsets",[]);
+		
+		return refsetsAdapter.findAll(user,0,1).then(function(response) // Get count of how many refsets (not implemented in back end yet...)
 		{
 			// Need to pick up total number of refsets from the response here...
 			
-			var start = 1, end = 0;
+			var start = 0, end = 0;
 			var idArraySlices = [];
 			
-			var totalNumRefsets = 100;
+			var totalNumRefsets = 10;
 			
 			while (start < totalNumRefsets)
 			{
@@ -529,14 +531,14 @@ export default Ember.ObjectController.extend({
 				
 				if (start === 0) {end = 10;}
 				
-				idArraySlices.push({from:start,to:end});
+				idArraySlices.push({user:user,from:start,to:end});
 				
 				start = end + 1;
 			}
 			
 			_this.refsetsRequestQueue.setObjects(idArraySlices);
 			
-			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter,user);
+			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter);
 							
 			if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 			{
@@ -545,7 +547,7 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
-	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter,user)
+	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter)
 	{
 		var _this = this;
 		var promise;
@@ -554,7 +556,7 @@ export default Ember.ObjectController.extend({
 		{
 			var refsetsToProcess = this.refsetsRequestQueue.shift();
 
-			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
+			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,refsetsToProcess.user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
 			{
 				if (typeof response === "undefined" || response.error)
 				{
@@ -567,7 +569,7 @@ export default Ember.ObjectController.extend({
 		{
 			if (_this.refsetsRequestQueue.length)
 			{
-				_this.processRefsetsRequestQueue(callingController,completeAction,user);
+				_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter);
 			}
 		});
 	},

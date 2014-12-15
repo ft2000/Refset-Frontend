@@ -1,7 +1,9 @@
 import LoginAdapter	from '../adapters/login';
 import User			from '../models/user';
-
 var loginAdapter = LoginAdapter.create();
+
+import RefsetAdapter	from '../adapters/refsets';
+var refsetAdapter = RefsetAdapter.create();
 
 export default Ember.ObjectController.extend({
 
@@ -109,6 +111,19 @@ export default Ember.ObjectController.extend({
 	{
 		var _this = this;
 		
+		return refsetAdapter.authenticate(username,password).then(function(authResult)
+		{
+			
+			var contentDisposition = authResult.jqXHR.getResponseHeader('Content-Disposition');
+			
+			Ember.Logger.log("-------------------------- login",authResult,contentDisposition);
+			
+			var filename = contentDisposition.split('"')[1];
+			
+			
+		});
+		
+/*		
 		return loginAdapter.authenticate(username,password).then(function(authResult)
 		{
 			var user = authResult.user;
@@ -142,6 +157,9 @@ export default Ember.ObjectController.extend({
 			}
 			
 		});
+		
+*/
+		
 	},
 	
 	// Log the user out of the app

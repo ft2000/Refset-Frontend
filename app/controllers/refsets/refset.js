@@ -772,8 +772,7 @@ export default Ember.ObjectController.extend({
 				try
 				{
 					var exportFile = response.response;
-					var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');
-					
+					var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');			
 					
 					var filename = contentDisposition.split('"')[1];
 
