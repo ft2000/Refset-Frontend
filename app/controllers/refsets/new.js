@@ -186,9 +186,6 @@ export default Ember.ObjectController.extend({
 				Refset.published 		= this.get("model.published");
 			}
 			
-			Ember.Logger.log("creat----------------",this.get("model"),Refset)
-			
-			
 			// Need to validate the form at this point and abort if required fields are not completed
 					
 			this.dialogInstance = BootstrapDialog.show({

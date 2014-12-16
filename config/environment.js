@@ -18,13 +18,6 @@ module.exports = function(environment) {
     	thisApplicationName 			: 'Refset',
     	RegistrationEmail 				: 'register@ihtsdo.org',
 
-    	//User authentication
-        authenticationActionSoapName	: 'getUserByNameAuth',
-        authenticationUrl				: 'https://usermanagement3.ihtsdotools.org/security-web/query',
-        appsUrl							: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps',
-        permissionsUrl					: 'https://usermanagement3.ihtsdotools.org/security-web/query/users/__USER_ID__/apps/Refset',
-        passwordResetURL				: 'https://usermanagement3.ihtsdotools.org/requestPwChange.jsp',
-
     	// Refsets API
         refsetApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/refsets',
         conceptsApiBaseUrl				: 'https://refset.ihtsdotools.org/refset-api/v1.0/snomed/concepts',

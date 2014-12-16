@@ -8,6 +8,7 @@ export default Ember.ObjectController.extend({
 	user						: Ember.computed.alias("controllers.login.user"),
 	
 	model 						: Ember.computed.alias("controllers.data.refset"),
+	model 						: Ember.computed.alias("controllers.data.refsetHistory"),
 	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
@@ -268,6 +269,7 @@ export default Ember.ObjectController.extend({
 		Ember.run.next(function()
 		{
 			dataController.getRefset(uuid,_this,'getRefsetComplete');
+			dataController.getRefsetHistory(uuid,_this,'getRefsetHistoryComplete');
 		});
 	
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -494,6 +496,17 @@ export default Ember.ObjectController.extend({
 			{
 				// Model will then contain attributes that will modify the display...
 				this.set("model",response);
+			}
+		},
+		
+		getRefsetHistoryComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetHistoryComplete",response);
+			
+			if (response.error)
+			{
+				// History will then contain attributes that will modify the display...
+				this.set("history",response);
 			}
 		},
 

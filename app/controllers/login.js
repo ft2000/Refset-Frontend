@@ -1,7 +1,4 @@
-import LoginAdapter	from '../adapters/login';
-import User			from '../models/user';
-var loginAdapter = LoginAdapter.create();
-
+import User				from '../models/user';
 import RefsetAdapter	from '../adapters/refsets';
 var refsetAdapter = RefsetAdapter.create();
 
@@ -115,8 +112,6 @@ export default Ember.ObjectController.extend({
 		return refsetAdapter.authenticate(username,password).then(function(response)
 		{
 			Ember.Logger.log("-------------------------- login",response);
-			
-			var userResponse = response.content;
 			
 			var userToken = response.jqXHR.getResponseHeader('X-REFSET-AUTH-TOKEN');
 			Ember.Logger.log("adapters.refsets:authenticate (userToken)",userToken);

@@ -22,6 +22,7 @@ export default Ember.ObjectController.extend({
 	publishedRefsets		: [],
 	inactiveRefsets			: [],
 	refset 					: {},
+	refsetHistory 			: {},
 	currentRefset			: null,
 	currentAllRefsets		: null,
 	showWaitCounter			: 0,
@@ -581,9 +582,6 @@ export default Ember.ObjectController.extend({
 		return refsetsAdapter.findAll(user,from,to).then(function(response)
 		{	
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
-
-			
-			Ember.Logger.log("************************* response",response)
 			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
@@ -632,6 +630,24 @@ export default Ember.ObjectController.extend({
 			{
 				_this.handleRequestFailure(response,'Get list of refsets','getAllRefsets',[],callingController,completeAction,retryCounter);
 			}
+		});
+	},
+	
+	getRefsetHistory : function(id,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:getRefsetHistory (id,callingController,completeAction,retry)",id,callingController,completeAction,retry);
+		
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		refsetsAdapter.getRefsetHistoryHeader(user,id).then(function(response)
+		{
+			Ember.Logger.log("refsetsAdapter.getRefsetHistoryHeader",response);
 		});
 	},
 	

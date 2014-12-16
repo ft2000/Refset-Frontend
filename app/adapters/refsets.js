@@ -16,15 +16,15 @@ export default Ember.Object.extend({
 	
 	getHeaders : function(user)
 	{
+		if (user.token === null) {return;}
+		
 		var headers =
 		{
-			'X-REFSET-PRE-AUTH-USERNAME'	: user.name,
-			'X-REFSET-PRE-AUTH-TOKEN'		: user.token
+			'X-REFSET-AUTH-TOKEN'			: user.token
 		};
 
 		return headers;
 	},
-
 	
 	returnErrorResponse : function(response)
 	{
@@ -65,7 +65,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
 		{
 			return response;
 		},
@@ -84,6 +84,24 @@ export default Ember.Object.extend({
 		var _this = this;
 		
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(response)
+		{	
+			return response;
+		},
+		function (response) 
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
+	
+	getRefsetHistoryHeader : function (user,id)
+	{
+		Ember.Logger.log("adapters.refsets:getRefsetHistoryHeader (user,id)",user,id);
+		
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/headerHistory?from=0&to=100', {headers:this.getHeaders(user), processData: false, contentType: 'application/json'}).then(function(response)
 		{	
 			return response;
 		},
