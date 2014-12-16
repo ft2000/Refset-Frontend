@@ -582,6 +582,9 @@ export default Ember.ObjectController.extend({
 		{	
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
+			
+			Ember.Logger.log("************************* response",response)
+			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
 				_this.hideWaitAnim();

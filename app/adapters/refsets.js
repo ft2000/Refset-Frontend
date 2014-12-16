@@ -45,15 +45,11 @@ export default Ember.Object.extend({
 		Ember.Logger.log("adapters.refsets:authenticate",username,password);
 		
 		var _this = this;
-		var tempUser = {name:username,token:password};
+		var user = {name:username,token:password};
 
-		var result = icAjaxRaw(RefsetENV.APP.refsetApiBaseUrl + '/getUserDetails', {headers:this.getPreAuthHeaders(tempUser) , type:"post", processData: false, contentType: 'application/json'}).then(function(response)
-		{
-			Ember.Logger.log("adapters.refsets:authenticate (response)",response);
-			var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');
-			Ember.Logger.log("adapters.refsets:authenticate (contentDisposition)",contentDisposition);
-			
-			return response;	
+		var result = icAjaxRaw(RefsetENV.APP.refsetApiBaseUrl + '/getUserDetails', {headers:this.getPreAuthHeaders(user) , type:"post", processData: false, contentType: 'application/json'}).then(function(response)
+		{			
+			return response;
 		},
 		function (response)
 		{
