@@ -101,7 +101,7 @@ export default Ember.Object.extend({
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/headerHistory?from=0&to=100', {headers:this.getHeaders(user), processData: false, contentType: 'application/json'}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/headerState?from=0&to=200', {headers:this.getHeaders(user), processData: false, contentType: 'application/json'}).then(function(response)
 		{	
 			return response;
 		},

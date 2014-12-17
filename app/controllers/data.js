@@ -513,7 +513,7 @@ export default Ember.ObjectController.extend({
 			var start = 0, end = 0;
 			var idArraySlices = [];
 			
-			var totalNumRefsets = 10;
+			var totalNumRefsets = 100;
 			
 			while (start < totalNumRefsets)
 			{

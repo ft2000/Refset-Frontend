@@ -218,7 +218,7 @@ export default Ember.ObjectController.extend({
     		{
     			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset creation failed.</h2></td></tr></table>';
 
-   				message += '<br><br><p class="centre">' + response.meta.message+'</p>';
+   				message += '<br><br><p class="centre">' + response.message+'</p>';
 
    				this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
@@ -226,7 +226,7 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			var refsetId = response.content.uuid;
+    			var refsetId = response.uuid;
 
     			this.transitionToRoute('refsets.refset',refsetId);
     			
