@@ -1,7 +1,6 @@
-import LoginAdapter	from '../adapters/login';
-import User			from '../models/user';
-
-var loginAdapter = LoginAdapter.create();
+import User				from '../models/user';
+import RefsetAdapter	from '../adapters/refsets';
+var refsetAdapter = RefsetAdapter.create();
 
 export default Ember.ObjectController.extend({
 
@@ -108,40 +107,31 @@ export default Ember.ObjectController.extend({
 	login : function(username,password)
 	{
 		var _this = this;
+		var user = $.extend(true, {}, this.user);
 		
-		return loginAdapter.authenticate(username,password).then(function(authResult)
+		return refsetAdapter.authenticate(username,password).then(function(response)
 		{
-			var user = authResult.user;
+			Ember.Logger.log("-------------------------- login",response);
 			
-			if (authResult.authenticated)
-			{
-				return loginAdapter.isPermittedToUseRefset(user.name).then(function(permissionResult)
-				{
-					if (permissionResult)
-					{
-						user.autoLogoutTime = new Date(new Date().getTime() + _this.loginExpiryLength);
-						user.loginDeclined	= false;
+			var userToken = response.jqXHR.getResponseHeader('X-REFSET-AUTH-TOKEN');
+			Ember.Logger.log("adapters.refsets:authenticate (userToken)",userToken);
 
-						_this.saveUserToLocalStore(user);
-         				_this.initUserInteractionEvents();
-						
-						var dataController = _this.get('controllers.data');
-						dataController.authenticationStatusChanged();
-					}
-					else
-					{
-						Bootstrap.GNM.push('Unauthorised','You do not have permission to acccess this application', 'warning');
-					}
-					return permissionResult;
-				});			
-			}
-			else
-			{
-				Bootstrap.GNM.push('Unauthorised','Your username and/or password were not accepted', 'warning');
-				return false;
-			}
+			user.token 			= userToken;
+			user.name 			= username;
+			user.autoLogoutTime = new Date(new Date().getTime() + _this.loginExpiryLength);
+			user.loginDeclined	= false;
+
+			_this.saveUserToLocalStore(user);
+			_this.initUserInteractionEvents();
 			
-		});
+			var dataController = _this.get('controllers.data');
+			dataController.authenticationStatusChanged();
+			
+			_this.saveUserToLocalStore(user);
+			
+			return user;
+			
+		});		
 	},
 	
 	// Log the user out of the app

@@ -186,9 +186,6 @@ export default Ember.ObjectController.extend({
 				Refset.published 		= this.get("model.published");
 			}
 			
-			Ember.Logger.log("creat----------------",this.get("model"),Refset)
-			
-			
 			// Need to validate the form at this point and abort if required fields are not completed
 					
 			this.dialogInstance = BootstrapDialog.show({
@@ -210,7 +207,7 @@ export default Ember.ObjectController.extend({
 		}
 
 	},
-
+ 
     actions :
     {
     	createRefsetComplete : function(response)
@@ -221,17 +218,9 @@ export default Ember.ObjectController.extend({
     		{
     			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset creation failed.</h2></td></tr></table>';
 
-    			if (typeof response.unauthorised !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">You are not authorised to create refsets. You may need to sign in.</p>';
-    			}
+   				message += '<br><br><p class="centre">' + response.message+'</p>';
 
-    			if (typeof response.commsError !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
-    			}
-
-    			this.dialogInstance.setMessage(message);
+   				this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
     			this.dialogInstance.getModalFooter().show();
     		}

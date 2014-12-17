@@ -13,6 +13,7 @@ export default Ember.ObjectController.extend({
 	
 	sortBy 							: 'description',
 	sortOrder						: 'asc',
+	showMetaData					: false,
 
 	filterByDescription				: '',
 	filterByStatus					: -1,
@@ -47,10 +48,26 @@ export default Ember.ObjectController.extend({
 		
 	}.observes('filterByMemberDescription'),
 	  
+	clearAllFilters : function()
+	{
+		this.set("filterByDescription","");		
+		this.set("filterByStatus",-1);
+		this.set("filterByType",-1);
+		this.set("filterByModuleId",-1);
+		this.set("filterByComponentType",-1);
+		this.set("filterByLanguage",-1);	
+		this.set("filterByEffectiveTime",-1);
+		this.set("filterByLastUpdateDate",-1);
+		this.set("filterByLastUpdateUser",-1);
+		this.set("filterByMemberDescription","");		
+	},
+	
 	setSortToBestMatch : function()
 	{
 		if (this.get("filterByDescription") !== '' || this.get("filterByMemberDescription") !== '')
-		this.set("sortOrder","score");
+		{
+			this.set("sortOrder","score");
+		}
 	}.observes('filterByMemberDescription','filterByDescription'),
 		
 	filteredRefsets : function()
@@ -221,6 +238,8 @@ export default Ember.ObjectController.extend({
 		var _this 			= this;
 		var dataController 	= this.get('controllers.data');
 		
+		this.clearAllFilters();
+		
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
 		return Ember.run.next(function(){dataController.getAllRefsets(_this,'getAllRefsetsComplete');});
 	},
@@ -228,6 +247,11 @@ export default Ember.ObjectController.extend({
 	
 	actions :
 	{
+		toggleMetaData : function()
+		{
+			this.set("showMetaData",!this.showMetaData);
+		},
+		
 		refresh : function()
 		{
 			Ember.Logger.log("controllers.refsets.index:actions:refresh");

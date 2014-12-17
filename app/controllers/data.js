@@ -22,6 +22,7 @@ export default Ember.ObjectController.extend({
 	publishedRefsets		: [],
 	inactiveRefsets			: [],
 	refset 					: {},
+	refsetHistory 			: {},
 	currentRefset			: null,
 	currentAllRefsets		: null,
 	showWaitCounter			: 0,
@@ -267,19 +268,19 @@ export default Ember.ObjectController.extend({
 	
 	showWaitAnim : function()
 	{
-		this.set("showWaitCounter",this.showWaitCounter+1);
+//		this.set("showWaitCounter",this.showWaitCounter+1);
 		
-		$('.waitAnim').show();
+//		$('.waitAnim').show();
 	},
 	
 	hideWaitAnim : function()
 	{
-		this.set("hideWaitCounter",this.hideWaitCounter+1);
+//		this.set("hideWaitCounter",this.hideWaitCounter+1);
 		
-		if (this.showWaitCounter === this.hideWaitCounter)
-		{
-			$('.waitAnim').hide();
-		}
+//		if (this.showWaitCounter === this.hideWaitCounter)
+//		{
+//			$('.waitAnim').hide();
+//		}
 	},
 	
 	getRetryWaitPeriod : function(counter)
@@ -300,6 +301,21 @@ export default Ember.ObjectController.extend({
 		
 		switch(response.meta.errorInfo.code)
 		{
+			case "302":
+			{
+				// User is logged in, but it not permitted to access the requested resource
+				Bootstrap.NM.push('Resource already exists : ' + resourceType, 'warning');
+
+				_this.hideWaitAnim();
+				
+				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				{
+					callingController.send(completeAction,{error:1,message:response.meta.errorInfo.message});
+				}
+				
+				return;
+			}
+		
 			case "401":
 			{
 				var loginController = this.get('controllers.login');
@@ -312,11 +328,6 @@ export default Ember.ObjectController.extend({
 					// User is not logged in, so prompt to login
 					Bootstrap.NM.push('Authentication Required : The ' + resourceType + ' you have requested is not publically available. You must log in to view it.', 'warning');
 					loginController.showLoginForm();
-
-    				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
-    				{
-        				callingController.send(completeAction,response);
-    				}				
 				}
 				else
 				{
@@ -341,7 +352,7 @@ export default Ember.ObjectController.extend({
 				
 				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
 				{
-    				callingController.send(completeAction,{error:1,unauthorised:1});
+    				callingController.send(completeAction,{error:1,unauthorised:1,message:response.meta.errorInfo.message});
 				}
 				
 				return;
@@ -356,7 +367,7 @@ export default Ember.ObjectController.extend({
 				
 				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
 				{
-    				callingController.send(completeAction,{error:1,notFound:1});
+    				callingController.send(completeAction,{error:1,notFound:1,message:response.meta.errorInfo.message});
 				}
 
 				return;
@@ -369,31 +380,10 @@ export default Ember.ObjectController.extend({
 
 				_this.hideWaitAnim();
 				
-				BootstrapDialog.show({
-		            title: 'Bad Request : ' + resourceType,
-		            closable: false,
-		            message: '<p>There has been a problem communicating with the server.</p><p>' + response.meta.errorInfo.message + '</p>',
-		            buttons: 
-		            [
-		             	{
-		             		label: 'OK',
-		             		action: function(dialog)
-		             		{
-		             			_this.hideWaitAnim();
-		        				
-		             			Ember.Logger.log("closing window",callingController,completeAction);
-		             			
-		             			
-		        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
-		        				{
-		            				callingController.send(completeAction,{error:1,requestError:1});
-		        				}
-		        				
-		             			dialog.close();
-		             		}
-		             	}
-		             ]
-		        });
+				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
+				{
+    				callingController.send(completeAction,{error:1,requestError:1,message:response.meta.errorInfo.message});
+				}
 
 				return;
 			}
@@ -447,7 +437,7 @@ export default Ember.ObjectController.extend({
 				        				
 				        				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
 				        				{
-				            				callingController.send(completeAction,{error:1,commsError:1});
+				            				callingController.send(completeAction,{error:1,commsError:1,message:"cannot connect to server"});
 				        				}
 				        				
 				             			dialog.close();
@@ -481,7 +471,7 @@ export default Ember.ObjectController.extend({
         				
         				if (typeof callingController !== "undefined" && typeof completeAction !== "undefined")
         				{
-            				callingController.send(completeAction,{error:1,commsError:1});
+            				callingController.send(completeAction,{error:1,commsError:1,message:"cannot connect to server"});
         				}
 
         				return;
@@ -514,11 +504,13 @@ export default Ember.ObjectController.extend({
 			this.showWaitAnim();
 		}
 		
-		return refsetsAdapter.findAll(user,0,1).then(function(response)
+		this.set("refsets",[]);
+		
+		return refsetsAdapter.findAll(user,0,1).then(function(response) // Get count of how many refsets (not implemented in back end yet...)
 		{
 			// Need to pick up total number of refsets from the response here...
 			
-			var start = 1, end = 0;
+			var start = 0, end = 0;
 			var idArraySlices = [];
 			
 			var totalNumRefsets = 100;
@@ -529,23 +521,23 @@ export default Ember.ObjectController.extend({
 				
 				if (start === 0) {end = 10;}
 				
-				idArraySlices.push({from:start,to:end});
+				idArraySlices.push({user:user,from:start,to:end});
 				
 				start = end + 1;
 			}
 			
 			_this.refsetsRequestQueue.setObjects(idArraySlices);
 			
-			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter,user);
+			_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter);
 							
-			if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
-			{
-				callingController.send(completeAction,{error:0});
-			}
+//			if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+//			{
+//				callingController.send(completeAction,{error:0});
+//			}
 		});
 	},
 	
-	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter,user)
+	processRefsetsRequestQueue : function(callingController,completeAction,retryCounter)
 	{
 		var _this = this;
 		var promise;
@@ -554,7 +546,7 @@ export default Ember.ObjectController.extend({
 		{
 			var refsetsToProcess = this.refsetsRequestQueue.shift();
 
-			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
+			promise = this.getRefsetChunks(callingController,completeAction,retryCounter,refsetsToProcess.user,refsetsToProcess.from,refsetsToProcess.to).then(function(response)
 			{
 				if (typeof response === "undefined" || response.error)
 				{
@@ -567,7 +559,7 @@ export default Ember.ObjectController.extend({
 		{
 			if (_this.refsetsRequestQueue.length)
 			{
-				_this.processRefsetsRequestQueue(callingController,completeAction,user);
+				_this.processRefsetsRequestQueue(callingController,completeAction,retryCounter);
 			}
 		});
 	},
@@ -579,11 +571,9 @@ export default Ember.ObjectController.extend({
 		return refsetsAdapter.findAll(user,from,to).then(function(response)
 		{	
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
-
+			
 			if (typeof response.meta.errorInfo === 'undefined')
 			{
-				_this.hideWaitAnim();
-
 				var refsetsArray 		= [];			
 
 				response.content.refsets.map(function(item)
@@ -620,6 +610,7 @@ export default Ember.ObjectController.extend({
 
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
+					_this.hideWaitAnim();
 					callingController.send(completeAction,{error:0});
 				}
 			}
@@ -627,6 +618,25 @@ export default Ember.ObjectController.extend({
 			{
 				_this.handleRequestFailure(response,'Get list of refsets','getAllRefsets',[],callingController,completeAction,retryCounter);
 			}
+		});
+	},
+	
+	getRefsetHistory : function(id,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:getRefsetHistory (id,callingController,completeAction,retry)",id,callingController,completeAction,retry);
+		
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		refsetsAdapter.getRefsetHistoryHeader(user,id).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+			Ember.Logger.log("refsetsAdapter.getRefsetHistoryHeader",response);
 		});
 	},
 	
@@ -651,9 +661,7 @@ export default Ember.ObjectController.extend({
 		
 		refsetsAdapter.findHeader(user,id).then(function(response)
 		{
-			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
-
-			if (typeof response.meta.errorInfo === 'undefined')
+			if (response.meta.status === 'OK')
 			{
 				_this.hideWaitAnim();
 
@@ -671,17 +679,18 @@ export default Ember.ObjectController.extend({
 				
 				while (start < response.content.refset.totalNoOfMembers)
 				{
-					end = Math.min(start + 99,response.content.refset.totalNoOfMembers);
+					end = Math.min(start + 199,response.content.refset.totalNoOfMembers);
 					
 					if (start === 0) {end = 10;}
 					
 					idArraySlices.push({from:start,to:end});
 					
+					_this.set("callsInProgressCounter",_this.callsInProgressCounter+1);
+					
 					start = end + 1;
 				}
-				
+								
 				_this.refsetMemberRequestQueue.setObjects(idArraySlices);
-				
 				_this.processRefsetMemberRequestQueue(user,id);
 								
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
@@ -689,6 +698,7 @@ export default Ember.ObjectController.extend({
 					callingController.send(completeAction,{error:0});
 				}
 
+				_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 			}
 			else
 			{
@@ -730,6 +740,8 @@ export default Ember.ObjectController.extend({
 		
 		return refsetsAdapter.findMembers(user,id,from,to).then(function(response)
 		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+			
 			if (typeof _this.refset.members !== "undefined")
 			{
 				var members = _this.refset.members.concat(response.content.members);
@@ -754,10 +766,12 @@ export default Ember.ObjectController.extend({
 				{
 					_this.set("refset.meta.allMembersLoaded",true);
 				}
+// IAN				
+				return {error:0};
 			}
 			else
 			{
-				return {error:false};
+				return {error:1,message:repsonse.meta.errorInfo.message};
 			}
 		});
 	
@@ -767,7 +781,7 @@ export default Ember.ObjectController.extend({
 	{
 		Ember.Logger.log("controllers.data:createRefset (retry,callingController,completeAction,retry)",retry,callingController,completeAction,refset);
 
-		var _this 		= this;
+		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
 		
 		var loginController = this.get('controllers.login');
