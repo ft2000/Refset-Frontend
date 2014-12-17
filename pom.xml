@@ -6,7 +6,7 @@
 
 	<groupId>org.ihtsdo.otf</groupId>
 	<artifactId>refsetFrontend</artifactId>
-	<version>1.0.7</version>
+	<version>1.0.8</version>
 	<name>Snomed Refset Web Front End</name>
 	<description>Snomed Refset Web Front End</description>
 	<url>https://refset.ihtsdotools.org/</url>
