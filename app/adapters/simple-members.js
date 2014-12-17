@@ -6,8 +6,7 @@ export default Ember.Object.extend({
 	{
 		var headers =
 		{
-			'X-REFSET-PRE-AUTH-USERNAME'	: user.name,
-			'X-REFSET-PRE-AUTH-TOKEN'		: user.token
+			'X-REFSET-AUTH-TOKEN'		: user.token
 		};
 
 		return headers;

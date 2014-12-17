@@ -133,7 +133,7 @@ export default Ember.Object.extend({
 	
 	findMembers : function (user,id,from,to)
 	{
-		Ember.Logger.log("adapters.refsets:findMembers (user,id)",user,id);
+		Ember.Logger.log("adapters.refsets:findMembers (user,id,from,to)",user,id,from,to);
 		
 		var _this = this;
 		
@@ -187,28 +187,6 @@ export default Ember.Object.extend({
 		});	
 		
 		return result;
-	},
-	
-	addMember : function (user,refsetId,referencedComponentId)
-	{
-		Ember.Logger.log("adapters.refsets:addMember (user,refsetId,referencedComponentId)",user,refsetId,referencedComponentId);
-
-		var _this = this;
-
-		var member = {referencedComponentId : referencedComponentId, active:true};
-			
-		var jsonFormatMemberData = JSON.stringify(member);
-		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/member', {headers:this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response)
-		{			
-			return response;
-		},
-		function (response)
-		{
-			return _this.returnErrorResponse(response);
-		});
-
-		return result;	
 	},
 	
 	addMembers : function (user,refsetId,members)

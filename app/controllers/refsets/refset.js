@@ -8,7 +8,7 @@ export default Ember.ObjectController.extend({
 	user						: Ember.computed.alias("controllers.login.user"),
 	
 	model 						: Ember.computed.alias("controllers.data.refset"),
-	model 						: Ember.computed.alias("controllers.data.refsetHistory"),
+	refsetHistory 				: Ember.computed.alias("controllers.data.refsetHistory"),
 	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
@@ -490,8 +490,6 @@ export default Ember.ObjectController.extend({
 		
 		getRefsetComplete : function (response)
 		{
-			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetComplete",response);
-			
 			if (response.error)
 			{
 				// Model will then contain attributes that will modify the display...
@@ -866,15 +864,7 @@ export default Ember.ObjectController.extend({
     		{
     			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset deletion failed.</h2></td></tr></table>';
 
-    			if (typeof response.unauthorised !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">You are not authorised to delete refsets. You may need to log in.</p>';
-    			}
-
-    			if (typeof response.commsError !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
-    			}
+   				message += '<br><br><p class="centre">' +  response.message +'</p>';
 
     			this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);
