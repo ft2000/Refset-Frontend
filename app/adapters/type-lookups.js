@@ -1,18 +1,7 @@
 import ajax from 'ic-ajax';
 
 export default Ember.Object.extend({
-	
-	getHeaders : function(user)
-	{
-		var headers =
-		{
-			'X-REFSET-PRE-AUTH-USERNAME'	: user.name,
-			'X-REFSET-PRE-AUTH-TOKEN'		: user.token
-		};
 
-		return headers;
-	}, 
-	
 	returnErrorResponse : function(response)
 	{
 		if (typeof response.jqXHR.responseJSON !== "undefined")
@@ -27,12 +16,12 @@ export default Ember.Object.extend({
 		}
 	},
 	
-	getComponentTypes : function (user)
+	getComponentTypes : function ()
 	{
 		Ember.Logger.log("adapters.type-lookups:getComponentTypes");
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'componentTypes', {headers:this.getHeaders(user), method:"get"}).then(function(response)
+		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'componentTypes').then(function(response)
 		{	
 			return response;
 		},
@@ -45,12 +34,12 @@ export default Ember.Object.extend({
 		return result;
 	},
 	
-	getModules : function (user)
+	getModules : function ()
 	{
 		Ember.Logger.log("adapters.type-lookups:getModules");
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'modules', {headers:this.getHeaders(user), method:"get"}).then(function(response)
+		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'modules').then(function(response)
 		{	
 			return response;
 		},
@@ -63,12 +52,12 @@ export default Ember.Object.extend({
 		return result;
 	},
 
-	getRefsetTypes : function (user)
+	getRefsetTypes : function ()
 	{
 		Ember.Logger.log("adapters.type-lookups:getRefsetTypes");
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'refsetTypes', {headers:this.getHeaders(user), method:"get"}).then(function(response)
+		var result = ajax(RefsetENV.APP.snomedTypesApiBaseUrl + 'refsetTypes').then(function(response)
 		{	
 			return response;
 		},

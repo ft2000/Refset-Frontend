@@ -6,7 +6,7 @@
 		<ul class="list-group checkboxList member-list refset-header" style="clear:both">
 			
 			<li class="list-group-item member-list-header" style="border-bottom:none">
-				<span class="snomed-id pointer"><a {{action 'setSortCriteria' 'sctId'}} class="pointer">Refset Id</a> {{sort-icon sortBy sortOrder 'sctId'}}</span>
+				<span pointer"><a {{action 'setSortCriteria' 'sctId'}} class="pointer">Refset Id</a> {{sort-icon sortBy sortOrder 'sctId'}}</span> |
 				<span class="pointer"><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a> {{sort-icon sortBy sortOrder 'description'}}</span>
 				<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 			</li>
@@ -20,47 +20,75 @@
 				<span class="num-members pointer"><a {{action 'setSortCriteria' 'totalNoOfMembers'}} class="pointer">Member Count</a> {{sort-icon sortBy sortOrder 'totalNoOfMembers'}}</span>
 			</li>
 			
+			{{#if showMetaData}}
 			<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
 				<span class="effective-time pointer" rel="tooltip" title="Latest member effective time"><a {{action 'setSortCriteria' 'latestEffectiveTime'}} class="pointer">Latest Effective Time</a> {{sort-icon sortBy sortOrder 'latestEffectiveTime'}}</span>
 				<span class="last-modified pointer" rel="tooltip" title="Last date refset header or any member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a> {{sort-icon sortBy sortOrder 'modifiedDate'}}</span>
 				<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this refset"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a> {{sort-icon sortBy sortOrder 'modifiedBy'}}</span>
 			</li>
 			
-			{{#if refsets}}
-				{{#if filteredRefsets}}
-					 {{#collection Ember.ListView contentBinding="filteredRefsets" height=400 rowHeight=65 width="100%"}}
-						<div {{bind-attr class=':list-group-item :member-list-item meta.disabled:inactiveConcept'}}>
-							{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
-							<span class="snomed-id">{{sctId}}</span>{{#if sctId}} | {{/if}}{{description}}
-							
-							<br>
+				{{#if refsets}}
+					{{#if filteredRefsets}}
+						 {{#collection Ember.ListView contentBinding="filteredRefsets" height=400 rowHeight=65 width="100%"}}
+							<div {{bind-attr class=':list-group-item :member-list-item meta.disabled:inactiveConcept'}}>
+								{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
+								<div class="memberRowWrapper"><span>{{sctId}}</span>{{#if sctId}}{{/if}} | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span></div>
+				
+								<div class="memberRowWrapper">
+									<span class="language pointer" rel="tooltip" {{bind-attr title='meta.language'}}>{{languageCode}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.type'}}>{{typeId}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
+									<span class="status">{{meta.status}}</span>
+									<span class="num-members">{{totalNoOfMembers}}</span>
+								</div>
+								
+								<div class="memberRowWrapper">
+									<span class="effective-time">{{effective-time-format latestEffectiveTime}}</span>
+									<span class="last-modified">{{date-format modifiedDate}}</span>
+									<span class="last-modified-by">{{modifiedBy}}</span>
+								</div>
+							</div>
+						  {{/collection}}
+					  {{else}}
+					  		No Refset match your search filters
+					  {{/if}}
+				{{else}}
+					<p>There are currently no matching refsets available.</p>
+				{{/if}}
 			
-							<span class="language pointer" rel="tooltip" {{bind-attr title='meta.language'}}>{{languageCode}}</span>
-							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.type'}}>{{typeId}}</span>
-							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
-							<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
-							
-							<span class="status">{{meta.status}}</span>
-							<span class="num-members">{{totalNoOfMembers}}</span>
-							
-							<br>
-							
-							<span class="effective-time">{{effective-time-format latestEffectiveTime}}</span>
-							<span class="last-modified">{{date-format modifiedDate}}</span>
-							<span class="last-modified-by">{{modifiedBy}}</span>
-						</div>
-					  {{/collection}}
-				  {{else}}
-				  		No Refset match your search filters
-				  {{/if}}
 			{{else}}
-				<p>There are currently no matching refsets available.</p>
+				{{#if refsets}}
+					{{#if filteredRefsets}}
+						 {{#collection Ember.ListView contentBinding="filteredRefsets" height=400 rowHeight=45 width="100%"}}
+							<div {{bind-attr class=':list-group-item :member-list-item meta.disabled:inactiveConcept'}}>
+								{{#link-to 'refsets.refset' uuid}}<button class="btn btn-primary right">view</button>{{/link-to}}
+								<div class="memberRowWrapper"><span>{{sctId}}</span>{{#if sctId}}{{/if}} | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span></div>
+				
+								<div class="memberRowWrapper">
+									<span class="language pointer" rel="tooltip" {{bind-attr title='meta.language'}}>{{languageCode}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.type'}}>{{typeId}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.moduleType'}}>{{moduleId}}</span>
+									<span class="snomed-id pointer" rel="tooltip" {{bind-attr title='meta.componentType'}}>{{componentTypeId}}</span>
+									<span class="status">{{meta.status}}</span>
+									<span class="num-members">{{totalNoOfMembers}}</span>
+								</div>
+							</div>
+						  {{/collection}}
+					  {{else}}
+					  		No Refset match your search filters
+					  {{/if}}
+				{{else}}
+					<p>There are currently no matching refsets available.</p>
+				{{/if}}			
 			{{/if}}
 		</ul>
 	
 	</div>
 	
 	<div class="col-md-3">
+		<button class="btn btn-default btn-side-menu icon-btn" {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}} {{action 'toggleMetaData'}}><span class="btn-text">{{#if showMetaData}}Hide{{else}}Show{{/if}} Metadata</span><span {{bind-attr class=':pointer :icon showHeaderMetaData:hideinfo:info'}}></span></button>
+
 		<h2>Filter Refsets</h2>
 		
 		<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>

@@ -8,6 +8,7 @@ export default Ember.ObjectController.extend({
 	user						: Ember.computed.alias("controllers.login.user"),
 	
 	model 						: Ember.computed.alias("controllers.data.refset"),
+	refsetHistory 				: Ember.computed.alias("controllers.data.refsetHistory"),
 	refsetTypes 				: Ember.computed.alias("controllers.data.refsetTypes"),
 	componentTypes 				: Ember.computed.alias("controllers.data.componentTypes"),
 	moduleTypes 				: Ember.computed.alias("controllers.data.moduleTypes"),
@@ -268,6 +269,7 @@ export default Ember.ObjectController.extend({
 		Ember.run.next(function()
 		{
 			dataController.getRefset(uuid,_this,'getRefsetComplete');
+			dataController.getRefsetHistory(uuid,_this,'getRefsetHistoryComplete');
 		});
 	
 		var uploadController = this.get('controllers.refsets/upload');		
@@ -488,12 +490,21 @@ export default Ember.ObjectController.extend({
 		
 		getRefsetComplete : function (response)
 		{
-			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetComplete",response);
-			
 			if (response.error)
 			{
 				// Model will then contain attributes that will modify the display...
 				this.set("model",response);
+			}
+		},
+		
+		getRefsetHistoryComplete : function (response)
+		{
+			Ember.Logger.log("controllers.refsets.refset:actions:getRefsetHistoryComplete",response);
+			
+			if (response.error)
+			{
+				// History will then contain attributes that will modify the display...
+				this.set("history",response);
 			}
 		},
 
@@ -772,8 +783,7 @@ export default Ember.ObjectController.extend({
 				try
 				{
 					var exportFile = response.response;
-					var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');
-					
+					var contentDisposition = response.jqXHR.getResponseHeader('Content-Disposition');			
 					
 					var filename = contentDisposition.split('"')[1];
 
@@ -854,15 +864,7 @@ export default Ember.ObjectController.extend({
     		{
     			var message = '<table class="centre"><tr><td><img src="assets/img/warning.jpg"></td><td style="vertical-align:middle"><h2>Refset deletion failed.</h2></td></tr></table>';
 
-    			if (typeof response.unauthorised !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">You are not authorised to delete refsets. You may need to log in.</p>';
-    			}
-
-    			if (typeof response.commsError !== "undefined")
-    			{
-    				message += '<br><br><p class="centre">We cannot communicate with the Refset API at this time. Retry later.</p>';
-    			}
+   				message += '<br><br><p class="centre">' +  response.message +'</p>';
 
     			this.dialogInstance.setMessage(message);
     			this.dialogInstance.setType(BootstrapDialog.TYPE_WARNING);

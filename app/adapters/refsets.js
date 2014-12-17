@@ -3,7 +3,7 @@ import { raw as icAjaxRaw } from 'ic-ajax';
 
 export default Ember.Object.extend({
 	
-	getHeaders : function(user)
+	getPreAuthHeaders : function(user)
 	{
 		var headers =
 		{
@@ -13,7 +13,18 @@ export default Ember.Object.extend({
 
 		return headers;
 	},
+	
+	getHeaders : function(user)
+	{
+		if (user.token === null) {return;}
+		
+		var headers =
+		{
+			'X-REFSET-AUTH-TOKEN'			: user.token
+		};
 
+		return headers;
+	},
 	
 	returnErrorResponse : function(response)
 	{
@@ -29,13 +40,32 @@ export default Ember.Object.extend({
 		}
 	},
 	
+	authenticate : function (username,password)
+	{
+		Ember.Logger.log("adapters.refsets:authenticate",username,password);
+		
+		var _this = this;
+		var user = {name:username,token:password};
+
+		var result = icAjaxRaw(RefsetENV.APP.refsetApiBaseUrl + '/getUserDetails', {headers:this.getPreAuthHeaders(user) , type:"post", processData: false, contentType: 'application/json'}).then(function(response)
+		{			
+			return response;
+		},
+		function (response)
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;				
+	},
+	
 	findAll : function (user,from,to)
 	{
-		Ember.Logger.log("adapters.refsets:findAll (user)",user);
+		Ember.Logger.log("adapters.refsets:findAll (user,from,to)",user,from,to);
 		
 		var _this = this;
 		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '?from=' + from + '&to=' + to, {headers:this.getHeaders(user)}).then(function(response)
 		{
 			return response;
 		},
@@ -54,6 +84,24 @@ export default Ember.Object.extend({
 		var _this = this;
 		
 		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id, {headers:this.getHeaders(user)}).then(function(response)
+		{	
+			return response;
+		},
+		function (response) 
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
+	
+	getRefsetHistoryHeader : function (user,id)
+	{
+		Ember.Logger.log("adapters.refsets:getRefsetHistoryHeader (user,id)",user,id);
+		
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + id + '/headerState?from=0&to=200', {headers:this.getHeaders(user), processData: false, contentType: 'application/json'}).then(function(response)
 		{	
 			return response;
 		},
@@ -85,7 +133,7 @@ export default Ember.Object.extend({
 	
 	findMembers : function (user,id,from,to)
 	{
-		Ember.Logger.log("adapters.refsets:findMembers (user,id)",user,id);
+		Ember.Logger.log("adapters.refsets:findMembers (user,id,from,to)",user,id,from,to);
 		
 		var _this = this;
 		
@@ -139,28 +187,6 @@ export default Ember.Object.extend({
 		});	
 		
 		return result;
-	},
-	
-	addMember : function (user,refsetId,referencedComponentId)
-	{
-		Ember.Logger.log("adapters.refsets:addMember (user,refsetId,referencedComponentId)",user,refsetId,referencedComponentId);
-
-		var _this = this;
-
-		var member = {referencedComponentId : referencedComponentId, active:true};
-			
-		var jsonFormatMemberData = JSON.stringify(member);
-		
-		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/add/member', {headers:this.getHeaders(user), method:"post", data: jsonFormatMemberData, processData: false, contentType: 'application/json'}).then(function(response)
-		{			
-			return response;
-		},
-		function (response)
-		{
-			return _this.returnErrorResponse(response);
-		});
-
-		return result;	
 	},
 	
 	addMembers : function (user,refsetId,members)
