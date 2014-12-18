@@ -1200,7 +1200,16 @@ export default Ember.ObjectController.extend({
 		
 		Ember.Logger.log("**********************",header,requiredRows.length);
 		
-		var result = refsetsAdapter.importRF2(user,refsetUUID,rf2file).then(function(response)
+		var filteredRF2Header 	= [header];
+		Ember.Logger.log("****************&&& filterRF2Header",filteredRF2Header);
+
+		var filteredRF2Array = filteredRF2Header.concat(requiredRows);
+		Ember.Logger.log("****************&&& filteredRF2Array",filteredRF2Array);
+
+		var filteredRF2File 	= filteredRF2Array.join('\n');		
+		Ember.Logger.log("****************&&& filteredRF2File",filteredRF2File);
+		
+		var result = refsetsAdapter.importRF2(user,refsetUUID,filteredRF2File).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
