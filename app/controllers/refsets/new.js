@@ -226,9 +226,10 @@ export default Ember.ObjectController.extend({
     		}
     		else
     		{
-    			var refsetId = response.uuid;
+    			var refsetUUID 	= response.uuid;
+    			var refsetSctId = this.get("rf2FileToImport").sctId;
 
-    			this.transitionToRoute('refsets.refset',refsetId);
+    			this.transitionToRoute('refsets.refset',refsetUUID);
     			
     			var conceptsToImport;
     			var isRF2Import 		= this.get("isRF2Import");
@@ -251,7 +252,7 @@ export default Ember.ObjectController.extend({
             			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members from your RF2 file. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
     					
             			// Now initiate sending RF2 file to the API.
-            			dataController.importRF2(refsetId,conceptsToImport,this,'importRF2Complete');	
+            			dataController.importRF2(refsetUUID,refsetSctId,conceptsToImport,this,'importRF2Complete');	
     				}
     				else // Flat file of concepts IDs to import
     				{
