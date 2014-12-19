@@ -56,8 +56,6 @@ export default Ember.ObjectController.extend({
 			{
 				if (typeof member !== "undefined")
 				{
-					Ember.Logger.log("*********",member);
-					
 					if (filterByInactiveConcepts !== -1)
 					{
 						if (member.meta.conceptActive !== filterByInactiveConcepts) {return null;}

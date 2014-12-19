@@ -216,6 +216,8 @@
 												<span>
 													{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 									 			</span>
+												<span>{{uuid}}</span>
+												<span>{{#if referencedComponent.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 
 												<hr>				
 												<span class="last-modified">{{date-time-format modifiedDate}}</span>
@@ -237,6 +239,7 @@
 														<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
 														<span>{{uuid}}</span>
+														<span>{{#if referencedComponent.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 													</div>
 													
 													<hr>				
@@ -262,6 +265,7 @@
 														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 										 			</span>
 													<span>{{uuid}}</span>
+													<span>{{#if referencedComponent.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 												</div>
 											  {{/collection}}
 										  {{/with}}
@@ -279,6 +283,7 @@
 															<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 															<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
 															<span>{{uuid}}</span>
+															<span>{{#if referencedComponent.active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
 														</div>
 													</div>
 												  {{/collection}}
@@ -345,18 +350,19 @@
 			
 				<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
 					<option value="0">Filter members...</option>
-					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive components (not working yet)</option>{{/unless}}
+					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Member with inactive components</option>{{/unless}}
 					
-					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by active status</option>{{/unless}}
-					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
-					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Member status (active / inactive)</option>{{/unless}}
+					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Module type</option>{{/unless}}
+					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Effective time</option>{{/unless}}
 
 					{{#if model.published}}
-						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Filter modified members (not working yet)</option>{{/unless}}
+						{{#unless filterByModifiedMembersIsActive}}<option value="filterByModifiedMembers">Modified members</option>{{/unless}}
+						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Published members</option>{{/unless}}
 					{{/if}}										
 					
-					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
-					{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Last update date</option>{{/unless}}
+					{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Last updater</option>{{/unless}}
 				</select>
 
 				<p class="filterItem">
@@ -393,13 +399,20 @@
 					</p>
 				{{/if}}
 
-				{{#if filterByPublishedMembersIsActive}}
+				{{#if filterByModifiedMembersIsActive}}
 					<p class="filterItem">
-						Modified members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
-						{{radio-button value=true checked=filterByPublishedMembers}} Published {{radio-button value=false checked=filterByPublishedMembers}} Unpublished/Modified 
+						Modified members:<a {{action 'removeFilter' 'filterByModifiedMembers'}} class="right pointer">remove</a><br>
+						{{radio-button value="1" checked=filterByModifiedMembers}} Modified {{radio-button value="0" checked=filterByModifiedMembers}} Unchanged
 					</p>				
 				{{/if}}	
 	
+				{{#if filterByPublishedMembersIsActive}}
+					<p class="filterItem">
+						Published members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
+						{{radio-button value="1" checked=filterByPublishedMembers}} Published {{radio-button value="0" checked=filterByPublishedMembers}} Never Published
+					</p>				
+				{{/if}}	
+				
 				{{#if filterByLastUpdateDateIsActive}}
 					<p class="filterItem">
 						Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
