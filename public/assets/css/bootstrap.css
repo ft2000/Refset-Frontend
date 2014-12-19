@@ -6466,6 +6466,10 @@ td.label {
   margin-top: 4px;
   float: right;
 }
+.member-list .member-list-item .uuid,
+.member-list .member-list-header .uuid {
+  width: 267px;
+}
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
   width: 130px;
@@ -6495,6 +6499,7 @@ td.label {
   white-space: nowrap;
   margin-right: 50px;
   overflow: hidden;
+  display: inline-block;
 }
 .member-list .member-list-item .memberRowWrapperEdit,
 .member-list .member-list-header .memberRowWrapperEdit {

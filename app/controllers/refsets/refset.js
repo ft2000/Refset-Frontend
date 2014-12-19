@@ -233,6 +233,8 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
+				Ember.Logger.log("*************** sortBy",sortBy);
+				
 				nullsRemoved = mergesort(nullsRemoved,sortBy,sortOrder);
 			}
 			

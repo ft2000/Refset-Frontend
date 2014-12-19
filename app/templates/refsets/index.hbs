@@ -93,14 +93,14 @@
 		
 		<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
 			<option value="0">Filter refsets...</option>
-			{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by refset status</option>{{/unless}}
-			{{#unless filterByTypeIsActive}}<option value="filterByType">Filter by refset type</option>{{/unless}}
-			{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
-			{{#unless filterByComponentTypeIsActive}}<option value="filterByComponentType">Filter by component type</option>{{/unless}}
-			{{#unless filterByLanguageIsActive}}<option value="filterByLanguage">Filter by language</option>{{/unless}}
-			{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}			
-			{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
-			{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+			{{#unless filterByStatusIsActive}}<option value="filterByStatus">Refset status (active/inactive)</option>{{/unless}}
+			{{#unless filterByTypeIsActive}}<option value="filterByType">Refset type</option>{{/unless}}
+			{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Module type</option>{{/unless}}
+			{{#unless filterByComponentTypeIsActive}}<option value="filterByComponentType">Component type</option>{{/unless}}
+			{{#unless filterByLanguageIsActive}}<option value="filterByLanguage">Language</option>{{/unless}}
+			{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Effective time</option>{{/unless}}			
+			{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Last update date</option>{{/unless}}
+			{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Last updater</option>{{/unless}}
 		</select>
 		
 		<p class="filterItem">
