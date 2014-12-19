@@ -1032,16 +1032,32 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("showMetaData",member);
 			
-			var theDate = new Date(member.modifiedDate);
+			var modifiedDate = new Date(member.modifiedDate);
+			var effectiveTime = new Date(member.effectiveTime);
+			var createdDate = new Date(member.created);
 			
-			var message = "Last modified date : " + member.modifiedBy + "<br>";
-			message += "Last modified by : " + $.formatDateTime('M dd, yy', theDate) + "<br>";
+			var message = "<p><b>" + member.referencedComponent.label + "</b></p>";
 			
-			message += member.memberHasPublishedState ? "This member has been previously published" : "This member has not yet been published" + "<br>";				
-			message += member.memberHasPendingEdit ? "This member has been edited an is awaiting publication" : "This member has not yet been published" + "<br>";				
+			message += "<p><table width=100%>";
+			
+			message += "<tr><td align=right>Referenced Component Id :&nbsp;</td><td><b>" + member.referencedComponent.id + "</b></td></tr>";
+
+			message += "<tr><td align=right>Status :&nbsp;</td><td><b>" + (member.active ? "Active" : "Inactive") + "</b></td></tr>";
+			message += "<tr><td align=right>Concept Status :&nbsp;</td><td><b>" + (member.referencedComponent.active ? "Active" : "Inactive") + "</b></td></tr>";
+
+			message += "<tr><td align=right>Module Id :&nbsp;</td><td><b>" + member.moduleId + "</b></td></tr>";
+			message += "<tr><td align=right>Member Id :&nbsp;</td><td><b>" + member.uuid + "</b></td></tr>";
+			
+			message += "<tr><td align=right>Created by :&nbsp;</td><td><b>" + member.createdBy + "</b> on <b>" + $.formatDateTime('M dd, yy', createdDate) +"</b></td></tr>";
+			message += "<tr><td align=right>Last modified by :&nbsp;</td><td><b>" + member.modifiedBy + "</b> on <b>" + $.formatDateTime('M dd, yy', modifiedDate) +"</b></td></tr>";
+			message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
+			message += "<tr><td align=right>Published :&nbsp;</td><td><b>" + (member.memberHasPublishedState ? "Yes" : "No") + "</b></td></tr>";
+			message += "<tr><td align=right>Edited :&nbsp;</td><td><b>" + (member.memberHasPendingEdit ? "Yes" : "No") + "</b></td></tr>";
+			
+			message += "</table></p>";
 			
 	        BootstrapDialog.show({
-	            title: member.referencedComponent.label,
+	            title: "Member data",
 	            closable: false,
 	            message: message,
 	            buttons: [{
