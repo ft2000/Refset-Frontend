@@ -52,7 +52,7 @@ export default Ember.ObjectController.extend({
 	filterByModifiedMembersIsActive		: function(){ return this.filterByModifiedMembers !== -1;}.property('filterByModifiedMembers'),
 	filterByPublishedMembersIsActive	: function(){ return this.filterByPublishedMembers !== -1;}.property('filterByPublishedMembers'),
 	
-	sortBy 								: 'description',
+	sortBy 								: 'referencedComponent.label',
 	sortOrder							: 'asc',
 
 	filteringActive						: function()
@@ -65,7 +65,7 @@ export default Ember.ObjectController.extend({
 		if (this.get("filterByInactiveConceptsIsActive")) { return true; }
 		if (this.get("filterByPublishedMembersIsActive")) { return true; }
 		
-	}.property('model.members.@each','sortBy','sortOrder','filterByModifiedMembers','filterByPublishedMembers','filterByDescription','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
+	}.property('model.members.@each','sortBy','sortOrder','filterByModifiedMembers','filterByPublishedMembers','filterByStatus','filterByModuleId','filterByEffectiveTime','filterByDescription','filterByInactiveConcepts','filterByLastUpdateDate','filterByLastUpdateUser'),
 
 	filteredMembers						: function()
 	{
@@ -205,7 +205,7 @@ export default Ember.ObjectController.extend({
 						}
 						else
 						{
-							score = LiquidMetal.score(member.description, filterByDescription);
+							score = LiquidMetal.score(member.referencedComponent.label, filterByDescription);
 
 							if (score < 0.75)
 							{
@@ -227,14 +227,12 @@ export default Ember.ObjectController.extend({
 			var sortBy 		= this.get("sortBy");
 			var sortOrder 	= this.get("sortOrder");
 			
-			if (filterByDescription !== '' && sortOrder === "score" && (sortBy === "description" || sortBy === "referencedComponentId"))
+			if (filterByDescription !== '' && sortOrder === "score" && (sortBy === "referencedComponent.label" || sortBy === "referencedComponentId"))
 			{
 				quick_sort(nullsRemoved);
 			}
 			else
 			{
-				Ember.Logger.log("*************** sortBy",sortBy);
-				
 				nullsRemoved = mergesort(nullsRemoved,sortBy,sortOrder);
 			}
 			
@@ -246,11 +244,11 @@ export default Ember.ObjectController.extend({
 	{
 		if (this.editMode)
 		{
-			return this.showMetaData ? 81 : 56;			
+			return this.showMetaData ? 86 : 56;			
 		}
 		else
 		{
-			return this.showMetaData ? 70 : 45;
+			return this.showMetaData ? 80 : 50;
 		}
 	}.property("showMetaData","editMode"),
 
@@ -391,7 +389,7 @@ export default Ember.ObjectController.extend({
 
 					case "desc":
 					{						
-						if (sortBy === "description" && filterByDescription !== "")
+						if (sortBy === "referencedComponent.label" && filterByDescription !== "")
 						{
 							sortOrder = "score";
 						}
@@ -401,7 +399,7 @@ export default Ember.ObjectController.extend({
 			}
 			else
 			{
-				if (sortBy === "description" && filterByDescription !== "")
+				if (sortBy === "referencedComponent.label" && filterByDescription !== "")
 				{
 					sortOrder = "score";
 				}
@@ -1028,7 +1026,37 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("setSortToBestMatch");
 			this.set("sortOrder","score");
-		}
-	
+		},
+		
+		showMetaData : function(member)
+		{
+			Ember.Logger.log("showMetaData",member);
+			
+			var theDate = new Date(member.modifiedDate);
+			
+			var message = "Last modified date : " + member.modifiedBy + "<br>";
+			message += "Last modified by : " + $.formatDateTime('M dd, yy', theDate) + "<br>";
+			
+			message += member.memberHasPublishedState ? "This member has been previously published" : "This member has not yet been published" + "<br>";				
+			message += member.memberHasPendingEdit ? "This member has been edited an is awaiting publication" : "This member has not yet been published" + "<br>";				
+			
+	        BootstrapDialog.show({
+	            title: member.referencedComponent.label,
+	            closable: false,
+	            message: message,
+	            buttons: [{
+	                label: 'Close',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+		},
+
+		showHistory : function(member)
+		{
+			Ember.Logger.log("showHistory",member);
+		},
+
 	}
 });

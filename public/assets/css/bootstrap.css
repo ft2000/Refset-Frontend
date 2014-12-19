@@ -6497,15 +6497,19 @@ td.label {
 .member-list .member-list-item .memberRowWrapper,
 .member-list .member-list-header .memberRowWrapper {
   white-space: nowrap;
-  margin-right: 50px;
   overflow: hidden;
   display: inline-block;
+  width: 720px;
 }
 .member-list .member-list-item .memberRowWrapperEdit,
 .member-list .member-list-header .memberRowWrapperEdit {
   white-space: nowrap;
-  margin-right: 85px;
   overflow: hidden;
+  width: 700px;
+}
+.member-list .member-list-item .rowIconBtn,
+.member-list .member-list-header .rowIconBtn {
+  padding-top: 7px;
 }
 .member-list .member-list-item hr,
 .member-list .member-list-header hr {
@@ -6647,6 +6651,15 @@ td.title {
 .edit {
   background-position: 0px -520px;
 }
+.history {
+  background-position: 0px -560px;
+}
+.deactivate {
+  background-position: 0px -600px;
+}
+.activate {
+  background-position: 0px -640px;
+}
 span.icon {
   display: inline-block;
 }
@@ -6708,6 +6721,15 @@ span.icon {
 }
 .icon-btn:hover .edit {
   background-position: -40px -520px;
+}
+.icon-btn:hover .history {
+  background-position: -40px -560px;
+}
+.icon-btn:hover .deactivate {
+  background-position: -40px -600px;
+}
+.icon-btn:hover .activate {
+  background-position: -40px -640px;
 }
 .btn-side-menu {
   width: 100%;
