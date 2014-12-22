@@ -265,8 +265,6 @@ export default Ember.ObjectController.extend({
 		var _this 			= this;
 		var uuid 				= params.params["refsets.refset"].uuid;
 
-		Ember.Logger.log("controllers.refsets.refset:initModel (uuid)",uuid);
-				
 		var dataController 	= this.get('controllers.data');
 
 		// Run next so that we do not prevent the UI being displayed if the data is delayed...
@@ -1072,7 +1070,56 @@ export default Ember.ObjectController.extend({
 		showHistory : function(member)
 		{
 			Ember.Logger.log("showHistory",member);
+			
+			var dataController 	= this.get('controllers.data');
+			
+			dataController.getRefsetMemberHistory(this.get("model").uuid,member.uuid,this,'showHistoryComplete');
 		},
+		
+		showHistoryComplete : function(response)
+		{
+			Ember.Logger.log("showHistoryComplete",response);
+			
+			var message = "";
+			
+			if (!response.error)
+			{
+				message += "<div style='max-height:90%;overflow-x:hidden;overflow-y:auto'>";
+				
+				response.history.map(function(item){
+					var effectiveTime = new Date(item.effectiveTime);
+					
+					if (typeof item.moduleId === "undefined")
+					{
+						item.moduleId 	= "Unknown";
+					}
+					
+					message += "<p><table width='100%'>"; 
+					message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
+					message += "<tr><td align=right>Status :&nbsp;</td><td><b>" + (item.active ? "Active" : "Inactive") + "</b></td></tr>";
+					message += "<tr><td align=right>Module Id :&nbsp;</td><td><b>" + item.moduleId + "</b></td></tr>";
+					message += "</table></p>"; 
+				});
+				
+				message += "</div>";
+			}
+			else
+			{
+				message = "Unable to retrieve member history.<br><br>" + response.message;				
+			}
+			
+	        BootstrapDialog.show({
+	            title: "Member history",
+	            closable: false,
+	            message: message,
+	            buttons: [{
+	                label: 'Close',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+		}
 
 	}
 });

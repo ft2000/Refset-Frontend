@@ -640,6 +640,38 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
+	
+	getRefsetMemberHistory : function(refsetid,memberId,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:getRefsetMemberHistory (refsetid,memberId,callingController,completeAction,retry)",refsetid,memberId,callingController,completeAction,retry);
+		
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		refsetsAdapter.getRefsetMemberHistory(user,refsetid,memberId).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+			Ember.Logger.log("refsetsAdapter.getRefsetMemberHistory",response);
+			
+			if (response.meta.status === 'OK')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,history:response.content.history.records});
+				}
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Get Refset Member History','getRefsetMemberHistory',[refsetid,memberId],callingController,completeAction,retryCounter);	
+			}
+		});
+	},
+	
 	getRefset : function(id,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.data:getRefset (id,callingController,completeAction,retry)",id,callingController,completeAction,retry);
