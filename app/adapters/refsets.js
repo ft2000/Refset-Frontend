@@ -113,6 +113,23 @@ export default Ember.Object.extend({
 		return result;
 	},
 
+	getRefsetMemberHistory : function (user,refsetId,memberId)
+	{
+		Ember.Logger.log("adapters.refsets:getRefsetMemberHistory (user,refsetId,memberId)",user,refsetId,memberId);
+		
+		var _this = this;
+		
+		var result = ajax(RefsetENV.APP.refsetApiBaseUrl + '/' + refsetId + '/' + memberId + '/allStates', {headers:this.getHeaders(user), processData: false, contentType: 'application/json'}).then(function(response)
+		{	
+			return response;
+		},
+		function (response) 
+		{
+			return _this.returnErrorResponse(response);
+		});	
+		
+		return result;
+	},
 	findHeader : function (user,id)
 	{
 		Ember.Logger.log("adapters.refsets:findHeader (user,id)",user,id);

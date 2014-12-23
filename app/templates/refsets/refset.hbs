@@ -31,7 +31,7 @@
 						<table width="100%">
 							
 							<tr class="hr"><td width="100"></td><td width="300"><td width="100"></td>
-							
+
 							<tr>
 								{{#if published}}
 									<td class="label">Description</td>
@@ -101,7 +101,7 @@
 									{{/if}}
 								</td>
 								<td class="label" rel="tooltip" title="Planned publish member effective time"><span class="pointer">Planned Publish Date</span></td><td class="content" colspan=2>				
-									not available in data yet...
+									{{effective-time-format expectedReleaseDate}}
 								</td>
 							</tr>
 
@@ -146,11 +146,11 @@
 				            	{{#with controller.moduleTypesArray as moduleTypesArray }}
 									 {{#collection Ember.ListView contentBinding="filteredImportMembers" height=400 rowHeight=59 width="100%"}}
 										<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-											<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponentId}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+											<span class="trashIcon"><a {{action 'toggleImportMember' referencedComponent.id}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
 		
-											<div class="listViewRow"><span class="sctid">{{referencedComponentId}}</span> | <span class="description">{{description}}</span> |</div>						
+											<div class="listViewRow"><span class="sctid">{{referencedComponent.id}}</span> | <span class="description">{{referencedComponent.label}}</span> |</div>						
 		
-											<span class="tickIcon"><a {{action 'toggleImportMemberActive' referencedComponentId}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+											<span class="tickIcon"><a {{action 'toggleImportMemberActive' referencedComponent.id}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 		
 											<label><span>{{view Em.Select value=content.moduleId content=moduleTypesArray optionValuePath="content.id" optionLabelPath="content.label" class="form-control"}}</span></label>
 					
@@ -183,8 +183,8 @@
 						<ul class="list-group checkboxList member-list">
 							{{#if filteredMembers}}
 								<li class="list-group-item member-list-header" style="border-bottom:none">
-									<span class="active"><a {{action 'setSortCriteria' 'referencedComponentId'}} class="pointer">Referenced Component Id</a> {{sort-icon sortBy sortOrder 'referencedComponentId'}}</span>
-									<span><a {{action 'setSortCriteria' 'description'}} class="pointer">Description</a> {{sort-icon sortBy sortOrder 'description'}}</span>
+									<span class="active"><a {{action 'setSortCriteria' 'referencedComponent.id'}} class="pointer">Referenced Component Id</a> {{sort-icon sortBy sortOrder 'referencedComponent.id'}}</span>
+									<span><a {{action 'setSortCriteria' 'referencedComponent.label'}} class="pointer">Description</a> {{sort-icon sortBy sortOrder 'referencedComponent.label'}}</span>
 									<span class="right">(hover over anything in <span class="tooltiplink">blue</span> for more info)</span>
 								</li>
 
@@ -192,68 +192,26 @@
 									<span class="active pointer" rel="tooltip" title="Member (not underlying component) status (active/inactive)"><a {{action 'setSortCriteria' 'active'}} class="pointer">Status</a> {{sort-icon sortBy sortOrder 'active'}}</span>
 									<span class="effective-time pointer" rel="tooltip" title="Latest published effective time"><a {{action 'setSortCriteria' 'latestEffectiveTime'}} class="pointer">Effective Time</a> {{sort-icon sortBy sortOrder 'latestEffectiveTime'}}</span>
 									<span class="module-id"><a {{action 'setSortCriteria' 'moduleId'}} class="pointer">Module Id</a> {{sort-icon sortBy sortOrder 'moduleId'}}</span>
-									<span>Member Id</span>
+									<span class="uuid">Member Id</span>
+									<span><a {{action 'setSortCriteria' 'referencedComponent.active'}} class="pointer">Concept Status</a></span>
 								</li>
 									
 								{{#if showMetaData}}
-								<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
-									<span class="last-modified pointer" rel="tooltip" title="Last date this member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a> {{sort-icon sortBy sortOrder 'modifiedDate'}}</span>
-									<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this member"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a> {{sort-icon sortBy sortOrder 'modifiedBy'}}</span>
-								</li>
-								
-								{{#if editMode}}
-					            	{{#with controller.moduleTypesArray as moduleTypesArray }}
-										 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
-											<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-												<span class="right"><a class="pointer icon info"></a></span>
-												<span class="right"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
-
-												<div class="memberRowWrapperEdit"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
-		
-												<span class="left active"><a {{action 'toggleMemberActive' uuid}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
-	
-												<span class="effective-time">{{effective-time-format effectiveTime}}</span>
-												<span>
-													{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
-									 			</span>
-
-												<hr>				
-												<span class="last-modified">{{date-time-format modifiedDate}}</span>
-												<span class="last-modified-by">{{modifiedBy}}</span>
-											</div>
-										  {{/collection}}
-									  {{/with}}
-									  
-									{{else}}
+									<li class="list-group-item member-list-header" style="border-top:1px solid #eee">
+										<span class="last-modified pointer" rel="tooltip" title="Last date this member was modified"><a {{action 'setSortCriteria' 'modifiedDate'}} class="pointer">Last update date</a> {{sort-icon sortBy sortOrder 'modifiedDate'}}</span>
+										<span class="last-modified-by pointer" rel="tooltip" title="User that last modified this member"><a {{action 'setSortCriteria' 'modifiedBy'}} class="pointer">Last updated by</a> {{sort-icon sortBy sortOrder 'modifiedBy'}}</span>
+									</li>
 									
-						            	{{#with controller.moduleTypes as moduleTypes }}
-											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
-												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-						
-													<div class="memberRowWrapper"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
-			
-													<div class="memberRowWrapper">
-														<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
-														<span class="effective-time">{{effective-time-format effectiveTime}}</span>
-														<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
-														<span>{{uuid}}</span>
-													</div>
-													
-													<hr>				
-													<span class="last-modified">{{date-time-format modifiedDate}}</span>
-													<span class="last-modified-by">{{modifiedBy}}</span>
-												</div>
-											  {{/collection}}
-										  {{/with}}									
-									{{/if}}
-								{{else}}
 									{{#if editMode}}
 						            	{{#with controller.moduleTypesArray as moduleTypesArray }}
 											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
-													<span class="right"><a class="pointer icon info"></a></span>
-													<span class="right"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
-													<div class="memberRowWrapperEdit"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
+													<span class="right rowIconBtn"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+													<span class="right rowIconBtn"><a class="pointer icon info " {{action 'showMetaData' this.content}}></a></span>
+													{{#if memberHasPublishedStateHistory}}<span class="right rowIconBtn"><a class="pointer icon history" {{action 'showHistory' this.content}}></a></span>{{/if}}
+
+	
+													<div class="memberRowWrapperEdit"><span class="active">{{referencedComponent.id}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="referencedComponent.label"}}>{{referencedComponent.label}}</span> |</div>
 			
 													<span class="left active"><a {{action 'toggleMemberActive' uuid}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
 		
@@ -261,7 +219,10 @@
 													<span>
 														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
 										 			</span>
-													<span>{{uuid}}</span>
+	
+													<hr>				
+													<span class="last-modified">{{date-time-format modifiedDate}}</span>
+													<span class="last-modified-by">{{modifiedBy}}</span>
 												</div>
 											  {{/collection}}
 										  {{/with}}
@@ -272,20 +233,71 @@
 												 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
 													<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
 							
-														<div class="memberRowWrapper"><span class="active">{{referencedComponentId}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="description"}}>{{description}}</span> |</div>
+														<span class="right rowIconBtn"><a class="pointer icon info " {{action 'showMetaData' this.content}}></a></span>
+														{{#if memberHasPublishedStateHistory}}<span class="right rowIconBtn"><a class="pointer icon history" {{action 'showHistory' this.content}}></a></span>{{/if}}
+
+														<div class="memberRowWrapper"><span class="active">{{referencedComponent.id}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="referencedComponent.label"}}>{{referencedComponent.label}}</span> |</div>
 				
 														<div class="memberRowWrapper">
-															<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>
+															<span {{bind-attr class=':active active::inactiveMemberText'}}>{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}{{#if memberHasPublishedState}}<span class="pointer" rel="tooltip" title="This member has been published">P</span>{{/if}}{{#if memberHasPendingEdit}}<span class="pointer" rel="tooltip" title="This member has edits awaiting publication">E</span>{{/if}}</span>
 															<span class="effective-time">{{effective-time-format effectiveTime}}</span>
 															<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
-															<span>{{uuid}}</span>
+															<span class="uuid">{{uuid}}</span>
+															<span>{{#if referencedComponent.active}}active{{else}}inactive{{/if}}</span>
+														</div>
+														
+														<hr>				
+														<span class="last-modified">{{date-time-format modifiedDate}}</span>
+														<span class="last-modified-by">{{modifiedBy}}</span>
+													</div>
+											  {{/collection}}
+										  {{/with}}									
+									{{/if}}
+								{{else}}
+									{{#if editMode}}
+						            	{{#with controller.moduleTypesArray as moduleTypesArray }}
+											 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
+												<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+													<span class="right rowIconBtn"><a {{action 'toggleDeleteMember' uuid}} {{bind-attr class=':pointer :icon meta.deleteConcept:undelete:delete'}}"></a></span>
+													<span class="right rowIconBtn"><a class="pointer icon info " {{action 'showMetaData' this.content}}></a></span>
+													{{#if memberHasPublishedStateHistory}}<span class="right rowIconBtn"><a class="pointer icon history" {{action 'showHistory' this.content}}></a></span>{{/if}}
+
+													<div class="memberRowWrapperEdit"><span class="active">{{referencedComponent.id}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="referencedComponent.label"}}>{{referencedComponent.label}}</span> |</div>
+			
+													<span class="left active"><a {{action 'toggleMemberActive' uuid}} {{bind-attr class=':pointer :icon active:tick:cross'}}"></a></span>
+		
+													<span class="effective-time">{{effective-time-format effectiveTime}}</span>
+													<span>
+														{{snomed-data-dropdown value=content.moduleId dataType="moduleTypesArray"}}
+										 			</span>
+												</div>
+											  {{/collection}}
+										  {{/with}}
+										  
+										{{else}}
+										
+							            	{{#with controller.moduleTypes as moduleTypes }}
+												 {{#collection Ember.ListView contentBinding="filteredMembers" height=400 rowHeight=memberRowHeight width="100%"}}
+													<div {{bind-attr class=':list-group-item :member-list-item meta.conceptActive::inactiveConcept meta.deleteConcept:deleteConcept'}}>
+							
+														<span class="right rowIconBtn"><a class="pointer icon info " {{action 'showMetaData' this.content}}></a></span>
+														{{#if memberHasPublishedStateHistory}}<span class="right rowIconBtn"><a class="pointer icon history" {{action 'showHistory' this.content}}></a></span>{{/if}}
+
+														<div class="memberRowWrapper"><span class="active">{{referencedComponent.id}}</span> | <span class="description pointer" rel="tooltip" {{bind-attr title="referencedComponent.label"}}>{{referencedComponent.label}}</span> |</div>
+								
+														<div class="memberRowWrapper">
+															<span {{bind-attr class=':active active::inactiveMemberText'}}><span class="status">{{#if active}}ACTIVE{{else}}INACTIVE{{/if}}</span>{{#if memberHasPublishedState}}<span class="pointer" rel="tooltip" title="This member has been published">P</span>{{/if}}{{#if memberHasPendingEdit}}<span class="pointer" rel="tooltip" title="This member has edits awaiting publication">E</span>{{/if}}</span>
+															<span class="effective-time">{{effective-time-format effectiveTime}}</span>
+															<span class="module-id">{{refset-list-item-span 'module-id' moduleId moduleTypes}}</span>
+															<span class="uuid">{{uuid}}</span>
+															<span>{{#if referencedComponent.active}}active{{else}}inactive{{/if}}</span>
 														</div>
 													</div>
 												  {{/collection}}
 											  {{/with}}									
 										{{/if}}
 								{{/if}}
-							
+						
 							{{else}}
 								<li class='list-group-item'>
 									{{#if totalNoOfMembers}}
@@ -345,18 +357,19 @@
 			
 				<select id="filterSelect" class="btn btn-default btn-side-menu" {{action 'addFilter' on="change"}}>
 					<option value="0">Filter members...</option>
-					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Filter inactive components (not working yet)</option>{{/unless}}
+					{{#unless filterByInactiveConceptsIsActive}}<option value="filterByInactiveConcepts">Members with inactive components</option>{{/unless}}
 					
-					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Filter by active status</option>{{/unless}}
-					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Filter by module type</option>{{/unless}}
-					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Filter by effective time</option>{{/unless}}
+					{{#unless filterByStatusIsActive}}<option value="filterByStatus">Member status (active / inactive)</option>{{/unless}}
+					{{#unless filterByModuleIdIsActive}}<option value="filterByModuleId">Module type</option>{{/unless}}
+					{{#unless filterByEffectiveTimeIsActive}}<option value="filterByEffectiveTime">Effective time</option>{{/unless}}
 
 					{{#if model.published}}
-						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Filter modified members (not working yet)</option>{{/unless}}
+						{{#unless filterByModifiedMembersIsActive}}<option value="filterByModifiedMembers">Modified members</option>{{/unless}}
+						{{#unless filterByPublishedMembersIsActive}}<option value="filterByPublishedMembers">Published members</option>{{/unless}}
 					{{/if}}										
 					
-					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Filter by last update date</option>{{/unless}}
-					{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Filter by last updater</option>{{/unless}}
+					{{#unless filterByLastUpdateDateIsActive}}<option value="filterByLastUpdateDate">Last update date</option>{{/unless}}
+					{{#unless filterByLastUpdateUserIsActive}}<option value="filterByLastUpdateUser">Last updater</option>{{/unless}}
 				</select>
 
 				<p class="filterItem">
@@ -366,7 +379,7 @@
 
 				{{#if filterByInactiveConceptsIsActive}}
 					<p class="filterItem">
-						Active members with inactive concepts: <a {{action 'removeFilter' 'filterByInactiveConcepts'}} class="right pointer">remove</a><br>
+						Active members with inactive concepts: {{radio-button value=true checked=filterByInactiveConcepts}} Active Concepts{{radio-button value=false checked=filterByInactiveConcepts}} Inactive concepts<a {{action 'removeFilter' 'filterByInactiveConcepts'}} class="right pointer">remove</a><br>
 					</p>
 				{{/if}}
 
@@ -393,13 +406,20 @@
 					</p>
 				{{/if}}
 
-				{{#if filterByPublishedMembersIsActive}}
+				{{#if filterByModifiedMembersIsActive}}
 					<p class="filterItem">
-						Modified members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
-						{{radio-button value=true checked=filterByPublishedMembers}} Published {{radio-button value=false checked=filterByPublishedMembers}} Unpublished/Modified 
+						Modified members:<a {{action 'removeFilter' 'filterByModifiedMembers'}} class="right pointer">remove</a><br>
+						{{radio-button value="1" checked=filterByModifiedMembers}} Modified {{radio-button value="0" checked=filterByModifiedMembers}} Unchanged
 					</p>				
 				{{/if}}	
 	
+				{{#if filterByPublishedMembersIsActive}}
+					<p class="filterItem">
+						Published members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
+						{{radio-button value="1" checked=filterByPublishedMembers}} Published {{radio-button value="0" checked=filterByPublishedMembers}} Never Published
+					</p>				
+				{{/if}}	
+				
 				{{#if filterByLastUpdateDateIsActive}}
 					<p class="filterItem">
 						Modified since: <a {{action 'removeFilter' 'filterByLastUpdateDate'}} class="right pointer">remove</a><br>
@@ -440,15 +460,15 @@
 				{{else}}
 					{{#if user.token}}
 						{{#if active}}
-							<button class="btn btn-primary btn-side-menu icon-btn" {{action 'toggleEditMode'}}><span class="btn-text">Edit Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>
+							<button class="btn btn-primary btn-side-menu icon-btn" {{action 'toggleEditMode'}}><span class="btn-text">Edit Refset</span><span {{bind-attr class=':pointer :icon :edit'}}></span></button>
 
 							{{#if published}}
-								<button class="btn btn-warning btn-side-menu icon-btn" {{action 'inactivateRefset'}}><span class="btn-text">Inactivate Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>
+								<button class="btn btn-warning btn-side-menu icon-btn" {{action 'inactivateRefset'}}><span class="btn-text">Inactivate Refset</span><span {{bind-attr class=':pointer :icon :deactivate'}}></span></button>
 							{{/if}}
 							
 							<button class="btn btn-danger btn-side-menu icon-btn" {{action 'deleteRefset'}}><span class="btn-text">Delete Refset</span><span {{bind-attr class=':pointer :icon :undelete'}}></span></button>
 						{{else}}
-							<button class="btn btn-warning btn-side-menu icon-btn" {{action 'activateRefset'}}><span class="btn-text">Activate Refset</span><span {{bind-attr class=':pointer :icon :link'}}></span></button>					
+							<button class="btn btn-warning btn-side-menu icon-btn" {{action 'activateRefset'}}><span class="btn-text">Activate Refset</span><span {{bind-attr class=':pointer :icon :activate'}}></span></button>					
 						{{/if}}
 					{{/if}}
 				{{/if}}

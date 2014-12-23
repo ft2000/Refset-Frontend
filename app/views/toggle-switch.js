@@ -12,6 +12,9 @@ export default Ember.View.extend({
   }).property(),
   
   _updateElementValue: function() {
-    return this.set('checked', this.$('input').prop('checked'));
+	  if (typeof this.$('input') !== "undefined")
+	{
+		   return this.set('checked', this.$('input').prop('checked'));
+	}
   }
 });

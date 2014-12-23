@@ -640,6 +640,38 @@ export default Ember.ObjectController.extend({
 		});
 	},
 	
+	
+	getRefsetMemberHistory : function(refsetid,memberId,callingController,completeAction,retry)
+	{
+		Ember.Logger.log("controllers.data:getRefsetMemberHistory (refsetid,memberId,callingController,completeAction,retry)",refsetid,memberId,callingController,completeAction,retry);
+		
+		var _this 			= this;
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		
+		var loginController = this.get('controllers.login');
+		var user = loginController.user;
+
+		this.set("callsInProgressCounter",this.callsInProgressCounter+1);
+
+		refsetsAdapter.getRefsetMemberHistory(user,refsetid,memberId).then(function(response)
+		{
+			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
+			Ember.Logger.log("refsetsAdapter.getRefsetMemberHistory",response);
+			
+			if (response.meta.status === 'OK')
+			{
+				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
+				{
+					callingController.send(completeAction,{error:0,history:response.content.history.records});
+				}
+			}
+			else
+			{
+				_this.handleRequestFailure(response,'Get Refset Member History','getRefsetMemberHistory',[refsetid,memberId],callingController,completeAction,retryCounter);	
+			}
+		});
+	},
+	
 	getRefset : function(id,callingController,completeAction,retry)
 	{
 		Ember.Logger.log("controllers.data:getRefset (id,callingController,completeAction,retry)",id,callingController,completeAction,retry);
@@ -1163,9 +1195,9 @@ export default Ember.ObjectController.extend({
 		return promise;
 	},
 
-	importRF2 : function(refsetId,rf2file,callingController,completeAction,retry)
+	importRF2 : function(refsetUUID,refsetSctId,rf2file,callingController,completeAction,retry)
 	{
-		Ember.Logger.log("controllers.data:importRF2 (refsetId,retry)",refsetId,retry);
+		Ember.Logger.log("controllers.data:importRF2 (refsetUUID,refsetSctId,retry)",refsetUUID,refsetSctId,retry);
 
 		var _this 			= this;
 		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
@@ -1179,8 +1211,37 @@ export default Ember.ObjectController.extend({
 		{
 			this.showWaitAnim();
 		}
+
+		var rawArray = rf2file.split('\n');
 		
-		var result = refsetsAdapter.importRF2(user,refsetId,rf2file).then(function(response)
+		var header = rawArray.shift(); // Remove the header row at the top
+		
+		var requiredRows = new Array;
+		
+		for (var r=0;r<rawArray.length;r++)
+		{
+			var member 		= rawArray[r];
+			var memberRow 	= member.split(/\t/);
+			var sctId	 	= memberRow[4];
+			
+			if (sctId === refsetSctId)
+			{
+				requiredRows.push(member);
+			}
+		}
+		
+		Ember.Logger.log("**********************",header,requiredRows.length);
+		
+		var filteredRF2Header 	= [header];
+		Ember.Logger.log("****************&&& filterRF2Header",filteredRF2Header);
+
+		var filteredRF2Array = filteredRF2Header.concat(requiredRows);
+		Ember.Logger.log("****************&&& filteredRF2Array",filteredRF2Array);
+
+		var filteredRF2File 	= filteredRF2Array.join('\n');		
+		Ember.Logger.log("****************&&& filteredRF2File",filteredRF2File);
+		
+		var result = refsetsAdapter.importRF2(user,refsetUUID,filteredRF2File).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);
 
@@ -1190,14 +1251,14 @@ export default Ember.ObjectController.extend({
 			{
 				if (typeof callingController !== "undefined" && typeof completeAction !== 'undefined')
 				{
-					callingController.send(completeAction,{error:0,refsetId:refsetId,rf2report:{}});	
+					callingController.send(completeAction,{error:0,refsetId:refsetUUID,rf2report:{}});	
 				}
 				
-				_this.getRefset(refsetId);
+				_this.getRefset(refsetUUID);
 			}
 			else
 			{
-				_this.handleRequestFailure(response,'Import RF2','importRF2',[refsetId,rf2file],callingController,completeAction,retryCounter);
+				_this.handleRequestFailure(response,'Import RF2','importRF2',[refsetUUID,rf2file],callingController,completeAction,retryCounter);
 			}
 		});
 
