@@ -233,7 +233,7 @@ export default Ember.ArrayController.extend({
 					member.moduleId = defaultMemberModuleId;
 					member.meta = {};
 					
-					if (conceptData[refCompId] !== null)
+					if (typeof conceptData[refCompId] !== "undefined" && conceptData[refCompId] !== null)
 					{
 						member.active 						= true;
 						member.description					= conceptData[refCompId].label;

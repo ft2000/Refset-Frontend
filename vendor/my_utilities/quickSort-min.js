@@ -30,6 +30,12 @@ var mergesort = function(array,sortBy,sortOrder)
 			y = right[0].active ? 1 : 0;
 		}
 
+		if (sortBy === "referencedComponent.active")
+		{
+			x = left[0].referencedComponent.active ? 1 : 0;
+			y = right[0].referencedComponent.active  ? 1 : 0;
+		}
+		
 		if (sortOrder === "desc")  
 		{
 		    if(x > y)
