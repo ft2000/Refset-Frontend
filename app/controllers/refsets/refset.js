@@ -1100,6 +1100,7 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("showHistoryComplete",response);
 			
 			var message = "";
+			var moduleTypes = this.get("moduleTypes");
 			
 			if (!response.error)
 			{
@@ -1107,6 +1108,9 @@ export default Ember.ObjectController.extend({
 				
 				response.history = mergesort(response.history,'modifiedDate','desc');
 				
+				message += "<p><table width='100%'>"; 
+				message += "<tr style='border-bottom:1px solid #ccc'><td>Effective Time</td><td>Status</td><td>Module Id</td></tr>"; 
+
 				response.history.map(function(item){
 					var effectiveTime = new Date(item.effectiveTime);
 					
@@ -1115,14 +1119,13 @@ export default Ember.ObjectController.extend({
 						item.moduleId 	= "Unknown";
 					}
 					
-					message += "<p><table width='100%'>"; 
-					message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
-					message += "<tr><td align=right>Status :&nbsp;</td><td><b>" + (item.active ? "Active" : "Inactive") + "</b></td></tr>";
-					message += "<tr><td align=right>Module Id :&nbsp;</td><td><b>" + item.moduleId + "</b></td></tr>";
-					message += "</table></p>"; 
+					message += "<tr><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td>";
+					message += "<td><b>" + (item.active ? "Active" : "Inactive") + "</b></td>";
+					message += "<td><b><span class='pointer' rel='tooltip' title='" + moduleTypes[item.moduleId] + "'>" + item.moduleId + "</span></b></td>";
+					message += "</tr>"; 
 				});
 				
-				message += "</div>";
+				message += "</table></div>";
 			}
 			else
 			{
