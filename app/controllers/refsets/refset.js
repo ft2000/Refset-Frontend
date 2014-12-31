@@ -544,6 +544,8 @@ export default Ember.ObjectController.extend({
 				
 				delete member["meta"];
 				
+				obj.memberHasPendingEdit = 1;
+				
 				return member;
 			});
 			membersToUpdate = $.grep(membersToUpdate,function(n){ return(n); });
@@ -1002,9 +1004,9 @@ export default Ember.ObjectController.extend({
 				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
-				case 'filterByModifiedMembers' : {defaultValue = "1"; break;}
+				case 'filterByModifiedMembers' : {defaultValue = 1; break;}
 				case 'filterByInactiveConcepts' : {defaultValue = false; break;}
-				case 'filterByPublishedMembers' : {defaultValue = "1"; break;}
+				case 'filterByPublishedMembers' : {defaultValue = 1; break;}
 			}
 		
 			this.set(filterName,defaultValue);

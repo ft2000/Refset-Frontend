@@ -411,14 +411,14 @@
 				{{#if filterByModifiedMembersIsActive}}
 					<p class="filterItem">
 						Modified members:<a {{action 'removeFilter' 'filterByModifiedMembers'}} class="right pointer">remove</a><br>
-						{{radio-button value="1" checked=filterByModifiedMembers}} Modified {{radio-button value="0" checked=filterByModifiedMembers}} Unchanged
+						{{radio-button value=1 checked=filterByModifiedMembers}} Modified {{radio-button value=0 checked=filterByModifiedMembers}} Unchanged
 					</p>				
 				{{/if}}	
 	
 				{{#if filterByPublishedMembersIsActive}}
 					<p class="filterItem">
 						Published members:<a {{action 'removeFilter' 'filterByPublishedMembers'}} class="right pointer">remove</a><br>
-						{{radio-button value="1" checked=filterByPublishedMembers}} Published {{radio-button value="0" checked=filterByPublishedMembers}} Never Published
+						{{radio-button value=1 checked=filterByPublishedMembers}} Published {{radio-button value=0 checked=filterByPublishedMembers}} Never Published
 					</p>				
 				{{/if}}	
 				
