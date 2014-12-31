@@ -260,7 +260,7 @@ export default Ember.ObjectController.extend({
             			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">We are now importing members. Please wait...<br><br><img src="assets/img/googleballs-animated.gif"></div><br><br>');
                 		
             			// Now initiate adding members to our new refset...
-            			dataController.addMembers(refsetId,conceptsToImport,this,'addMembersComplete');	
+            			dataController.addMembers(refsetUUID,conceptsToImport,this,'addMembersComplete');	
     				}
     			}
     			else
