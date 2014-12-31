@@ -18,9 +18,6 @@ export default Ember.ObjectController.extend({
 	needs 					: ["login"],
 	
 	refsets 				: [],
-	unpublishedRefsets		: [],
-	publishedRefsets		: [],
-	inactiveRefsets			: [],
 	refset 					: {},
 	refsetHistory 			: {},
 	currentRefset			: null,
@@ -1200,7 +1197,7 @@ export default Ember.ObjectController.extend({
 		Ember.Logger.log("controllers.data:importRF2 (refsetUUID,refsetSctId,retry)",refsetUUID,refsetSctId,retry);
 
 		var _this 			= this;
-		var retryCounter 	= (typeof retry === "undefined" ? 0 : retry);
+		var retryCounter 	= (typeof retry === "undefined" ? 0 : this.get("numAutoServerRetries")); // don't want to auto-retry the rf2 import... (it will import members more than once!!!)
 
 		var loginController = this.get('controllers.login');
 		var user 			= loginController.user;
@@ -1230,17 +1227,10 @@ export default Ember.ObjectController.extend({
 			}
 		}
 		
-		Ember.Logger.log("**********************",header,requiredRows.length);
-		
 		var filteredRF2Header 	= [header];
-		Ember.Logger.log("****************&&& filterRF2Header",filteredRF2Header);
-
 		var filteredRF2Array = filteredRF2Header.concat(requiredRows);
-		Ember.Logger.log("****************&&& filteredRF2Array",filteredRF2Array);
-
 		var filteredRF2File 	= filteredRF2Array.join('\n');		
-		Ember.Logger.log("****************&&& filteredRF2File",filteredRF2File);
-		
+
 		var result = refsetsAdapter.importRF2(user,refsetUUID,filteredRF2File).then(function(response)
 		{
 			_this.set("callsInProgressCounter",_this.callsInProgressCounter-1);

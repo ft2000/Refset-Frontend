@@ -119,9 +119,6 @@ export default Ember.ObjectController.extend({
 	createEmptyRefset : function()
 	{
 		var model = RefsetModel.create();
-		
-		
-		Ember.Logger.log("xxxxxxxxxxxxxxxxxxxxxxxxxx createEmptyRefset",model);
 
 		model.meta.expectedReleaseDateInput = null;
 		this.set("model",model);
@@ -154,7 +151,6 @@ export default Ember.ObjectController.extend({
 				{
 					fn: function (value) 
 					{
-						console.log("+++++++++++++++++++++++ ParsleyConfig",value);  	
 						return false;
 					},
 					priority: 32
@@ -182,7 +178,9 @@ export default Ember.ObjectController.extend({
 			Refset.description 			= this.get("model.description");
 			Refset.published 			= false;
 			
-			var releaseDate 			= this.get("model.meta.expectedReleaseDateInput");
+			var releaseDateAsString 	= this.get("model.meta.expectedReleaseDateInput");
+			
+			var releaseDate 			= new Date(releaseDateAsString.substr(0,4),releaseDateAsString.substr(4,2),releaseDateAsString.substr(6,2));
 			Refset.expectedReleaseDate 	= releaseDate;
 	
 			if (isRF2Import)
@@ -191,8 +189,6 @@ export default Ember.ObjectController.extend({
 				Refset.published 		= this.get("model.published");
 			}
 			
-			// Need to validate the form at this point and abort if required fields are not completed
-					
 			this.dialogInstance = BootstrapDialog.show({
 	            title: 'Creating your Refsetence Set',
 	            closable: false,
@@ -275,10 +271,20 @@ export default Ember.ObjectController.extend({
     		}
     	},
 
-    	importRF2Complete : function()
+    	importRF2Complete : function(response)
     	{
-			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file imported.<br><br>');
-			this.dialogInstance.getModalFooter().show();
+    		Ember.Logger.log("importRF2Complete",response);
+    		
+    		if (response.error)
+    		{
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file import failed.<br><br>' + response.message + '<br><br>');
+    			this.dialogInstance.getModalFooter().show();
+    		}
+    		else
+    		{
+    			this.dialogInstance.setMessage('<br><br><div class="centre">Your Reference Set Header has been created.<br><br><div class="centre">RF2 file imported.<br><br>');
+    			this.dialogInstance.getModalFooter().show();
+    		}
     	},
     	
     	addMembersComplete : function(response)

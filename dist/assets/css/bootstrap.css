@@ -6808,3 +6808,17 @@ textarea.parsley-error {
 .parsley-required {
   color: red;
 }
+.membericon {
+  background: url('../img/member-icons.png') no-repeat 0px 0px;
+  display: block;
+  height: 18px;
+  text-indent: -9999px;
+  width: 18px;
+  margin-right: 1px;
+}
+.edited {
+  background-position: 0px 0px;
+}
+.published {
+  background-position: 0px -30px;
+}
