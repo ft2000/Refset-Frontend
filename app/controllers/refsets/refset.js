@@ -21,7 +21,8 @@ export default Ember.ObjectController.extend({
 	getConceptDataInProgress 	: Ember.computed.alias("controllers.refsets/upload.getConceptDataInProgress"),
 	importError 				: Ember.computed.alias("controllers.refsets/upload.importError"),
 	importProgress				: Ember.computed.alias("controllers.refsets/upload.importProgress"),
-	
+	isRF2Import					: Ember.computed.alias("controllers.refsets/upload.isRF2Import"),
+
 	editModel					: {},	
 	membersToDelete 			: [],
 	membersToAdd				: [],
@@ -78,6 +79,8 @@ export default Ember.ObjectController.extend({
 	filteredImportMembers				: function()
 	{
 		var allMembers = this.get('potentialMembersToImport');
+		
+		Ember.Logger.log("filteredImportMembers",this.get("isRF2Import"));
 		
 		return this.filterMembers(allMembers);
 		
@@ -286,13 +289,20 @@ export default Ember.ObjectController.extend({
 		
 		Ember.Logger.log("controllers.refsets.refset:importListChanged");
 		
+		
+		if (this.get("isRF2Import"))
+		{
+			var uploadController = this.get('controllers.refsets/upload');		
+			uploadController.clearMemberList();
+		}
+		
 		// Need  to check if we have any duplicates...
 		var duplicates = [];
 		
-		var existingMembersArray = this.get("model").members;
-		var potentialMembersToImport = this.get("potentialMembersToImport");
+		var existingMembersArray 		= this.get("model").members;
+		var potentialMembersToImport 	= this.get("potentialMembersToImport");
 		
-		if (typeof existingMembersArray !== "undefined")
+		if (typeof existingMembersArray !== "undefined" && potentialMembersToImport.length > 0)
 		{
 			for (var m=0;m<existingMembersArray.length;m++)
 			{
@@ -302,10 +312,13 @@ export default Ember.ObjectController.extend({
 				{
 					var importMember = potentialMembersToImport[i];
 					
-					if (existingMember.referencedComponentId === importMember.referencedComponentId)
+					if (importMember !== null)
 					{
-						duplicates.push(importMember.meta.description);
-						potentialMembersToImport[i] = null;
+						if (existingMember.referencedComponentId === importMember.referencedComponentId)
+						{
+							duplicates.push(importMember.description);
+							potentialMembersToImport[i] = null;
+						}
 					}
 				}
 			}
@@ -530,6 +543,8 @@ export default Ember.ObjectController.extend({
 				Ember.Logger.log(member.active,member.meta.originalActive,member.moduleId,member.meta.originalModuleId);	
 				
 				delete member["meta"];
+				
+				obj.memberHasPendingEdit = 1;
 				
 				return member;
 			});
@@ -989,9 +1004,9 @@ export default Ember.ObjectController.extend({
 				case 'filterByEffectiveTime' : {defaultValue = this.getDefaultEffectiveTime(); break;}
 				case 'filterByLastUpdateDate' : {defaultValue = ''; break;}
 				case 'filterByLastUpdateUser' : {defaultValue = this.getDefaultLastUpdater(); break;}
-				case 'filterByModifiedMembers' : {defaultValue = "1"; break;}
+				case 'filterByModifiedMembers' : {defaultValue = 1; break;}
 				case 'filterByInactiveConcepts' : {defaultValue = false; break;}
-				case 'filterByPublishedMembers' : {defaultValue = "1"; break;}
+				case 'filterByPublishedMembers' : {defaultValue = 1; break;}
 			}
 		
 			this.set(filterName,defaultValue);
@@ -1030,9 +1045,8 @@ export default Ember.ObjectController.extend({
 		{
 			Ember.Logger.log("showMetaData",member);
 			
-			var modifiedDate = new Date(member.modifiedDate);
-			var effectiveTime = new Date(member.effectiveTime);
-			var createdDate = new Date(member.created);
+			var modifiedDate 	= new Date(member.modifiedDate);
+			var createdDate 	= new Date(member.created);
 			
 			var message = "<p><b>" + member.referencedComponent.label + "</b></p>";
 			
@@ -1048,7 +1062,14 @@ export default Ember.ObjectController.extend({
 			
 			message += "<tr><td align=right>Created by :&nbsp;</td><td><b>" + member.createdBy + "</b> on <b>" + $.formatDateTime('M dd, yy', createdDate) +"</b></td></tr>";
 			message += "<tr><td align=right>Last modified by :&nbsp;</td><td><b>" + member.modifiedBy + "</b> on <b>" + $.formatDateTime('M dd, yy', modifiedDate) +"</b></td></tr>";
-			message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
+			
+			message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" 
+			if (typeof member.effectiveTime !== "undefined")
+			{
+				var effectiveTime 	= new Date(member.effectiveTime);
+				message += $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
+			}
+			
 			message += "<tr><td align=right>Published :&nbsp;</td><td><b>" + (member.memberHasPublishedState ? "Yes" : "No") + "</b></td></tr>";
 			message += "<tr><td align=right>Edited :&nbsp;</td><td><b>" + (member.memberHasPendingEdit ? "Yes" : "No") + "</b></td></tr>";
 			
@@ -1081,11 +1102,17 @@ export default Ember.ObjectController.extend({
 			Ember.Logger.log("showHistoryComplete",response);
 			
 			var message = "";
+			var moduleTypes = this.get("moduleTypes");
 			
 			if (!response.error)
 			{
 				message += "<div style='max-height:90%;overflow-x:hidden;overflow-y:auto'>";
 				
+				response.history = mergesort(response.history,'modifiedDate','desc');
+				
+				message += "<p><table width='100%'>"; 
+				message += "<tr style='border-bottom:1px solid #ccc'><td>Effective Time</td><td>Status</td><td>Module Id</td></tr>"; 
+
 				response.history.map(function(item){
 					var effectiveTime = new Date(item.effectiveTime);
 					
@@ -1094,14 +1121,13 @@ export default Ember.ObjectController.extend({
 						item.moduleId 	= "Unknown";
 					}
 					
-					message += "<p><table width='100%'>"; 
-					message += "<tr><td align=right>Effective Time :&nbsp;</td><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td></tr>";
-					message += "<tr><td align=right>Status :&nbsp;</td><td><b>" + (item.active ? "Active" : "Inactive") + "</b></td></tr>";
-					message += "<tr><td align=right>Module Id :&nbsp;</td><td><b>" + item.moduleId + "</b></td></tr>";
-					message += "</table></p>"; 
+					message += "<tr><td><b>" + $.formatDateTime('yymmdd', effectiveTime) +"</b></td>";
+					message += "<td><b>" + (item.active ? "Active" : "Inactive") + "</b></td>";
+					message += "<td><b><span class='pointer' rel='tooltip' title='" + moduleTypes[item.moduleId] + "'>" + item.moduleId + "</span></b></td>";
+					message += "</tr>"; 
 				});
 				
-				message += "</div>";
+				message += "</table></div>";
 			}
 			else
 			{

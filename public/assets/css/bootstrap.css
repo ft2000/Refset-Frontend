@@ -6472,7 +6472,7 @@ td.label {
 }
 .member-list .member-list-item .active,
 .member-list .member-list-header .active {
-  width: 130px;
+  width: 140px;
 }
 .member-list .member-list-item .status,
 .member-list .member-list-header .status {
@@ -6807,4 +6807,18 @@ textarea.parsley-error {
 }
 .parsley-required {
   color: red;
+}
+.membericon {
+  background: url('../img/member-icons.png') no-repeat 0px 0px;
+  display: block;
+  height: 18px;
+  text-indent: -9999px;
+  width: 18px;
+  margin-right: 1px;
+}
+.edited {
+  background-position: 0px 0px;
+}
+.published {
+  background-position: 0px -30px;
 }

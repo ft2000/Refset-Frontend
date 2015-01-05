@@ -101,7 +101,7 @@ export default Ember.ArrayController.extend({
         BootstrapDialog.show({
             title: 'Member import help',
             closable: false,
-            message: '...............',
+            message: 'Member import help to be inserted here once agreed with Robert...',
             buttons: [{
                 label: 'OK',
                 action: function(dialog)
@@ -327,7 +327,16 @@ export default Ember.ArrayController.extend({
 								
 							var promise = membersAdapter.find(user,refsetId).then(function(response)
 							{
-								return {sctId:refsetId,label:response.content.concept.label};	
+								Ember.Logger.log("import rft2.....",response);
+								
+								if (response.meta.status === "OK")
+								{
+									return {sctId:refsetId,label:response.content.concept.label};									
+								}
+								else
+								{
+									return {sctId:refsetId,label:"NOT FOUND"}
+								}
 							});
 							
 							promises.push(promise);
@@ -363,6 +372,9 @@ export default Ember.ArrayController.extend({
 				
 				_this.set("moreThanOneRefsetInRF2",refsets.length>1);
 				
+				var bad_rf2 = [];
+				var good_rf2 = [];
+				
 				Ember.RSVP.all(promises).then(function(result)
 				{
 					for (var l=0;l<result.length;l++)
@@ -371,11 +383,43 @@ export default Ember.ArrayController.extend({
 						{
 							if (refsets[r].sctId === result[l].sctId)
 							{
-								refsets[r].label = result[l].label;
+								if (result[l].label !== "NOT FOUND")
+								{
+									refsets[r].label = result[l].label;
+									good_rf2.push(refsets[r]);
+								}
+								else
+								{
+									bad_rf2.push(result[l]);
+								}
 							}
 						}
 					}
-
+					
+					refsets = good_rf2;
+					
+					if (bad_rf2.length)
+					{
+						var message = "Reference sets with the following refset IDs cannot be imported:<br><br>";
+						
+						for (var l=0;l<bad_rf2.length;l++)
+						{
+							message += bad_rf2[l].sctId + "<br>";
+						}
+							
+				        BootstrapDialog.show({
+				            title: "Import error",
+				            closable: false,
+				            message: message,
+				            buttons: [{
+				                label: 'Close',
+				                action: function(dialog) {
+				                    dialog.close();
+				                }
+				            }]
+				        });
+					}
+					
 					if (refsets.length > 0)
 					{
 						_this.set("rf2FileToImport",refsets[0]);
